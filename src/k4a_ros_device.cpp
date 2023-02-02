@@ -49,13 +49,11 @@ static const std::unordered_map<k4a_depth_mode_t, std::string> depth_mode_string
 
 K4AROSDevice::K4AROSDevice(const NodeHandle& n, const NodeHandle& p)
   : k4a_device_(nullptr),
-    k4a_playback_handle_(nullptr),
     node_(n),
     private_node_(p),
     node_rgb_("rgb"),
     node_ir_("ir"),
-    image_transport_(n),
-    last_capture_time_usec_(0)
+    image_transport_(n)
 {
   // Collect ROS parameters from the param server or from the command line
 #define LIST_ENTRY(param_variable, param_help_string, param_type, param_default_val) \
@@ -63,165 +61,79 @@ K4AROSDevice::K4AROSDevice(const NodeHandle& n, const NodeHandle& p)
   ROS_PARAM_LIST
 #undef LIST_ENTRY
 
-  if (!params_.recording_file.empty())
+  // Print all parameters
+  ROS_INFO("K4A Parameters:");
+  params_.Print();
+
+  // Setup the K4A device
+  uint32_t k4a_device_count = k4a::device::get_installed_count();
+
+  ROS_INFO_STREAM("Found " << k4a_device_count << " sensors");
+
+  if (params_.sensor_sn != "")
   {
-    ROS_INFO("Node is started in playback mode");
-    ROS_INFO_STREAM("Try to open recording file " << params_.recording_file);
-
-    // Open recording file and print its length
-    k4a_playback_handle_ = k4a::playback::open(params_.recording_file.c_str());
-    auto recording_length = k4a_playback_handle_.get_recording_length();
-    ROS_INFO_STREAM("Successfully openend recording file. Recording is " << recording_length.count() / 1000000
-                                                                         << " seconds long");
-
-    if (!k4a_playback_handle_.get_tag("K4A_DEVICE_SERIAL_NUMBER", &serial_number_))
-    {
-      serial_number_ = {};
-      ROS_ERROR("Cannot read serial number from recording.");
-    }
-
-    // Get the recordings configuration to overwrite node parameters
-    k4a_record_configuration_t record_config = k4a_playback_handle_.get_record_configuration();
-
-    // Overwrite fps param with recording configuration for a correct loop rate in the frame publisher thread
-    switch (record_config.camera_fps)
-    {
-      case K4A_FRAMES_PER_SECOND_5:
-        params_.fps = 5;
-        break;
-      case K4A_FRAMES_PER_SECOND_15:
-        params_.fps = 15;
-        break;
-      case K4A_FRAMES_PER_SECOND_30:
-        params_.fps = 30;
-        break;
-      default:
-        break;
-    };
-
-    // Disable color if the recording has no color track
-    if (params_.color_enabled && !record_config.color_track_enabled)
-    {
-      ROS_WARN("Disabling color and rgb_point_cloud because recording has no color track");
-      params_.color_enabled = false;
-      params_.rgb_point_cloud = false;
-    }
-    // This is necessary because at the moment there are only checks in place which use BgraPixel size
-    else if (params_.color_enabled && record_config.color_track_enabled)
-    {
-      if (params_.color_format == "jpeg" && record_config.color_format != K4A_IMAGE_FORMAT_COLOR_MJPG)
-      {
-        ROS_FATAL("Converting color images to K4A_IMAGE_FORMAT_COLOR_MJPG is not supported.");
-        ros::requestShutdown();
-        return;
-      }
-      if (params_.color_format == "bgra" && record_config.color_format != K4A_IMAGE_FORMAT_COLOR_BGRA32)
-      {
-        k4a_playback_handle_.set_color_conversion(K4A_IMAGE_FORMAT_COLOR_BGRA32);
-      }
-    }
-
-    // Disable depth if the recording has neither ir track nor depth track
-    if (!record_config.ir_track_enabled && !record_config.depth_track_enabled)
-    {
-      if (params_.depth_enabled)
-      {
-        ROS_WARN("Disabling depth because recording has neither ir track nor depth track");
-        params_.depth_enabled = false;
-      }
-    }
-
-    // Disable depth if the recording has no depth track
-    if (!record_config.depth_track_enabled)
-    {
-      if (params_.point_cloud)
-      {
-        ROS_WARN("Disabling point cloud because recording has no depth track");
-        params_.point_cloud = false;
-      }
-      if (params_.rgb_point_cloud)
-      {
-        ROS_WARN("Disabling rgb point cloud because recording has no depth track");
-        params_.rgb_point_cloud = false;
-      }
-    }
+    ROS_INFO_STREAM("Searching for sensor with serial number: " << params_.sensor_sn);
   }
   else
   {
-    // Print all parameters
-    ROS_INFO("K4A Parameters:");
-    params_.Print();
+    ROS_INFO("No serial number provided: picking first sensor");
+    ROS_WARN_COND(k4a_device_count > 1, "Multiple sensors connected! Picking first sensor.");
+  }
 
-    // Setup the K4A device
-    uint32_t k4a_device_count = k4a::device::get_installed_count();
+  for (uint32_t i = 0; i < k4a_device_count; i++)
+  {
+    k4a::device device;
+    try
+    {
+      device = k4a::device::open(i);
+    }
+    catch (exception)
+    {
+      ROS_ERROR_STREAM("Failed to open K4A device at index " << i);
+      continue;
+    }
 
-    ROS_INFO_STREAM("Found " << k4a_device_count << " sensors");
+    ROS_INFO_STREAM("K4A[" << i << "] : " << device.get_serialnum());
 
+    // Try to match serial number
     if (params_.sensor_sn != "")
     {
-      ROS_INFO_STREAM("Searching for sensor with serial number: " << params_.sensor_sn);
-    }
-    else
-    {
-      ROS_INFO("No serial number provided: picking first sensor");
-      ROS_WARN_COND(k4a_device_count > 1, "Multiple sensors connected! Picking first sensor.");
-    }
-
-    for (uint32_t i = 0; i < k4a_device_count; i++)
-    {
-      k4a::device device;
-      try
-      {
-        device = k4a::device::open(i);
-      }
-      catch (exception)
-      {
-        ROS_ERROR_STREAM("Failed to open K4A device at index " << i);
-        continue;
-      }
-
-      ROS_INFO_STREAM("K4A[" << i << "] : " << device.get_serialnum());
-
-      // Try to match serial number
-      if (params_.sensor_sn != "")
-      {
-        if (device.get_serialnum() == params_.sensor_sn)
-        {
-          k4a_device_ = std::move(device);
-          break;
-        }
-      }
-      // Pick the first device
-      else if (i == 0)
+      if (device.get_serialnum() == params_.sensor_sn)
       {
         k4a_device_ = std::move(device);
         break;
       }
     }
-
-    if (!k4a_device_)
+    // Pick the first device
+    else if (i == 0)
     {
-      ROS_ERROR("Failed to open a K4A device. Cannot continue.");
-      return;
+      k4a_device_ = std::move(device);
+      break;
     }
-
-    serial_number_ = k4a_device_.get_serialnum();
-
-    ROS_INFO_STREAM("K4A Serial Number: " << serial_number_);
-
-    k4a_hardware_version_t version_info = k4a_device_.get_version();
-
-    ROS_INFO("RGB Version: %d.%d.%d", version_info.rgb.major, version_info.rgb.minor, version_info.rgb.iteration);
-
-    ROS_INFO("Depth Version: %d.%d.%d", version_info.depth.major, version_info.depth.minor,
-             version_info.depth.iteration);
-
-    ROS_INFO("Audio Version: %d.%d.%d", version_info.audio.major, version_info.audio.minor,
-             version_info.audio.iteration);
-
-    ROS_INFO("Depth Sensor Version: %d.%d.%d", version_info.depth_sensor.major, version_info.depth_sensor.minor,
-             version_info.depth_sensor.iteration);
   }
+
+  if (!k4a_device_)
+  {
+    ROS_ERROR("Failed to open a K4A device. Cannot continue.");
+    return;
+  }
+
+  serial_number_ = k4a_device_.get_serialnum();
+
+  ROS_INFO_STREAM("K4A Serial Number: " << serial_number_);
+
+  k4a_hardware_version_t version_info = k4a_device_.get_version();
+
+  ROS_INFO("RGB Version: %d.%d.%d", version_info.rgb.major, version_info.rgb.minor, version_info.rgb.iteration);
+
+  ROS_INFO("Depth Version: %d.%d.%d", version_info.depth.major, version_info.depth.minor,
+            version_info.depth.iteration);
+
+  ROS_INFO("Audio Version: %d.%d.%d", version_info.audio.major, version_info.audio.minor,
+            version_info.audio.iteration);
+
+  ROS_INFO("Depth Sensor Version: %d.%d.%d", version_info.depth_sensor.major, version_info.depth_sensor.minor,
+            version_info.depth_sensor.iteration);
 
   // Register our topics
   if (params_.color_format == "jpeg")
@@ -264,19 +176,6 @@ K4AROSDevice::K4AROSDevice(const NodeHandle& n, const NodeHandle& p)
     pointcloud_publisher_ = node_.advertise<PointCloud2>("points2", 1);
   }
 
-  if (k4a_playback_handle_) {
-    // override color and depth mode configuration with settings from log file
-    const k4a_color_resolution_t cm = k4a_playback_handle_.get_record_configuration().color_resolution;
-    if (cm != K4A_COLOR_RESOLUTION_OFF) {
-      params_.color_resolution = color_mode_string.at(cm);
-    }
-
-    const k4a_depth_mode_t dm = k4a_playback_handle_.get_record_configuration().depth_mode;
-    if (dm != K4A_DEPTH_MODE_OFF) {
-      params_.depth_mode = depth_mode_string.at(dm);
-    }
-  }
-
   // load calibration file from provided path or use default camera calibration URL at $HOME/.ros/camera_info/<cname>.yaml
   const std::string calibration_file_name_rgb = "azure_kinect_rgb_"+serial_number_+"_"+params_.color_resolution;
   const std::string calibration_file_name_ir = "azure_kinect_ir_"+serial_number_+"_"+params_.depth_mode;
@@ -298,11 +197,6 @@ K4AROSDevice::~K4AROSDevice()
   ROS_INFO("Camera publisher thread joined");
 
   stopCameras();
-
-  if (k4a_playback_handle_)
-  {
-    k4a_playback_handle_.close();
-  }
 }
 
 k4a_result_t K4AROSDevice::startCameras()
@@ -323,23 +217,12 @@ k4a_result_t K4AROSDevice::startCameras()
     calibration_data_.initialize(k4a_device_, k4a_configuration.depth_mode, k4a_configuration.color_resolution,
                                  params_);
   }
-  else if (k4a_playback_handle_)
-  {
-    // initialize the class which will take care of device calibration information from the playback_handle
-    calibration_data_.initialize(k4a_playback_handle_, params_);
-  }
 
   if (k4a_device_)
   {
     ROS_INFO_STREAM("STARTING CAMERAS");
     k4a_device_.start_cameras(&k4a_configuration);
   }
-
-  // Cannot assume the device timestamp begins increasing upon starting the cameras.
-  // If we set the time base here, depending on the machine performance, the new timestamp
-  // would lag the value of ros::Time::now() by at least 0.5 secs which is much larger than
-  // the real transmission delay as can be observed using the rqt_plot tool.
-  // start_time_ = ros::Time::now();
 
   // Prevent the worker thread from exiting immediately
   running_ = true;

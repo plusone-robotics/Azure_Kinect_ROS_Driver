@@ -22,7 +22,6 @@
 #include <sensor_msgs/PointCloud2.h>
 #include <sensor_msgs/Temperature.h>
 #include <k4a/k4a.hpp>
-#include <k4arecord/playback.hpp>
 #include <camera_info_manager/camera_info_manager.h>
 
 // Project headers
@@ -121,17 +120,10 @@ class K4AROSDevice
   k4a::device k4a_device_;
   K4ACalibrationTransformData calibration_data_;
 
-  // K4A Recording
-  k4a::playback k4a_playback_handle_;
-  std::mutex k4a_playback_handle_mutex_;
-
   std::chrono::nanoseconds device_to_realtime_offset_{0};
 
   // Thread control
   volatile bool running_;
-
-  // Last capture timestamp for synchronizing playback capture and imu thread
-  std::atomic_int64_t last_capture_time_usec_;
 
   // Threads
   std::thread frame_publisher_thread_;
