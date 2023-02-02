@@ -135,16 +135,7 @@ K4AROSDevice::K4AROSDevice(const NodeHandle& n, const NodeHandle& p)
   ROS_INFO("Depth Sensor Version: %d.%d.%d", version_info.depth_sensor.major, version_info.depth_sensor.minor,
             version_info.depth_sensor.iteration);
 
-  // Register our topics
-  if (params_.color_format == "jpeg")
-  {
-    // JPEG images are directly published on 'rgb/image_raw/compressed' so that
-    // others can subscribe to 'rgb/image_raw' with compressed_image_transport.
-    // This technique is described in:
-    // http://wiki.ros.org/compressed_image_transport#Publishing_compressed_images_directly
-    rgb_jpeg_publisher_ = node_.advertise<CompressedImage>(node_.resolveName("rgb/image_raw") + "/compressed", 1);
-  }
-  else if (params_.color_format == "bgra")
+  if (params_.color_format == "bgra")
   {
     rgb_raw_publisher_ = image_transport_.advertise("rgb/image_raw", 1);
   }
@@ -324,22 +315,6 @@ k4a_result_t K4AROSDevice::renderIrToROS(sensor_msgs::ImagePtr& ir_image, k4a::i
     ir_image = cv_bridge::CvImage(std_msgs::Header(), sensor_msgs::image_encodings::MONO16, ir_buffer_mat).toImageMsg();
   }
 
-  return K4A_RESULT_SUCCEEDED;
-}
-
-k4a_result_t K4AROSDevice::getJpegRgbFrame(const k4a::capture& capture, sensor_msgs::CompressedImagePtr& jpeg_image)
-{
-  k4a::image k4a_jpeg_frame = capture.get_color_image();
-
-  if (!k4a_jpeg_frame)
-  {
-    ROS_ERROR("Cannot render Jpeg frame: no frame");
-    return K4A_RESULT_FAILED;
-  }
-
-  const uint8_t* jpeg_frame_buffer = k4a_jpeg_frame.get_buffer();
-  jpeg_image->format = "bgra8; jpeg compressed bgr8";
-  jpeg_image->data.assign(jpeg_frame_buffer, jpeg_frame_buffer + k4a_jpeg_frame.get_size());
   return K4A_RESULT_SUCCEEDED;
 }
 
@@ -646,7 +621,6 @@ void K4AROSDevice::framePublisherThread()
       waitTime = regularFrameWaitTime;
     }
 
-    CompressedImagePtr rgb_jpeg_frame(new CompressedImage);
     ImagePtr rgb_raw_frame(new Image);
     ImagePtr rgb_rect_frame(new Image);
     ImagePtr depth_raw_frame(new Image);
@@ -753,32 +727,7 @@ void K4AROSDevice::framePublisherThread()
     {
       // Only create rgb frame when we are using a device or we have a color image.
       // Recordings may not have synchronized captures. For unsynchronized captures without color image skip rgb frame.
-      if (params_.color_format == "jpeg")
-      {
-        if ((rgb_jpeg_publisher_.getNumSubscribers() > 0 || rgb_raw_camerainfo_publisher_.getNumSubscribers() > 0) &&
-            (k4a_device_ || capture.get_color_image() != nullptr))
-        {
-          result = getJpegRgbFrame(capture, rgb_jpeg_frame);
-
-          if (result != K4A_RESULT_SUCCEEDED)
-          {
-            ROS_ERROR_STREAM("Failed to get Jpeg frame");
-            ros::shutdown();
-            return;
-          }
-
-          capture_time = timestampToROS(capture.get_color_image().get_device_timestamp());
-
-          rgb_jpeg_frame->header.stamp = capture_time;
-          rgb_jpeg_frame->header.frame_id = calibration_data_.tf_prefix_ + calibration_data_.rgb_camera_frame_;
-          rgb_jpeg_publisher_.publish(rgb_jpeg_frame);
-
-          // Re-synchronize the header timestamps since we cache the camera calibration message
-          rgb_raw_camera_info.header.stamp = capture_time;
-          rgb_raw_camerainfo_publisher_.publish(rgb_raw_camera_info);
-        }
-      }
-      else if (params_.color_format == "bgra")
+      if (params_.color_format == "bgra")
       {
         if ((rgb_raw_publisher_.getNumSubscribers() > 0 || rgb_raw_camerainfo_publisher_.getNumSubscribers() > 0) &&
             (k4a_device_ || capture.get_color_image() != nullptr))

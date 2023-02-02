@@ -18,7 +18,6 @@
   <arg name="depth_mode"                  default="NFOV_UNBINNED" />  <!-- Set the depth camera mode, which affects FOV, depth range, and camera resolution. See Azure Kinect documentation for full details. Valid options: NFOV_UNBINNED, NFOV_2X2BINNED, WFOV_UNBINNED, WFOV_2X2BINNED, and PASSIVE_IR -->
   <arg name="depth_unit"                  default="16UC1" />          <!-- Depth distance units. Options are: "32FC1" (32 bit float metre) or "16UC1" (16 bit integer millimetre) -->
   <arg name="color_enabled"               default="true" />           <!-- Enable or disable the color camera -->
-  <arg name="color_format"                default="bgra" />           <!-- The format of RGB camera. Valid options: bgra, jpeg -->
   <arg name="color_resolution"            default="2160P" />          <!-- Resolution at which to run the color camera. Valid options: 720P, 1080P, 1440P, 1536P, 2160P, 3072P -->
   <arg name="fps"                         default="30" />             <!-- FPS to run both cameras at. Valid options are 5, 15, and 30 -->
   <arg name="point_cloud"                 default="true" />           <!-- Generate a point cloud from depth data. Requires depth_enabled -->
@@ -59,7 +58,7 @@
       <param name="depth_mode"                    value="$(arg depth_mode)" />
       <param name="depth_unit"                    value="$(arg depth_unit)" />
       <param name="color_enabled"                 value="$(arg color_enabled)" />
-      <param name="color_format"                  value="$(arg color_format)" />
+      <param name="color_format"                  value="bgra" />
       <param name="color_resolution"              value="$(arg color_resolution)" />
       <param name="fps"                           value="$(arg fps)" />
       <param name="point_cloud"                   value="$(arg point_cloud)" />
