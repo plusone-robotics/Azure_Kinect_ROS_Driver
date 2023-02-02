@@ -46,27 +46,16 @@ static const std::unordered_map<k4a_depth_mode_t, std::string> depth_mode_string
   {K4A_DEPTH_MODE_PASSIVE_IR, "PASSIVE_IR"},
 };
 
-#if defined(K4A_BODY_TRACKING)
-using namespace visualization_msgs;
-#endif
 
 K4AROSDevice::K4AROSDevice(const NodeHandle& n, const NodeHandle& p)
   : k4a_device_(nullptr),
     k4a_playback_handle_(nullptr),
-// clang-format off
-#if defined(K4A_BODY_TRACKING)
-    k4abt_tracker_(nullptr),
-    k4abt_tracker_queue_size_(0),
-#endif
-    // clang-format on
     node_(n),
     private_node_(p),
     node_rgb_("rgb"),
     node_ir_("ir"),
     image_transport_(n),
-    last_capture_time_usec_(0),
-    last_imu_time_usec_(0),
-    imu_stream_end_of_file_(false)
+    last_capture_time_usec_(0)
 {
   // Collect ROS parameters from the param server or from the command line
 #define LIST_ENTRY(param_variable, param_help_string, param_type, param_default_val) \
@@ -271,8 +260,6 @@ K4AROSDevice::K4AROSDevice(const NodeHandle& n, const NodeHandle& p)
   ir_raw_publisher_ = image_transport_.advertise("ir/image_raw", 1);
   ir_raw_camerainfo_publisher_ = node_.advertise<CameraInfo>("ir/camera_info", 1);
 
-  imu_orientation_publisher_ = node_.advertise<Imu>("imu", 200);
-
   if (params_.point_cloud || params_.rgb_point_cloud) {
     pointcloud_publisher_ = node_.advertise<PointCloud2>("points2", 1);
   }
@@ -298,19 +285,6 @@ K4AROSDevice::K4AROSDevice(const NodeHandle& n, const NodeHandle& p)
 
   ci_mngr_rgb_ = std::make_shared<camera_info_manager::CameraInfoManager>(node_rgb_, calibration_file_name_rgb, calibration_url_rgb);
   ci_mngr_ir_ = std::make_shared<camera_info_manager::CameraInfoManager>(node_ir_, calibration_file_name_ir, calibration_url_ir);
-
-#if defined(K4A_BODY_TRACKING)
-  if (params_.body_tracking_enabled) {    
-    tfListener = new tf2_ros::TransformListener(tfBuffer);
-    body_marker_publisher_ = node_.advertise<MarkerArray>("body_tracking_data", 1);
-
-    body_index_map_publisher_ = image_transport_.advertise("body_index_map/image_raw", 1);
-
-    image_subscriber_ = image_transport_.subscribeCamera("rgb/image_raw", 1, &K4AROSDevice::imageCallback, this);
-    image_tf_publisher_ = image_transport_.advertise("image_tf", 1); 
-  
-  }
-#endif
 }
 
 K4AROSDevice::~K4AROSDevice()
@@ -318,37 +292,17 @@ K4AROSDevice::~K4AROSDevice()
   // Start tearing down the publisher threads
   running_ = false;
 
-#if defined(K4A_BODY_TRACKING)
-  // Join the publisher thread
-  ROS_INFO("Joining body publisher thread");
-  body_publisher_thread_.join();
-  ROS_INFO("Body publisher thread joined");
-#endif
-
   // Join the publisher thread
   ROS_INFO("Joining camera publisher thread");
   frame_publisher_thread_.join();
   ROS_INFO("Camera publisher thread joined");
 
-  // Join the publisher thread
-  ROS_INFO("Joining IMU publisher thread");
-  imu_publisher_thread_.join();
-  ROS_INFO("IMU publisher thread joined");
-
   stopCameras();
-  stopImu();
 
   if (k4a_playback_handle_)
   {
     k4a_playback_handle_.close();
   }
-
-#if defined(K4A_BODY_TRACKING)
-  if (k4abt_tracker_)
-  {
-    k4abt_tracker_.shutdown();
-  }
-#endif
 }
 
 k4a_result_t K4AROSDevice::startCameras()
@@ -375,15 +329,6 @@ k4a_result_t K4AROSDevice::startCameras()
     calibration_data_.initialize(k4a_playback_handle_, params_);
   }
 
-#if defined(K4A_BODY_TRACKING)
-  // When calibration is initialized the body tracker can be created with the device calibration
-  if (params_.body_tracking_enabled)
-  {
-    k4abt_tracker_ = k4abt::tracker::create(calibration_data_.k4a_calibration_);
-    k4abt_tracker_.set_temporal_smoothing(params_.body_tracking_smoothing_factor);
-  }
-#endif
-
   if (k4a_device_)
   {
     ROS_INFO_STREAM("STARTING CAMERAS");
@@ -401,23 +346,6 @@ k4a_result_t K4AROSDevice::startCameras()
 
   // Start the thread that will poll the cameras and publish frames
   frame_publisher_thread_ = thread(&K4AROSDevice::framePublisherThread, this);
-#if defined(K4A_BODY_TRACKING)
-  body_publisher_thread_ = thread(&K4AROSDevice::bodyPublisherThread, this);
-#endif
-
-  return K4A_RESULT_SUCCEEDED;
-}
-
-k4a_result_t K4AROSDevice::startImu()
-{
-  if (k4a_device_)
-  {
-    ROS_INFO_STREAM("STARTING IMU");
-    k4a_device_.start_imu();
-  }
-
-  // Start the IMU publisher thread
-  imu_publisher_thread_ = thread(&K4AROSDevice::imuPublisherThread, this);
 
   return K4A_RESULT_SUCCEEDED;
 }
@@ -430,14 +358,6 @@ void K4AROSDevice::stopCameras()
     ROS_INFO("Stopping K4A device");
     k4a_device_.stop_cameras();
     ROS_INFO("K4A device stopped");
-  }
-}
-
-void K4AROSDevice::stopImu()
-{
-  if (k4a_device_)
-  {
-    k4a_device_.stop_imu();
   }
 }
 
@@ -767,201 +687,6 @@ k4a_result_t K4AROSDevice::fillPointCloud(const k4a::image& pointcloud_image, se
   return K4A_RESULT_SUCCEEDED;
 }
 
-k4a_result_t K4AROSDevice::getImuFrame(const k4a_imu_sample_t& sample, sensor_msgs::ImuPtr& imu_msg)
-{
-  imu_msg->header.frame_id = calibration_data_.tf_prefix_ + calibration_data_.imu_frame_;
-  imu_msg->header.stamp = timestampToROS(sample.acc_timestamp_usec);
-
-  // The correct convention in ROS is to publish the raw sensor data, in the
-  // sensor coordinate frame. Do that here.
-  imu_msg->angular_velocity.x = sample.gyro_sample.xyz.x;
-  imu_msg->angular_velocity.y = sample.gyro_sample.xyz.y;
-  imu_msg->angular_velocity.z = sample.gyro_sample.xyz.z;
-
-  imu_msg->linear_acceleration.x = sample.acc_sample.xyz.x;
-  imu_msg->linear_acceleration.y = sample.acc_sample.xyz.y;
-  imu_msg->linear_acceleration.z = sample.acc_sample.xyz.z;
-
-  // Disable the orientation component of the IMU message since it's invalid
-  imu_msg->orientation_covariance[0] = -1.0;
-
-  return K4A_RESULT_SUCCEEDED;
-}
-
-#if defined(K4A_BODY_TRACKING)
-k4a_result_t K4AROSDevice::getBodyMarker(const k4abt_body_t& body, MarkerPtr marker_msg, geometry_msgs::TransformStamped& transform_msg, int bodyNum, int jointType,
-                                         ros::Time capture_time)
-{
-  k4a_float3_t position = body.skeleton.joints[jointType].position;
-  k4a_quaternion_t orientation = body.skeleton.joints[jointType].orientation;
-  std::string depth_frame = calibration_data_.tf_prefix_ + calibration_data_.depth_camera_frame_;
-  std::string rgb_frame = calibration_data_.tf_prefix_ + calibration_data_.rgb_camera_frame_;
-
-  marker_msg->header.frame_id = depth_frame;
-  marker_msg->header.stamp = capture_time;
-
-  // Set the lifetime to 0.25 to prevent flickering for even 5fps configurations.
-  // New markers with the same ID will replace old markers as soon as they arrive.
-  marker_msg->lifetime = ros::Duration(0.25);
-  marker_msg->id = body.id * 100 + jointType;
-  marker_msg->type = Marker::SPHERE;
-
-  Color color = BODY_COLOR_PALETTE[body.id % BODY_COLOR_PALETTE.size()];
-
-  marker_msg->color.a = color.a;
-  marker_msg->color.r = color.r;
-  marker_msg->color.g = color.g;
-  marker_msg->color.b = color.b;
-
-  marker_msg->scale.x = 0.05;
-  marker_msg->scale.y = 0.05;
-  marker_msg->scale.z = 0.05;
-
-  marker_msg->pose.position.x = position.v[0] / 1000.0f;
-  marker_msg->pose.position.y = position.v[1] / 1000.0f;
-  marker_msg->pose.position.z = position.v[2] / 1000.0f;
-  marker_msg->pose.orientation.w = orientation.wxyz.w;
-  marker_msg->pose.orientation.x = orientation.wxyz.x;
-  marker_msg->pose.orientation.y = orientation.wxyz.y;
-  marker_msg->pose.orientation.z = orientation.wxyz.z;
-
- //try transforming from depth_camera_link to rgb_camera_link by waiting for the transform upto 1 second
-  geometry_msgs::TransformStamped depth_link_to_rgb_link;
-  try{
-    depth_link_to_rgb_link = tfBuffer.lookupTransform(rgb_frame , depth_frame,
-                              ros::Time(0));
-  }
-  catch (tf2::TransformException &ex) {
-    ROS_WARN("%s",ex.what());
-    ros::Duration(1.0).sleep();
-  }
-
-  //Pose msg which is used to transform the pose to the rgb camera link
-  geometry_msgs::Pose pose_msg;
-  pose_msg.position.x = position.v[0] / 1000.0f;
-  pose_msg.position.y = position.v[1] / 1000.0f;
-  pose_msg.position.z = position.v[2] / 1000.0f;
-  pose_msg.orientation.w = orientation.wxyz.w;
-  pose_msg.orientation.x = orientation.wxyz.x;
-  pose_msg.orientation.y = orientation.wxyz.y;
-  pose_msg.orientation.z = orientation.wxyz.z;
-
-
-  tf2::doTransform(pose_msg, pose_msg, depth_link_to_rgb_link);
-
-  transform_msg.header.stamp = capture_time;
-  transform_msg.header.frame_id = rgb_frame;
-  transform_msg.child_frame_id = joint_names_[jointType] + std::to_string(bodyNum);
-
-  transform_msg.transform.translation.x = pose_msg.position.x;
-  transform_msg.transform.translation.y = pose_msg.position.y;
-  transform_msg.transform.translation.z = pose_msg.position.z;
-
-  transform_msg.transform.rotation.w = pose_msg.orientation.w;
-  transform_msg.transform.rotation.x = pose_msg.orientation.x;
-  transform_msg.transform.rotation.y = pose_msg.orientation.y;
-  transform_msg.transform.rotation.z = pose_msg.orientation.z;
-
-  return K4A_RESULT_SUCCEEDED;
-}
-
-//method to project a tf frame to an image
-void K4AROSDevice::imageCallback(const sensor_msgs::ImageConstPtr& image_msg, const sensor_msgs::CameraInfoConstPtr& info_msg)
-{
-  cv::Mat image;
-  cv_bridge::CvImagePtr input_bridge;
-  try {
-    input_bridge = cv_bridge::toCvCopy(image_msg, sensor_msgs::image_encodings::BGR8);
-    image = input_bridge->image;
-  }
-  catch (cv_bridge::Exception& ex){
-    ROS_ERROR("[draw_frames] Failed to convert image");
-    return;
-  }
-
-  cam_model_.fromCameraInfo(info_msg);
-
-  std::vector<std::string> frame_ids_;
-  for(int i = 0; i < num_bodies; ++i){
-      std::transform(joint_names_.begin(), joint_names_.end(), back_inserter(frame_ids_), [&i](std::string j){return j + std::to_string(i);});    
-  }
-
-  for(const std::string frame_id: frame_ids_) {
-    
-    geometry_msgs::TransformStamped transform_msg;
-    try{
-
-      transform_msg = tfBuffer.lookupTransform(cam_model_.tfFrame(), frame_id,
-                               ros::Time(0));
-    }
-    catch (tf2::TransformException &ex) {
-      ROS_WARN("Unable to look up the transform between the frames, %s",ex.what());
-      return;
-    }
-
-    cv::Point3d pt_cv(transform_msg.transform.translation.x, transform_msg.transform.translation.y, transform_msg.transform.translation.z);
-    cv::Point2d uv;
-    uv = cam_model_.project3dToPixel(pt_cv);
-
-    static const int RADIUS = 10;
-    cv::circle(image, uv, RADIUS, CV_RGB(255,0,0), -1);
-  }
-
-  image_tf_publisher_.publish(input_bridge->toImageMsg());
-}
-
-k4a_result_t K4AROSDevice::getBodyIndexMap(const k4abt::frame& body_frame, sensor_msgs::ImagePtr body_index_map_image)
-{
-  k4a::image k4a_body_index_map = body_frame.get_body_index_map();
-
-  if (!k4a_body_index_map)
-  {
-    ROS_ERROR("Cannot render body index map: no body index map");
-    return K4A_RESULT_FAILED;
-  }
-
-  return renderBodyIndexMapToROS(body_index_map_image, k4a_body_index_map, body_frame);
-}
-
-k4a_result_t K4AROSDevice::renderBodyIndexMapToROS(sensor_msgs::ImagePtr body_index_map_image,
-                                                   k4a::image& k4a_body_index_map, const k4abt::frame& body_frame)
-{
-  // Access the body index map as an array of uint8 pixels
-  BodyIndexMapPixel* body_index_map_frame_buffer = k4a_body_index_map.get_buffer();
-  auto body_index_map_pixel_count = k4a_body_index_map.get_size() / sizeof(BodyIndexMapPixel);
-
-  // Build the ROS message
-  body_index_map_image->height = k4a_body_index_map.get_height_pixels();
-  body_index_map_image->width = k4a_body_index_map.get_width_pixels();
-  body_index_map_image->encoding = sensor_msgs::image_encodings::MONO8;
-  body_index_map_image->is_bigendian = false;
-  body_index_map_image->step = k4a_body_index_map.get_width_pixels() * sizeof(BodyIndexMapPixel);
-
-  // Enlarge the data buffer in the ROS message to hold the frame
-  body_index_map_image->data.resize(body_index_map_image->height * body_index_map_image->step);
-
-  // If the pixel doesn't belong to a detected body the pixels value will be 255 (K4ABT_BODY_INDEX_MAP_BACKGROUND).
-  // If the pixel belongs to a detected body the value is calculated by body id mod 255.
-  // This means that up to body id 254 the value is equals the body id.
-  // Afterwards it will lose the relation to the body id and is only a information for the segmentation of the image.
-  for (size_t i = 0; i < body_index_map_pixel_count; ++i)
-  {
-    BodyIndexMapPixel val = body_index_map_frame_buffer[i];
-    if (val == K4ABT_BODY_INDEX_MAP_BACKGROUND)
-    {
-      body_index_map_image->data[i] = K4ABT_BODY_INDEX_MAP_BACKGROUND;
-    }
-    else
-    {
-      auto body_id = k4abt_frame_get_body_id(body_frame.handle(), val);
-      body_index_map_image->data[i] = body_id % K4ABT_BODY_INDEX_MAP_BACKGROUND;
-    }
-  }
-
-  return K4A_RESULT_SUCCEEDED;
-}
-#endif
-
 void K4AROSDevice::framePublisherThread()
 {
   ros::Rate loop_rate(params_.fps);
@@ -1036,29 +761,6 @@ void K4AROSDevice::framePublisherThread()
         }
       }
       waitTime = regularFrameWaitTime;
-    }
-    else if (k4a_playback_handle_)
-    {
-      std::lock_guard<std::mutex> guard(k4a_playback_handle_mutex_);
-      if (!k4a_playback_handle_.get_next_capture(&capture))
-      {
-        // rewind recording if looping is enabled
-        if (params_.recording_loop_enabled)
-        {
-          k4a_playback_handle_.seek_timestamp(std::chrono::microseconds(0), K4A_PLAYBACK_SEEK_BEGIN);
-          k4a_playback_handle_.get_next_capture(&capture);
-          imu_stream_end_of_file_ = false;
-          last_imu_time_usec_ = 0;
-        }
-        else
-        {
-          ROS_INFO("Recording reached end of file. node cannot continue.");
-          ros::requestShutdown();
-          return;
-        }
-      }
-
-      last_capture_time_usec_ = getCaptureTimestamp(capture).count();
     }
 
     CompressedImagePtr rgb_jpeg_frame(new CompressedImage);
@@ -1161,24 +863,6 @@ void K4AROSDevice::framePublisherThread()
             depth_rect_camerainfo_publisher_.publish(depth_rect_camera_info);
           }
         }
-
-#if defined(K4A_BODY_TRACKING)
-        // Publish body markers when body tracking is enabled and a depth image is available
-        if (params_.body_tracking_enabled &&  k4abt_tracker_queue_size_ < 3 &&
-            (body_marker_publisher_.getNumSubscribers() > 0 || body_index_map_publisher_.getNumSubscribers() > 0))
-        {
-          if (!k4abt_tracker_.enqueue_capture(capture))
-          {
-            ROS_ERROR("Error! Add capture to tracker process queue failed!");
-            ros::shutdown();
-            return;
-          }
-          else
-          {
-            ++k4abt_tracker_queue_size_;
-          }
-        }
-#endif
       }
     }
 
@@ -1312,219 +996,6 @@ void K4AROSDevice::framePublisherThread()
                                        << std::endl
                                        << "Expected max loop time: " << loop_rate.expectedCycleTime() << std::endl
                                        << "Actual loop time: " << loop_rate.cycleTime() << std::endl);
-    }
-
-    ros::spinOnce();
-    loop_rate.sleep();
-  }
-}
-
-#if defined(K4A_BODY_TRACKING)
-void K4AROSDevice::bodyPublisherThread()
-{
-  while (running_ && ros::ok() && !ros::isShuttingDown())
-  {
-    if (k4abt_tracker_queue_size_ > 0)
-    {
-      k4abt::frame body_frame = k4abt_tracker_.pop_result();
-      --k4abt_tracker_queue_size_;
-
-      if (body_frame == nullptr)
-      {
-        ROS_ERROR_STREAM("Pop body frame result failed!");
-        ros::shutdown();
-        return;
-      }
-      else
-      {
-        auto capture_time = timestampToROS(body_frame.get_device_timestamp());
-
-        if (body_marker_publisher_.getNumSubscribers() > 0)
-        {
-          // Joint marker array
-          
-          MarkerArrayPtr markerArrayPtr(new MarkerArray);
-          std::vector<geometry_msgs::TransformStamped> transformArrary;
-          num_bodies = body_frame.get_num_bodies();
-          for (size_t i = 0; i < num_bodies; ++i)
-          {
-            //tf2_ros::TransformListener tfListener(tfBuffer);
-            k4abt_body_t body = body_frame.get_body(i);
-            for (int j = 0; j < (int) K4ABT_JOINT_COUNT; ++j)
-            {
-              MarkerPtr markerPtr(new Marker);
-              geometry_msgs::TransformStamped transform_msg; 
-              getBodyMarker(body, markerPtr, transform_msg, i, j, capture_time);
-              markerArrayPtr->markers.push_back(*markerPtr);
-              transformArrary.push_back(std::move(transform_msg));
-            }
-          }
-          body_marker_publisher_.publish(markerArrayPtr);
-          br.sendTransform(transformArrary); 
-        }
-
-        if (body_index_map_publisher_.getNumSubscribers() > 0)
-        {
-          // Body index map
-          ImagePtr body_index_map_frame(new Image);
-          auto result = getBodyIndexMap(body_frame, body_index_map_frame);
-
-          if (result != K4A_RESULT_SUCCEEDED)
-          {
-            ROS_ERROR_STREAM("Failed to get body index map");
-            ros::shutdown();
-            return;
-          }
-          else if (result == K4A_RESULT_SUCCEEDED)
-          {
-            // Re-sychronize the timestamps with the capture timestamp
-            body_index_map_frame->header.stamp = capture_time;
-            body_index_map_frame->header.frame_id =
-                calibration_data_.tf_prefix_ + calibration_data_.depth_camera_frame_;
-
-            body_index_map_publisher_.publish(body_index_map_frame);
-          }
-        }
-      }
-    }
-    else
-    {
-      std::this_thread::sleep_for(std::chrono::milliseconds{ 20 });
-    }
-  }
-}
-#endif
-
-k4a_imu_sample_t K4AROSDevice::computeMeanIMUSample(const std::vector<k4a_imu_sample_t>& samples)
-{
-  // Compute mean sample
-  // Using double-precision version of imu sample struct to avoid overflow
-  k4a_imu_accumulator_t mean;
-  for (auto imu_sample : samples)
-  {
-    mean += imu_sample;
-  }
-  float num_samples = samples.size();
-  mean /= num_samples;
-
-  // Convert to floating point
-  k4a_imu_sample_t mean_float;
-  mean.to_float(mean_float);
-  // Use most timestamp of most recent sample
-  mean_float.acc_timestamp_usec = samples.back().acc_timestamp_usec;
-  mean_float.gyro_timestamp_usec = samples.back().gyro_timestamp_usec;
-
-  return mean_float;
-}
-
-void K4AROSDevice::imuPublisherThread()
-{
-  ros::Rate loop_rate(300);
-
-  k4a_result_t result;
-  k4a_imu_sample_t sample;
-
-  // For IMU throttling
-  unsigned int count = 0;
-  unsigned int target_count = params_.imu_rate_target ? IMU_MAX_RATE / params_.imu_rate_target : IMU_MAX_RATE;
-  std::vector<k4a_imu_sample_t> accumulated_samples;
-  accumulated_samples.reserve(target_count);
-  bool throttling = target_count > 1;
-
-  while (running_ && ros::ok() && !ros::isShuttingDown())
-  {
-    if (k4a_device_)
-    {
-      // IMU messages are delivered in batches at 300 Hz. Drain the queue of IMU messages by
-      // constantly reading until we get a timeout
-      bool read = false;
-      do
-      {
-        read = k4a_device_.get_imu_sample(&sample, std::chrono::milliseconds(0));
-
-        if (read)
-        {
-          if (throttling)
-          {
-            accumulated_samples.push_back(sample);
-            count++;
-          }
-
-          if (count % target_count == 0)
-          {
-            ImuPtr imu_msg(new Imu);
-
-            if (throttling)
-            {
-              k4a_imu_sample_t mean_sample_float = computeMeanIMUSample(accumulated_samples);
-              result = getImuFrame(mean_sample_float, imu_msg);
-              accumulated_samples.clear();
-              count = 0;
-            }
-            else
-            {
-              result = getImuFrame(sample, imu_msg);
-            }
-
-            ROS_ASSERT_MSG(result == K4A_RESULT_SUCCEEDED, "Failed to get IMU frame");
-
-            if (std::abs(imu_msg->angular_velocity.x) > DBL_EPSILON ||
-                std::abs(imu_msg->angular_velocity.y) > DBL_EPSILON ||
-                std::abs(imu_msg->angular_velocity.z) > DBL_EPSILON){
-              imu_orientation_publisher_.publish(imu_msg);
-            }
-          }
-        }
-
-      } while (read);
-    }
-    else if (k4a_playback_handle_)
-    {
-      // publish imu messages as long as the imu timestamp is less than the last capture timestamp to catch up to the
-      // cameras compare signed with unsigned shouldn't cause a problem because timestamps should always be positive
-      while (last_imu_time_usec_ <= last_capture_time_usec_ && !imu_stream_end_of_file_)
-      {
-        std::lock_guard<std::mutex> guard(k4a_playback_handle_mutex_);
-        if (!k4a_playback_handle_.get_next_imu_sample(&sample))
-        {
-          imu_stream_end_of_file_ = true;
-        }
-        else
-        {
-          if (throttling)
-          {
-            accumulated_samples.push_back(sample);
-            count++;
-          }
-
-          if (count % target_count == 0)
-          {
-            ImuPtr imu_msg(new Imu);
-
-            if (throttling)
-            {
-              k4a_imu_sample_t mean_sample_float = computeMeanIMUSample(accumulated_samples);
-              result = getImuFrame(mean_sample_float, imu_msg);
-              accumulated_samples.clear();
-              count = 0;
-            }
-            else
-            {
-              result = getImuFrame(sample, imu_msg);
-            }
-
-            ROS_ASSERT_MSG(result == K4A_RESULT_SUCCEEDED, "Failed to get IMU frame");
-
-            if (std::abs(imu_msg->angular_velocity.x) > DBL_EPSILON ||
-                std::abs(imu_msg->angular_velocity.y) > DBL_EPSILON ||
-                std::abs(imu_msg->angular_velocity.z) > DBL_EPSILON){
-              imu_orientation_publisher_.publish(imu_msg);
-            }
-
-            last_imu_time_usec_ = sample.acc_timestamp_usec;
-          }
-        }
-      }
     }
 
     ros::spinOnce();
