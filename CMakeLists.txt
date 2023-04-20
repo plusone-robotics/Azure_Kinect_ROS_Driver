@@ -25,9 +25,16 @@ find_package(catkin REQUIRED COMPONENTS
   nodelet
   cv_bridge
   camera_info_manager
+  dynamic_reconfigure
 )
 
 find_package(OpenCV REQUIRED)
+
+# Add Dynamic Reconfigure params
+generate_dynamic_reconfigure_options(
+  cfg/azure_kinect_params.cfg
+)
+
 ###################################
 ## catkin specific configuration ##
 ###################################
@@ -58,7 +65,7 @@ add_executable(${PROJECT_NAME}_node
   src/k4a_ros_device_params.cpp
   src/k4a_calibration_transform_data.cpp
   )
-
+add_dependencies(${PROJECT_NAME}_node ${PROJECT_NAME}_gencfg)
 target_compile_features(${PROJECT_NAME}_node PUBLIC cxx_std_11)
 
 add_library(${PROJECT_NAME}_nodelet
@@ -67,7 +74,7 @@ add_library(${PROJECT_NAME}_nodelet
   src/k4a_ros_device_params.cpp
   src/k4a_calibration_transform_data.cpp
   )
-
+add_dependencies(${PROJECT_NAME}_nodelet ${PROJECT_NAME}_gencfg)
 target_compile_features(${PROJECT_NAME}_nodelet PUBLIC cxx_std_11)
 
 ## Rename C++ executable without prefix

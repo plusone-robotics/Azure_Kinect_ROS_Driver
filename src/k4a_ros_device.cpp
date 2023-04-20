@@ -167,6 +167,9 @@ K4AROSDevice::K4AROSDevice(const NodeHandle& n, const NodeHandle& p)
     pointcloud_publisher_ = node_.advertise<PointCloud2>("points2", 1);
   }
 
+  // Initialize reconfigure server
+  reconfigure_server_.setCallback(boost::bind(&K4AROSDevice::reconfigureCallback, this, _1, _2));
+
   // load calibration file from provided path or use default camera calibration URL at $HOME/.ros/camera_info/<cname>.yaml
   const std::string calibration_file_name_rgb = "azure_kinect_rgb_"+serial_number_+"_"+params_.color_resolution;
   const std::string calibration_file_name_ir = "azure_kinect_ir_"+serial_number_+"_"+params_.depth_mode;
@@ -924,4 +927,17 @@ void K4AROSDevice::updateTimestampOffset(const std::chrono::microseconds& k4a_de
                                  std::chrono::nanoseconds(static_cast<int64_t>(
                                      std::floor(alpha * (device_to_realtime - device_to_realtime_offset_).count())));
   }
+}
+
+void K4AROSDevice::reconfigureCallback(azure_kinect_ros_driver::AzureKinectParamsConfig &config, uint32_t level)
+{
+  k4a_device_.set_color_control(K4A_COLOR_CONTROL_EXPOSURE_TIME_ABSOLUTE, K4A_COLOR_CONTROL_MODE_MANUAL, config.exposure_time);
+  k4a_device_.set_color_control(K4A_COLOR_CONTROL_BRIGHTNESS, K4A_COLOR_CONTROL_MODE_MANUAL, config.brightness);
+  k4a_device_.set_color_control(K4A_COLOR_CONTROL_CONTRAST, K4A_COLOR_CONTROL_MODE_MANUAL, config.contrast);
+  k4a_device_.set_color_control(K4A_COLOR_CONTROL_SATURATION, K4A_COLOR_CONTROL_MODE_MANUAL, config.saturation);
+  k4a_device_.set_color_control(K4A_COLOR_CONTROL_SHARPNESS, K4A_COLOR_CONTROL_MODE_MANUAL, config.sharpness);
+  // Whitebalance must be set to a value evenly divisible by 10 degrees
+  k4a_device_.set_color_control(K4A_COLOR_CONTROL_WHITEBALANCE, K4A_COLOR_CONTROL_MODE_MANUAL, int(config.white_balance / 10) * 10);
+  k4a_device_.set_color_control(K4A_COLOR_CONTROL_BACKLIGHT_COMPENSATION, K4A_COLOR_CONTROL_MODE_MANUAL, config.backlight_compensation);
+  k4a_device_.set_color_control(K4A_COLOR_CONTROL_GAIN, K4A_COLOR_CONTROL_MODE_MANUAL, config.color_control_gain);
 }
