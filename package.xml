@@ -29,6 +29,7 @@
   <depend>xacro</depend>
   <depend>cv_bridge</depend>
   <depend>libopencv-dev</depend>
+  <depend>dynamic_reconfigure</depend>
 
   <exec_depend>rgbd_launch</exec_depend>
 

@@ -12,6 +12,8 @@
 
 // Library headers
 //
+#include <azure_kinect_ros_driver/AzureKinectParamsConfig.h>
+#include <dynamic_reconfigure/server.h>
 #include <image_transport/image_transport.h>
 #include <k4a/k4a.h>
 #include <ros/ros.h>
@@ -80,6 +82,9 @@ class K4AROSDevice
   // available.
   void initializeTimestampOffset(const std::chrono::microseconds& k4a_device_timestamp_us);
 
+  // Dynamic reconfigure callback for device
+  void reconfigureCallback(azure_kinect_ros_driver::AzureKinectParamsConfig &config, uint32_t level);
+
   // ROS Node variables
   ros::NodeHandle node_;
   ros::NodeHandle private_node_;
@@ -108,6 +113,7 @@ class K4AROSDevice
 
   std::shared_ptr<camera_info_manager::CameraInfoManager> ci_mngr_rgb_, ci_mngr_ir_;
 
+  dynamic_reconfigure::Server<azure_kinect_ros_driver::AzureKinectParamsConfig> reconfigure_server_;
 
   // Parameters
   K4AROSDeviceParams params_;
