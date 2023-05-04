@@ -137,9 +137,9 @@ K4AROSDevice::K4AROSDevice(const NodeHandle& n, const NodeHandle& p)
 
   if (params_.color_format == "bgra")
   {
-    rgb_raw_publisher_ = image_transport_.advertise("rgb/image_raw", 1);
+    rgb_raw_publisher_ = image_transport_.advertise("rgb/raw/image", 1);
   }
-  rgb_raw_camerainfo_publisher_ = node_.advertise<CameraInfo>("rgb/camera_info", 1);
+  rgb_raw_camerainfo_publisher_ = node_.advertise<CameraInfo>("rgb/raw/camera_info", 1);
 
   static const std::string depth_raw_topic = "depth/raw/image";
   static const std::string depth_rect_topic = "depth/rect/image";
