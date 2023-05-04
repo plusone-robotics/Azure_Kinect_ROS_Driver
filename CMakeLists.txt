@@ -32,7 +32,7 @@ find_package(OpenCV REQUIRED)
 
 # Add Dynamic Reconfigure params
 generate_dynamic_reconfigure_options(
-  cfg/azure_kinect_params.cfg
+  cfg/AzureKinectParams.cfg
 )
 
 ###################################
@@ -127,7 +127,7 @@ if(MSVC AND NOT k4abt_FOUND)
       )
 
       file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${KBT}")
-        execute_process(COMMAND tar xvzf "${CMAKE_CURRENT_BINARY_DIR}/kbt.nuget" 
+        execute_process(COMMAND tar xvzf "${CMAKE_CURRENT_BINARY_DIR}/kbt.nuget"
                     WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${KBT}"
       )
 
@@ -176,7 +176,7 @@ if(MSVC AND NOT k4abt_FOUND)
       )
 
       file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${KBT_DEPENDENCIES}")
-        execute_process(COMMAND tar xvzf "${CMAKE_CURRENT_BINARY_DIR}/kbtd.nuget" 
+        execute_process(COMMAND tar xvzf "${CMAKE_CURRENT_BINARY_DIR}/kbtd.nuget"
                     WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${KBT_DEPENDENCIES}"
       )
 
@@ -199,10 +199,10 @@ if(MSVC AND NOT k4abt_FOUND)
 
       file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${CUDNN_DEPENDENCIES}")
 
-      execute_process(COMMAND tar xvzf "${CMAKE_CURRENT_BINARY_DIR}/cudnn.nuget" 
+      execute_process(COMMAND tar xvzf "${CMAKE_CURRENT_BINARY_DIR}/cudnn.nuget"
                   WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${CUDNN_DEPENDENCIES}"
                   )
-      
+
       file(GLOB CUDNN_DLLS
       "${CMAKE_CURRENT_BINARY_DIR}/${CUDNN_DEPENDENCIES}/lib/native/amd64/release/*.dll"
       )
