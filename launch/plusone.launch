@@ -70,6 +70,10 @@
       <param name="subordinate_delay_off_master_usec" value="$(arg subordinate_delay_off_master_usec)"/>
     </node>
 
+    <!-- Start the K4A pc listener -->
+    <node pkg="Azure_Kinect_ROS_Driver" type="k4a_pc_listener.cpp" name="k4a_pc_listener">
+    </node>
+
     <!-- Load standard constellation of processing nodelets -->
     <include file="$(find rgbd_launch)/launch/includes/processing.launch.xml">
       <arg name="manager"                         value="$(arg manager)" />
