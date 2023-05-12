@@ -28,6 +28,7 @@
   <arg name="calibration_url"             default="" />               <!-- Load intrinsic calibration from specific URL (default: "file://$HOME/.ros/camera_info/"") -->
   <arg name="wired_sync_mode"             default="0"/>               <!-- Wired sync mode. 0: OFF, 1: MASTER, 2: SUBORDINATE. -->
   <arg name="subordinate_delay_off_master_usec" default="0"/>         <!-- Delay subordinate camera off master camera by specified amount in usec. -->
+  <arg name="camera_start_verification"   default="false"/>           <!-- Parameter to let Azure Kinect Calibration know if camera start was successful. -->
 
   <!-- Processing Modules -->
   <arg name="rgb_processing"                  default="true"  />
@@ -68,7 +69,7 @@
       <param name="calibration_url"               value="$(arg calibration_url)" />
       <param name="wired_sync_mode"               value="$(arg wired_sync_mode)"/>
       <param name="subordinate_delay_off_master_usec" value="$(arg subordinate_delay_off_master_usec)"/>
-      <param name="camera_start_verification"     value=false/>
+      <param name="camera_start_verification"     value="$(arg camera_start_verification)"/>
     </node>
 
     <!-- Start the Azure Kinect Calibration Node -->
