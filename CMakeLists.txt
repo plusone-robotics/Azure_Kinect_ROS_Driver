@@ -61,7 +61,6 @@ catkin_package(
 ## The recommended prefix ensures that target names across packages don't collide
 add_executable(${PROJECT_NAME}_node
   src/azure_kinect_calibration_node.cpp
-  src/azure_kinect_calibration_nodelet.cpp
   src/k4a_ros_bridge_node.cpp
   src/k4a_ros_device.cpp
   src/k4a_ros_device_params.cpp
@@ -71,7 +70,6 @@ add_dependencies(${PROJECT_NAME}_node ${PROJECT_NAME}_gencfg)
 target_compile_features(${PROJECT_NAME}_node PUBLIC cxx_std_11)
 
 add_library(${PROJECT_NAME}_nodelet
-  src/azure_kinect_calibration_node.cpp
   src/azure_kinect_calibration_nodelet.cpp
   src/k4a_ros_bridge_nodelet.cpp
   src/k4a_ros_device.cpp
