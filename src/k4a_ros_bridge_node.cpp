@@ -23,7 +23,6 @@ void callback(const std_msgs::StringConstPtr& str)
 int main(int argc, char** argv)
 {
   ros::init(argc, argv, "k4a_bridge");
-  ros::NodeHandle nh;
 
   // Setup the K4A device
   std::shared_ptr<K4AROSDevice> device(new K4AROSDevice);
@@ -40,8 +39,8 @@ int main(int argc, char** argv)
 
   if (result == K4A_RESULT_SUCCEEDED)
   {
-    ros::Subscriber subP2 = nh.subscribe("points2", 1, callback)
-    ros::Subscriber subRGBRaw = nh.subscribe("/rgb/raw/image", 1, callback)
+    ros::Subscriber subP2 = device.subscribe("points2", 1, callback)
+    ros::Subscriber subRGBRaw = device.subscribe("/rgb/raw/image", 1, callback)
     ros::spin();
 
     ROS_INFO("ROS Exit Started");
