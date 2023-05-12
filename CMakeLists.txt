@@ -46,7 +46,7 @@ generate_dynamic_reconfigure_options(
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES k4a_ros_bridge
+#  LIBRARIES k4a_ros_bridge, k4a_pc_listener
 #  CATKIN_DEPENDS roscpp std_msgs
 #  DEPENDS system_lib
 )
@@ -60,6 +60,7 @@ catkin_package(
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 add_executable(${PROJECT_NAME}_node
+  src/k4a_pc_listener_node.cpp
   src/k4a_ros_bridge_node.cpp
   src/k4a_ros_device.cpp
   src/k4a_ros_device_params.cpp

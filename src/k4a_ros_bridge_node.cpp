@@ -4,12 +4,12 @@
 // System headers
 //
 #include <sstream>
-#include "std_msgs/String.h"
 
 // Library headers
 //
 #include <ros/ros.h>
 #include <k4a/k4a.h>
+#include <std_msgs/String.h>
 
 // Project headers
 //
@@ -39,8 +39,6 @@ int main(int argc, char** argv)
 
   if (result == K4A_RESULT_SUCCEEDED)
   {
-    ros::Subscriber subP2 = device.subscribe("points2", 1, callback)
-    ros::Subscriber subRGBRaw = device.subscribe("/rgb/raw/image", 1, callback)
     ros::spin();
 
     ROS_INFO("ROS Exit Started");
