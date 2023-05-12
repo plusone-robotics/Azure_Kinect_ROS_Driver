@@ -8,9 +8,4 @@
     A nodelet version of the Azure Kinect ROS Driver.
   </description>
   </class>
-  <class name="Azure_Kinect_ROS_Driver/AzureKinectCalibrationNodelet" type="Azure_Kinect_ROS_Driver::AzureKinectCalibrationNodelet" base_class_type="nodelet::Nodelet">
-  <description>
-    A nodelet version of the Azure Kinect Calibration Node.
-  </description>
-  </class>
 </library>

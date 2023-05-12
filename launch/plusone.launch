@@ -70,12 +70,6 @@
       <param name="subordinate_delay_off_master_usec" value="$(arg subordinate_delay_off_master_usec)"/>
     </node>
 
-    <!-- Start the Azure Kinect Calibration Node -->
-    <node pkg="nodelet" type="nodelet" name="azure_kinect_calibration_node"
-          args="load Azure_Kinect_ROS_Driver/AzureKinectCalibrationNodelet $(arg manager) --no-bond"
-          respawn="true">
-    </node>
-
     <!-- Load standard constellation of processing nodelets -->
     <include file="$(find rgbd_launch)/launch/includes/processing.launch.xml">
       <arg name="manager"                         value="$(arg manager)" />
