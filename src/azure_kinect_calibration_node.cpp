@@ -24,11 +24,30 @@ int main(int argc, char** argv)
 {
   ros::init(argc, argv, "azure_kinect_calibration");
 
-  ros::NodeHandle nh;
-  ros::Subscriber subP2 = nh.subscribe("points2", 1000, azureCallback);
-  ros::Subscriber subRGBRaw = nh.subscribe("/rgb/raw/image", 1000, azureCallback);
+  if(!ros::param::get("camera_start_verification", true))
+  {
+    ROS_ERROR_STREAM("Failed to start Azure Kinect Calibration");
+    return -1;
+  }
 
-  ros::spin();
+  ROS_INFO("Azure Kinect Calibration started");
+
+  if(ros::param::get("camera_start_verification", true))
+  {
+    ros::NodeHandle nh;
+    ros::Subscriber subP2 = nh.subscribe("points2", 1000, azureCallback);
+    ros::Subscriber subRGBRaw = nh.subscribe("/rgb/raw/image", 1000, azureCallback);
+
+    ros::spin();
+
+    ROS_INFO("ROS Exit Started");
+  }
+
+  ROS_INFO("ROS Exit");
+
+  ros::shutdown();
+
+  ROS_INFO("ROS Shutdown complete");
 
   return 0;
 }

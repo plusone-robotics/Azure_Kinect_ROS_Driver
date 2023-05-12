@@ -33,6 +33,7 @@ int main(int argc, char** argv)
 
   if (result == K4A_RESULT_SUCCEEDED)
   {
+    ros::param::set("camera_start_verification", true);
     ros::spin();
 
     ROS_INFO("ROS Exit Started");
