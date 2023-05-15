@@ -46,7 +46,7 @@ generate_dynamic_reconfigure_options(
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES k4a_ros_bridge, k4a_calibration_listener
+#  LIBRARIES k4a_ros_bridge, k4a_exposure_calibration
 #  CATKIN_DEPENDS roscpp std_msgs
 #  DEPENDS system_lib
 )
@@ -65,12 +65,12 @@ add_executable(${PROJECT_NAME}_node
   src/k4a_ros_device_params.cpp
   src/k4a_calibration_transform_data.cpp
   )
-add_executable(k4a_calibration_listener_node
-  src/k4a_calibration_listener_node.cpp
+add_executable(k4a_exposure_calibration_node
+  src/k4a_exposure_calibration_node.cpp
   )
 add_dependencies(${PROJECT_NAME}_node ${PROJECT_NAME}_gencfg)
 target_compile_features(${PROJECT_NAME}_node PUBLIC cxx_std_11)
-target_compile_features(k4a_calibration_listener_node PUBLIC cxx_std_11)
+target_compile_features(k4a_c_listener_node PUBLIC cxx_std_11)
 
 add_library(${PROJECT_NAME}_nodelet
   src/k4a_ros_bridge_nodelet.cpp
@@ -237,7 +237,7 @@ target_link_libraries(${PROJECT_NAME}_node
   ${OpenCV_LIBS}
 )
 
-target_link_libraries(k4a_calibration_listener_node
+target_link_libraries(k4a_exposure_calibration_node
   ${K4A_LIBS}
   ${catkin_LIBRARIES}
   ${OpenCV_LIBS}
@@ -263,7 +263,7 @@ install(TARGETS ${PROJECT_NAME}_node
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
-install(TARGETS k4a_calibration_listener_node
+install(TARGETS k4a_exposure_calibration_node
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}

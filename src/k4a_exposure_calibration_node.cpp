@@ -5,20 +5,20 @@
 void p2Callback(const sensor_msgs::PointCloud2& msg)
 {
   // ROS_ERROR("calibration_listener (/points2) heard: [%s]", msg->data.c_str());
-  ROS_ERROR("calibration_listener hearing points2");
+  ROS_ERROR("exposure_calibration hearing points2");
 }
 
 void rgbRawCallback(const sensor_msgs::Image& msg)
 {
   // ROS_ERROR("calibration_listener (/rgb/raw/image) heard: [%s]", msg->data.c_str());
-  ROS_ERROR("calibration_listener hearing rgb/raw/image");
+  ROS_ERROR("exposure_calibration hearing rgb/raw/image");
 }
 
 int main(int argc, char **argv)
 {
-  ros::init(argc, argv, "calibration_listener");
+  ros::init(argc, argv, "k4a_exposure_calibration");
   
-  ROS_ERROR("initialized calibration listener");
+  ROS_ERROR("initialized exposure calibration");
   
   ros::NodeHandle nh;
   ros::Subscriber subPC = nh.subscribe("/points2", 100, p2Callback);
