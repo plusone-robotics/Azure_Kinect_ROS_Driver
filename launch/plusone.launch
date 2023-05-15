@@ -42,9 +42,6 @@
   <arg name="hw_registered_processing"        default="false" unless="$(arg depth_registration)" />
   <arg name="sw_registered_processing"        default="true" unless="$(arg depth_registration)" />
 
-  <node pkg="azure_kinect_ros_driver" type="k4a_pc_listener_node" name="k4a_pc_listener">
-  </node>
-
   <group>
     <!-- Start nodelet manager -->
     <arg name="manager" value="$(arg camera)_nodelet_manager" />
