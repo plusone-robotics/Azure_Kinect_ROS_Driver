@@ -70,7 +70,7 @@ add_executable(k4a_exposure_calibration_node
   )
 add_dependencies(${PROJECT_NAME}_node ${PROJECT_NAME}_gencfg)
 target_compile_features(${PROJECT_NAME}_node PUBLIC cxx_std_11)
-target_compile_features(k4a_c_listener_node PUBLIC cxx_std_11)
+target_compile_features(k4a_exposure_calibration_node PUBLIC cxx_std_11)
 
 add_library(${PROJECT_NAME}_nodelet
   src/k4a_ros_bridge_nodelet.cpp
