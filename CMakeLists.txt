@@ -237,6 +237,12 @@ target_link_libraries(${PROJECT_NAME}_node
   ${OpenCV_LIBS}
 )
 
+target_link_libraries(k4a_pc_listener_node
+  ${K4A_LIBS}
+  ${catkin_LIBRARIES}
+  ${OpenCV_LIBS}
+)
+
 target_link_libraries(${PROJECT_NAME}_nodelet
   ${K4A_LIBS}
   ${catkin_LIBRARIES}
@@ -252,6 +258,12 @@ target_link_libraries(${PROJECT_NAME}_nodelet
 
 ## Mark executables and/or libraries for installation
 install(TARGETS ${PROJECT_NAME}_node
+  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+
+install(TARGETS k4a_pc_listener_node
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
