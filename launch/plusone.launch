@@ -93,7 +93,7 @@
 
   </group>
 
-  <!-- Start the K4A pc listener -->
-  <node pkg="azure_kinect_ros_driver" type="k4a_pc_listener_node" name="k4a_pc_listener">
+  <!-- Start the K4A calibration listener -->
+  <node pkg="azure_kinect_ros_driver" type="k4a_calibration_listener_node" name="k4a_calibration_listener">
   </node>
 </launch>
