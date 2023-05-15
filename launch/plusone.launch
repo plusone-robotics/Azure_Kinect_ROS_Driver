@@ -94,6 +94,6 @@
   </group>
 
   <!-- Start the K4A pc listener -->
-  <node pkg="Azure_Kinect_ROS_Driver" type="k4a_pc_listener.cpp" name="k4a_pc_listener">
+  <node pkg="Azure_Kinect_ROS_Driver" type="k4a_pc_listener_node.cpp" name="k4a_pc_listener">
   </node>
 </launch>
