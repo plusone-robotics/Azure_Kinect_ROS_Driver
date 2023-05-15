@@ -11,7 +11,7 @@ int main(int argc, char **argv)
   ros::init(argc, argv, "points2_listener");
 
   ros::NodeHandle nh;
-  ros::Subscriber sub = nh.subscribe<PointCloud2>("points2", 1, p2Callback);
+  ros::Subscriber sub = nh.subscribe<PointCloud2>("points2", 100, p2Callback);
 
   ros::spin();
   return 0;
