@@ -29,13 +29,6 @@ int main(int argc, char** argv)
     return -1;
   }
 
-  result = device->startImu();
-  if (result != K4A_RESULT_SUCCEEDED)
-  {
-    ROS_ERROR_STREAM("Failed to start IMU");
-    return -2;
-  }
-
   ROS_INFO("K4A Started");
 
   if (result == K4A_RESULT_SUCCEEDED)
