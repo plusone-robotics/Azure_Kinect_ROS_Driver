@@ -9,16 +9,10 @@
 //
 #include <ros/ros.h>
 #include <k4a/k4a.h>
-#include <std_msgs/String.h>
 
 // Project headers
 //
 #include "azure_kinect_ros_driver/k4a_ros_device.h"
-
-void callback(const std_msgs::StringConstPtr& str)
-{
-  ROS_INFO("k4a_ros_bridge_node heard: [%s]", str->data.c_str());
-}
 
 int main(int argc, char** argv)
 {
@@ -33,6 +27,13 @@ int main(int argc, char** argv)
   {
     ROS_ERROR_STREAM("Failed to start cameras");
     return -1;
+  }
+
+  result = device->startImu();
+  if (result != K4A_RESULT_SUCCEEDED)
+  {
+    ROS_ERROR_STREAM("Failed to start IMU");
+    return -2;
   }
 
   ROS_INFO("K4A Started");
