@@ -14,11 +14,6 @@ void rgbRawCallback(const sensor_msgs::Image& msg)
   ROS_INFO("exposure_calibration hearing /rgb/raw/image");
 }
 
-// void exposureCalibrationCallback(azure_kinect_ros_driver::AzureKinectParamsConfig &config, uint32_t level)
-// {
-//   int exposure_time = config.exposure_time;
-// }
-
 int main(int argc, char **argv)
 {
   ros::init(argc, argv, "k4a_exposure_calibration");
@@ -30,15 +25,6 @@ int main(int argc, char **argv)
   ros::Subscriber subRGBRaw = nh.subscribe("/rgb/raw/image", 100, rgbRawCallback);
   
   ROS_INFO("Exposure Calibration subscribed to /points2 and /rgb/raw/image");
-  
-  // ROS_INFO("Setting up dynamic reconfigure server");
-
-  // dynamic_reconfigure::Server<azure_kinect_ros_driver::AzureKinectParamsConfig> exposureCalibrationServer;
-  // dynamic_reconfigure::Server<azure_kinect_ros_driver::AzureKinectParamsConfig>::CallbackType f;
-  // f = boost::bind(&exposureCalibrationCallback, _1, _2);
-  // exposureCalibrationServer.setCallback(f);
-
-  // rosrun dynamic_reconfigure dynparam set /k4a_nodelet_manager exposure_time 0
 
   ros::Duration(5.0).sleep();
 
@@ -54,16 +40,8 @@ int main(int argc, char **argv)
   conf.ints.push_back(int_param);
 
   srv_req.config = conf;
-
-  for(int k4aExposureIncrement = int_param.value; k4aExposureIncrement <= 1,000,000; k4aExposureIncrement += 1000)
-  {
-    int_param.value = k4aExposureIncrement;
-    conf.ints.push_back(int_param);
-    ROS_INFO("UPDATING EXPOSURE TO: [%d]", k4aExposureIncrement);
-    ros::service::call("/k4a_nodelet_manager/set_parameters", srv_req, srv_resp);
-    ros::Duration(1).sleep();
-  }
-
+  ros::service::call("/k4a_nodelet_manager/set_parameters", srv_req, srv_resp);
+  
   ROS_INFO("Spinning Exposure Calibration Node");
   ros::spin();
   return 0;
