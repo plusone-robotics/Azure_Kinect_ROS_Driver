@@ -58,6 +58,7 @@ int main(int argc, char **argv)
   for(int k4aExposureIncrement = int_param.value; k4aExposureIncrement <= 1,000,000; k4aExposureIncrement += 1000)
   {
     int_param.value = k4aExposureIncrement;
+    conf.ints.push_back(int_param);
     ROS_INFO("UPDATING EXPOSURE TO: [%d]", k4aExposureIncrement);
     ros::service::call("/k4a_nodelet_manager/set_parameters", srv_req, srv_resp);
     ros::Duration(1).sleep();
