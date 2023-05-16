@@ -39,15 +39,36 @@ int main(int argc, char **argv)
   exposureCalibrationServer.setCallback(f);
 
   ROS_INFO("Looping through exposures");
-  while(ros::ok)
-  {
-    for(int k4aExposureIncrement = 488; k4aExposureIncrement <= 1,000,000; k4aExposureIncrement += 1000)
-    {
-      ROS_INFO("UPDATING EXPOSURE TO: [%d]", k4aExposureIncrement);
-      nh.setParam("exposure_time", k4aExposureIncrement);
-      //ros::Duration(0.1).sleep();
-    }
-  }
+
+  // while(ros::ok)
+  // {
+  //   for(int k4aExposureIncrement = 488; k4aExposureIncrement <= 1,000,000; k4aExposureIncrement += 1000)
+  //   {
+  //     ROS_INFO("UPDATING EXPOSURE TO: [%d]", k4aExposureIncrement);
+  //     nh.setParam("exposure_time", k4aExposureIncrement);
+  //     ros::Duration(0.1).sleep();
+  //   }
+  // }
+  // rosrun dynamic_reconfigure dynparam set /k4a_nodelet_manager exposure_time 0
+
+  ros::Duration(5.0).sleep();
+
+  dynamic_reconfigure::ReconfigureRequest srv_req;
+  dynamic_reconfigure::ReconfigureResponse srv_resp;
+  dynamic_reconfigure::IntParameter int_param;
+  dynamic_reconfigure::Config conf;
+
+  int_param.name = "exposure_time";
+  int_param.value = 0;
+  conf.ints.push_back(int_param);
+
+  //dynamic_reconfigure::IntParameter int_param;
+  //int_param.name = "num_to_save";
+  //int_param.value = 7;
+  //conf.ints.push_back(int_param);
+
+  srv_req.config = conf;
+  ros::service::call("/k4a_nodelet_manager/set_parameters", srv_req, srv_resp);
 
   ROS_INFO("Spinning Exposure Calibration Node");
   ros::spin();
