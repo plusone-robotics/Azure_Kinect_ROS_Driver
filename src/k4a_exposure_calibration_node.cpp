@@ -14,10 +14,10 @@ void rgbRawCallback(const sensor_msgs::Image& msg)
   ROS_INFO("exposure_calibration hearing /rgb/raw/image");
 }
 
-void exposureCalibrationCallback(azure_kinect_ros_driver::AzureKinectParamsConfig &config, uint32_t level)
-{
-  int exposure_time = config.exposure_time;
-}
+// void exposureCalibrationCallback(azure_kinect_ros_driver::AzureKinectParamsConfig &config, uint32_t level)
+// {
+//   int exposure_time = config.exposure_time;
+// }
 
 int main(int argc, char **argv)
 {
@@ -31,14 +31,12 @@ int main(int argc, char **argv)
   
   ROS_INFO("Exposure Calibration subscribed to /points2 and /rgb/raw/image");
   
-  ROS_INFO("Setting up dynamic reconfigure server");
+  // ROS_INFO("Setting up dynamic reconfigure server");
 
-  dynamic_reconfigure::Server<azure_kinect_ros_driver::AzureKinectParamsConfig> exposureCalibrationServer;
-  dynamic_reconfigure::Server<azure_kinect_ros_driver::AzureKinectParamsConfig>::CallbackType f;
-  f = boost::bind(&exposureCalibrationCallback, _1, _2);
-  exposureCalibrationServer.setCallback(f);
-
-  ROS_INFO("Looping through exposures");
+  // dynamic_reconfigure::Server<azure_kinect_ros_driver::AzureKinectParamsConfig> exposureCalibrationServer;
+  // dynamic_reconfigure::Server<azure_kinect_ros_driver::AzureKinectParamsConfig>::CallbackType f;
+  // f = boost::bind(&exposureCalibrationCallback, _1, _2);
+  // exposureCalibrationServer.setCallback(f);
 
   // while(ros::ok)
   // {
@@ -53,6 +51,8 @@ int main(int argc, char **argv)
 
   ros::Duration(5.0).sleep();
 
+  ROS_INFO("Looping through exposures");
+
   dynamic_reconfigure::ReconfigureRequest srv_req;
   dynamic_reconfigure::ReconfigureResponse srv_resp;
   dynamic_reconfigure::IntParameter int_param;
@@ -61,11 +61,6 @@ int main(int argc, char **argv)
   int_param.name = "exposure_time";
   int_param.value = 31337;
   conf.ints.push_back(int_param);
-
-  //dynamic_reconfigure::IntParameter int_param;
-  //int_param.name = "num_to_save";
-  //int_param.value = 7;
-  //conf.ints.push_back(int_param);
 
   srv_req.config = conf;
   ros::service::call("/k4a_nodelet_manager/set_parameters", srv_req, srv_resp);
