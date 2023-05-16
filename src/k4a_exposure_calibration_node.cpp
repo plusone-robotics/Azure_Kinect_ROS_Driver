@@ -41,7 +41,7 @@ int main(int argc, char **argv)
   ROS_INFO("Looping through exposures");
   while(ros::ok)
   {
-    for(int k4aExposureIncrement = 488; k4aExposureIncrement <= 1,000,000; k4aExposureIncrement += 500)
+    for(int k4aExposureIncrement = 488; k4aExposureIncrement <= 1,000,000; k4aExposureIncrement += 1000)
     {
       ROS_ERROR("UPDATING EXPOSURE TO: [%d]", k4aExposureIncrement);
       nh.setParam("exposure_time", k4aExposureIncrement);
