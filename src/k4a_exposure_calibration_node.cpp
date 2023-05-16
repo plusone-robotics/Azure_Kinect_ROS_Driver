@@ -45,7 +45,7 @@ int main(int argc, char **argv)
     {
       ROS_INFO("UPDATING EXPOSURE TO: [%d]", k4aExposureIncrement);
       nh.setParam("exposure_time", k4aExposureIncrement);
-      ros::Duration(0.1).sleep();
+      //ros::Duration(0.1).sleep();
     }
   }
 
