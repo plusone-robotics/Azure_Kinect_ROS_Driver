@@ -59,7 +59,7 @@ int main(int argc, char **argv)
   dynamic_reconfigure::Config conf;
 
   int_param.name = "exposure_time";
-  int_param.value = 0;
+  int_param.value = 31337;
   conf.ints.push_back(int_param);
 
   //dynamic_reconfigure::IntParameter int_param;
