@@ -3,32 +3,43 @@
 #include "sensor_msgs/Image.h"
 #include "dynamic_reconfigure/server.h"
 #include "azure_kinect_ros_driver/AzureKinectParamsConfig.h"
+#include "azure_kinect_ros_driver/k4a_exposure_calibration.h"
 
 void p2Callback(const sensor_msgs::PointCloud2& msg)
 {
-  ROS_INFO("exposure_calibration hearing /points2");
+  ROS_ERROR("exposure_calibration hearing /points2");
 }
 
 void rgbRawCallback(const sensor_msgs::Image& msg)
 {
-  ROS_INFO("exposure_calibration hearing /rgb/raw/image");
+  ROS_ERROR("exposure_calibration hearing /rgb/raw/image");
 }
 
+bool k4aExposureCalibration(azure_kinect_ros_driver::update_exp_cal::Request &req,
+                            azure_kinect_ros_driver::update_exp_cal::Response &res)
+{
+  res.updated_cal_exp = req.new_cal_exp;
+  ROS_ERROR("k4a_exposure_calibration_node received request that exposure be updated to: [%d]", (uint32)req.new_cal_exp);
+  ROS_ERROR("k4a_sending back response: [%d]", (unit32)res.updated_cal_exp);
+  return true;
+}
+HECC U MAN
 int main(int argc, char **argv)
 {
   ros::init(argc, argv, "k4a_exposure_calibration");
   
-  ROS_INFO("Initialized Exposure Calibration");
+  ROS_ERROR("Initialized Exposure Calibration");
   
   ros::NodeHandle nh;
   ros::Subscriber subPC = nh.subscribe("/points2", 100, p2Callback);
   ros::Subscriber subRGBRaw = nh.subscribe("/rgb/raw/image", 100, rgbRawCallback);
   
-  ROS_INFO("Exposure Calibration subscribed to /points2 and /rgb/raw/image");
+  ROS_ERROR("Exposure Calibration subscribed to /points2 and /rgb/raw/image");
 
-  ros::Duration(5.0).sleep();
+  // Advertise calibrate_exposure service
+  ros::ServiceServer service = nh.advertiseService("tune_exposure", k4aExposureCalibration);
 
-  ROS_INFO("Adjusting exposure_time");
+  ROS_ERROR("Adjusting exposure_time");
 
   dynamic_reconfigure::ReconfigureRequest srv_req;
   dynamic_reconfigure::ReconfigureResponse srv_resp;
@@ -42,7 +53,7 @@ int main(int argc, char **argv)
   srv_req.config = conf;
   ros::service::call("/k4a_nodelet_manager/set_parameters", srv_req, srv_resp);
   
-  ROS_INFO("Spinning Exposure Calibration Node");
+  ROS_ERROR("Spinning Exposure Calibration Node");
   ros::spin();
   return 0;
 }
