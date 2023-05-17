@@ -14,6 +14,7 @@ option(CUDA_SUPPORT "use CUDA support onnxruntime library" ON)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   std_msgs
+  message_generation
   sensor_msgs
   image_transport
   image_geometry
