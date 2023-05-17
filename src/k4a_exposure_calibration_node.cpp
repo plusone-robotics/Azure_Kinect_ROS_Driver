@@ -28,7 +28,7 @@ int main(int argc, char **argv)
 
   ros::Duration(5.0).sleep();
 
-  ROS_INFO("Looping through exposures");
+  ROS_INFO("Adjusting exposure_time");
 
   dynamic_reconfigure::ReconfigureRequest srv_req;
   dynamic_reconfigure::ReconfigureResponse srv_resp;

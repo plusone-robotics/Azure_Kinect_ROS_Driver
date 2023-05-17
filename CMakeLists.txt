@@ -220,6 +220,13 @@ if(MSVC AND NOT k4abt_FOUND)
   endif()
 endif()
 
+# Testing
+if(CATKIN_ENABLE_TESTING)
+  find_package(rostest REQUIRED)
+  add_rostest_gtest(utest_node test/utest_launch.test src/test/utest.cpp)
+  target_link_libraries(utest_node ${catkin_LIBRARIES})
+endif()
+
 # This reads the K4A_LIBS and K4A_INSTALL_REQUIRED variables and decides how to install
 # the various shared objects / DLLs
 include(Installk4a)
