@@ -1,7 +1,7 @@
 #include <ros/ros.h>
 #include <gtest/gtest.h>
 
-TEST(TestSuite, myworkcell_core_framework)
+TEST(TestSuite, azure_kinect_ros_driver_framework)
 {
   ASSERT_TRUE(true);
 }
