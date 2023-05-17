@@ -3,6 +3,7 @@
 #include "sensor_msgs/Image.h"
 #include "dynamic_reconfigure/server.h"
 #include "azure_kinect_ros_driver/AzureKinectParamsConfig.h"
+#include "azure_kinect_ros_driver/update_exp_cal.h"
 
 void p2Callback(const sensor_msgs::PointCloud2& msg)
 {
