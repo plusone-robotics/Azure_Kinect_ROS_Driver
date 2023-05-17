@@ -15,14 +15,6 @@ void rgbRawCallback(const sensor_msgs::Image& msg)
   ROS_ERROR("exposure_calibration hearing /rgb/raw/image");
 }
 
-bool k4aExposureCalibration(azure_kinect_ros_driver::update_exp_cal::Request &req,
-                            azure_kinect_ros_driver::update_exp_cal::Response &res)
-{
-  res.updated_cal_exp = req.new_cal_exp;
-  ROS_ERROR("k4a_exposure_calibration_node received request that exposure be updated to: [%d]", (uint32)req.new_cal_exp);
-  ROS_ERROR("k4a_sending back response: [%d]", (unit32)res.updated_cal_exp);
-  return true;
-}
 HECC U MAN
 int main(int argc, char **argv)
 {
@@ -56,4 +48,13 @@ int main(int argc, char **argv)
   ROS_ERROR("Spinning Exposure Calibration Node");
   ros::spin();
   return 0;
+}
+
+bool k4aExposureCalibration(azure_kinect_ros_driver::update_exp_cal::Request &req,
+                            azure_kinect_ros_driver::update_exp_cal::Response &res)
+{
+  res.updated_cal_exp = req.new_cal_exp;
+  ROS_ERROR("k4a_exposure_calibration_node received request that exposure be updated to: [%d]", (uint32)req.new_cal_exp);
+  ROS_ERROR("k4a_sending back response: [%d]", (unit32)res.updated_cal_exp);
+  return true;
 }
