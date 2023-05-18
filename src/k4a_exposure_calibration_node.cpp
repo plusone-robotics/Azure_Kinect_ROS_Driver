@@ -3,7 +3,7 @@
 #include "sensor_msgs/Image.h"
 #include "dynamic_reconfigure/server.h"
 #include "azure_kinect_ros_driver/AzureKinectParamsConfig.h"
-// #include "azure_kinect_ros_driver/update_exp_cal.h"
+#include "azure_kinect_ros_driver/update_exp_cal.h"
 
 void p2Callback(const sensor_msgs::PointCloud2& msg)
 {
@@ -15,7 +15,6 @@ void rgbRawCallback(const sensor_msgs::Image& msg)
   ROS_ERROR("exposure_calibration hearing /rgb/raw/image");
 }
 
-HECC U MAN
 int main(int argc, char **argv)
 {
   ros::init(argc, argv, "k4a_exposure_calibration");
