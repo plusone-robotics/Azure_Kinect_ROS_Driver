@@ -15,6 +15,15 @@ void rgbRawCallback(const sensor_msgs::Image& msg)
   ROS_ERROR("exposure_calibration hearing /rgb/raw/image");
 }
 
+bool k4aExposureCalibration(azure_kinect_ros_driver::update_exp_cal::Request &req,
+                            azure_kinect_ros_driver::update_exp_cal::Response & res)
+{
+  res.updated_cal_exp = req.new_cal_exp;
+  ROS_ERROR("HEY WE GOT A REQUEST [%d]", req.new_cal_exp);
+  ROS_ERROR("UPDATIN THE EXPOSURE TO [%d] yeye", res.updated_cal_exp);
+  return true;
+}
+
 int main(int argc, char **argv)
 {
   ros::init(argc, argv, "k4a_exposure_calibration");
@@ -32,17 +41,17 @@ int main(int argc, char **argv)
 
   ROS_ERROR("Adjusting exposure_time");
 
-  dynamic_reconfigure::ReconfigureRequest srv_req;
-  dynamic_reconfigure::ReconfigureResponse srv_resp;
-  dynamic_reconfigure::IntParameter int_param;
-  dynamic_reconfigure::Config conf;
+  // dynamic_reconfigure::ReconfigureRequest srv_req;
+  // dynamic_reconfigure::ReconfigureResponse srv_resp;
+  // dynamic_reconfigure::IntParameter int_param;
+  // dynamic_reconfigure::Config conf;
 
-  int_param.name = "exposure_time";
-  int_param.value = 31337;
-  conf.ints.push_back(int_param);
+  // int_param.name = "exposure_time";
+  // int_param.value = 31337;
+  // conf.ints.push_back(int_param);
 
-  srv_req.config = conf;
-  ros::service::call("/k4a_nodelet_manager/set_parameters", srv_req, srv_resp);
+  // srv_req.config = conf;
+  // ros::service::call("/k4a_nodelet_manager/set_parameters", srv_req, srv_resp);
   
   ROS_ERROR("Spinning Exposure Calibration Node");
   ros::spin();
