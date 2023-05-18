@@ -39,6 +39,10 @@ add_service_files(
   FILES
   k4a_exposure_tuning.srv
 )
+add_message_files(
+  FILES
+  exp_cal.msg
+)
 generate_messages(
   DEPENDENCIES
   std_msgs
