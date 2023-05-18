@@ -37,7 +37,7 @@ generate_dynamic_reconfigure_options(
 )
 add_service_files(
   FILES
-  update_exp_cal.srv
+  k4a_exposure_tuning.srv
 )
 
 ###################################

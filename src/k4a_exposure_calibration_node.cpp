@@ -3,7 +3,7 @@
 #include "sensor_msgs/Image.h"
 #include "dynamic_reconfigure/server.h"
 #include "azure_kinect_ros_driver/AzureKinectParamsConfig.h"
-#include "azure_kinect_ros_driver/update_exp_cal.h"
+#include "azure_kinect_ros_driver/k4a_exposure_tuning.h"
 
 void p2Callback(const sensor_msgs::PointCloud2& msg)
 {
@@ -15,12 +15,12 @@ void rgbRawCallback(const sensor_msgs::Image& msg)
   ROS_ERROR("exposure_calibration hearing /rgb/raw/image");
 }
 
-bool k4aExposureCalibration(azure_kinect_ros_driver::update_exp_cal::Request &req,
-                            azure_kinect_ros_driver::update_exp_cal::Response & res)
+bool k4aExposureTuning(azure_kinect_ros_driver::k4a_exposure_tuning::Request &req,
+                       azure_kinect_ros_driver::k4a_exposure_tuning::Response & res)
 {
-  res.updated_cal_exp = req.new_cal_exp;
-  ROS_ERROR("HEY WE GOT A REQUEST [%d]", req.new_cal_exp);
-  ROS_ERROR("UPDATIN THE EXPOSURE TO [%d] yeye", res.updated_cal_exp);
+  res.updated_exp = req.new_exp;
+  ROS_ERROR("HEY WE GOT A REQUEST [%d]", req.new_exp);
+  ROS_ERROR("UPDATIN THE EXPOSURE TO [%d] yeye", res.updated_exp);
   return true;
 }
 
@@ -37,7 +37,7 @@ int main(int argc, char **argv)
   ROS_ERROR("Exposure Calibration subscribed to /points2 and /rgb/raw/image");
 
   // Advertise calibrate_exposure service
-  ros::ServiceServer service = nh.advertiseService("tune_exposure", k4aExposureCalibration);
+  ros::ServiceServer service = nh.advertiseService("k4a_exposure_tuning", k4aExposureTuning);
 
   ROS_ERROR("Adjusting exposure_time");
 
@@ -56,13 +56,4 @@ int main(int argc, char **argv)
   ROS_ERROR("Spinning Exposure Calibration Node");
   ros::spin();
   return 0;
-}
-
-bool k4aExposureCalibration(azure_kinect_ros_driver::update_exp_cal::Request &req,
-                            azure_kinect_ros_driver::update_exp_cal::Response &res)
-{
-  res.updated_cal_exp = req.new_cal_exp;
-  ROS_ERROR("k4a_exposure_calibration_node received request that exposure be updated to: [%d]", (uint32)req.new_cal_exp);
-  ROS_ERROR("k4a_sending back response: [%d]", (unit32)res.updated_cal_exp);
-  return true;
 }
