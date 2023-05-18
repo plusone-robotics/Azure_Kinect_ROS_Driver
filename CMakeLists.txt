@@ -39,6 +39,10 @@ add_service_files(
   FILES
   k4a_exposure_tuning.srv
 )
+generate_messages(
+  DEPENDENCIES
+  std_msgs
+)
 
 ###################################
 ## catkin specific configuration ##
@@ -50,10 +54,10 @@ add_service_files(
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-  INCLUDE_DIRS include
-  LIBRARIES k4a_ros_bridge k4a_exposure_calibration
-  CATKIN_DEPENDS roscpp std_msgs message_runtime
-  DEPENDS system_lib
+#  INCLUDE_DIRS include
+#  LIBRARIES k4a_ros_bridge k4a_exposure_calibration
+#  CATKIN_DEPENDS roscpp std_msgs message_runtime
+#  DEPENDS system_lib
 )
 
 ###########

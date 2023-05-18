@@ -15,14 +15,14 @@ void rgbRawCallback(const sensor_msgs::Image& msg)
   ROS_ERROR("exposure_calibration hearing /rgb/raw/image");
 }
 
-// bool k4aExposureTuning(azure_kinect_ros_driver::k4a_exposure_tuning::Request &req,
-//                        azure_kinect_ros_driver::k4a_exposure_tuning::Response & res)
-// {
-//   res.updated_exp = req.new_exp;
-//   ROS_ERROR("HEY WE GOT A REQUEST [%d]", req.new_exp);
-//   ROS_ERROR("UPDATIN THE EXPOSURE TO [%d] yeye", res.updated_exp);
-//   return true;
-// }
+bool k4aExposureTuning(azure_kinect_ros_driver::k4a_exposure_tuning::Request &req,
+                       azure_kinect_ros_driver::k4a_exposure_tuning::Response & res)
+{
+  res.updated_exp = req.new_exp;
+  ROS_ERROR("HEY WE GOT A REQUEST [%d]", req.new_exp);
+  ROS_ERROR("UPDATIN THE EXPOSURE TO [%d] yeye", res.updated_exp);
+  return true;
+}
 
 int main(int argc, char **argv)
 {
@@ -37,7 +37,7 @@ int main(int argc, char **argv)
   ROS_ERROR("Exposure Calibration subscribed to /points2 and /rgb/raw/image");
 
   // Advertise calibrate_exposure service
-  // ros::ServiceServer service = nh.advertiseService("k4a_exposure_tuning", k4aExposureTuning);
+  ros::ServiceServer service = nh.advertiseService("k4a_exposure_tuning", k4aExposureTuning);
 
   ROS_ERROR("Adjusting exposure_time");
 
