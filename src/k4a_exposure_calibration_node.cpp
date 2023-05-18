@@ -17,6 +17,7 @@ void rgbRawCallback(const sensor_msgs::Image& msg)
 
 bool k4aExposureTuning(int reqExposure)
 {
+  ROS_ERROR("Adjusting exposure_time");
   if(reqExposure < 488 || reqExposure > 1,000,000)
   {
     ROS_ERROR("k4a exposure limited to 488 =< exposure <= 1,000,000");
@@ -80,7 +81,8 @@ int main(int argc, char **argv)
   // Advertise calibrate_exposure service
   ros::ServiceServer service = nh.advertiseService("k4a_exposure_tuning", rosk4aExposureTuningCallback);
 
-  ROS_ERROR("Adjusting exposure_time");
+  ros::Rate r(0.2);
+  r.sleep();
   
   ROS_ERROR("Spinning Exposure Calibration Node");
   ros::spin();
