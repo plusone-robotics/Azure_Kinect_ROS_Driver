@@ -15,13 +15,54 @@ void rgbRawCallback(const sensor_msgs::Image& msg)
   ROS_ERROR("exposure_calibration hearing /rgb/raw/image");
 }
 
-bool k4aExposureTuning(azure_kinect_ros_driver::k4a_exposure_tuning::Request &req,
-                       azure_kinect_ros_driver::k4a_exposure_tuning::Response & res)
+bool k4aExposureTuning(int reqExposure)
 {
-  res.updated_exp = req.new_exp;
-  ROS_ERROR("HEY WE GOT A REQUEST [%d]", req.new_exp);
-  ROS_ERROR("UPDATIN THE EXPOSURE TO [%d] yeye", res.updated_exp);
+  if(reqExposure < 488 || reqExposure > 1,000,000)
+  {
+    ROS_ERROR("k4a exposure limited to 488 =< exposure <= 1,000,000");
+    return false;
+  }
+  dynamic_reconfigure::ReconfigureRequest srv_req;
+  dynamic_reconfigure::ReconfigureResponse srv_resp;
+  dynamic_reconfigure::IntParameter int_param;
+  dynamic_reconfigure::Config conf;
+
+  int_param.name = "exposure_time";
+  int_param.value = reqExposure;
+  conf.ints.push_back(int_param);
+
+  srv_req.config = conf;
+  ros::service::call("/k4a_nodelet_manager/set_parameters", srv_req, srv_resp);
+
   return true;
+}
+
+void rosk4aExposureTuningCallback(azure_kinect_ros_driver::k4a_exposure_tuning::Request &req,
+                                  azure_kinect_ros_driver::k4a_exposure_tuning::Response &res)
+{
+  // prepare response
+  ROS_ERROR("HEY WE GOT A REQUEST [%d]", req.new_exp);
+  res.success = true;
+  res.message = "";
+
+  ROS_ERROR("ATTEMPTIN UPDATIN THE EXPOSURE TO [%d] yeye", res.updated_exp);
+  bool res = k4aExposureTuning(req.new_exp);
+  
+  if(!res)
+  {
+    res.success = false;
+    res.message += "\nUnable to change exposure_time"
+  }
+  else
+  {
+    res.updated_exp = req.new_exp;
+    res.message += "Exposure updated";
+  }
+
+  ROS_ERROR("Sending back response...");
+
+  return true;
+
 }
 
 int main(int argc, char **argv)
@@ -40,18 +81,6 @@ int main(int argc, char **argv)
   ros::ServiceServer service = nh.advertiseService("k4a_exposure_tuning", k4aExposureTuning);
 
   ROS_ERROR("Adjusting exposure_time");
-
-  // dynamic_reconfigure::ReconfigureRequest srv_req;
-  // dynamic_reconfigure::ReconfigureResponse srv_resp;
-  // dynamic_reconfigure::IntParameter int_param;
-  // dynamic_reconfigure::Config conf;
-
-  // int_param.name = "exposure_time";
-  // int_param.value = 31337;
-  // conf.ints.push_back(int_param);
-
-  // srv_req.config = conf;
-  // ros::service::call("/k4a_nodelet_manager/set_parameters", srv_req, srv_resp);
   
   ROS_ERROR("Spinning Exposure Calibration Node");
   ros::spin();
