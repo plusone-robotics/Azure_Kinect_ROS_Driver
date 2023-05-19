@@ -76,7 +76,7 @@ int main(int argc, char **argv)
   ROS_ERROR("Exposure Calibration subscribed to /points2 and /rgb/raw/image");
 
   // Advertise calibrate_exposure service
-  ros::ServiceServer service = nh.advertiseService("k4a_exposure_tuning", rosk4aExposureTuningCallback, this);
+  ros::ServiceServer service = nh.advertiseService("k4a_exposure_tuning", rosk4aExposureTuningCallback);
   
   ROS_ERROR("Spinning Exposure Calibration Node");
   ros::spin();
