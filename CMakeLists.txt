@@ -41,11 +41,12 @@ add_service_files(
 )
 add_message_files(
   FILES
-  exp_cal.msg
+  exposure_tuning.msg
 )
 generate_messages(
   DEPENDENCIES
   std_msgs
+  exposure_tuning
 )
 
 ###################################
