@@ -38,7 +38,7 @@ bool k4aExposureTuning(int reqExposure)
   return true;
 }
 
-void rosk4aExposureTuningCallback(azure_kinect_ros_driver::k4a_exposure_tuning::Request &req,
+bool rosk4aExposureTuningCallback(azure_kinect_ros_driver::k4a_exposure_tuning::Request &req,
                                   azure_kinect_ros_driver::k4a_exposure_tuning::Response &res)
 {
   // prepare response
@@ -53,6 +53,7 @@ void rosk4aExposureTuningCallback(azure_kinect_ros_driver::k4a_exposure_tuning::
   {
     res.success = false;
     res.message += "\nUnable to change exposure_time";
+    return false;
   }
   else
   {
@@ -61,6 +62,7 @@ void rosk4aExposureTuningCallback(azure_kinect_ros_driver::k4a_exposure_tuning::
   }
 
   ROS_ERROR("Sending back response...");
+  return true;
 }
 
 int main(int argc, char **argv)
