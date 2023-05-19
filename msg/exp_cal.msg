@@ -1,1 +1,1 @@
-uint32 new_exp_cal
+int new_exp_cal
