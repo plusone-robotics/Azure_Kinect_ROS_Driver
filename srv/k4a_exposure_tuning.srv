@@ -1,5 +1,5 @@
-uint32 new_exp
+int new_exp
 ---
-uint32 updated_exp
+int updated_exp
 bool success
 string message

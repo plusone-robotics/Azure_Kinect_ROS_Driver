@@ -49,7 +49,7 @@ bool rosk4aExposureTuningCallback(azure_kinect_ros_driver::k4a_exposure_tuning::
   }
   else
   {
-    ROS_ERROR("Updating exposure to: [%d]", res.updated_exp);
+    ROS_ERROR("Updating exposure to: [%d]", req.new_exp);
     bool tuningRes = k4aExposureTuning(req.new_exp);
     
     if(!tuningRes)
