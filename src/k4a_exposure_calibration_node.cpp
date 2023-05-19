@@ -18,11 +18,7 @@ void rgbRawCallback(const sensor_msgs::Image& msg)
 bool k4aExposureTuning(int reqExposure)
 {
   ROS_ERROR("Adjusting exposure_time");
-  if(reqExposure < 488 || reqExposure > 1,000,000)
-  {
-    ROS_ERROR("k4a exposure limited to 488 =< exposure <= 1,000,000");
-    return false;
-  }
+
   dynamic_reconfigure::ReconfigureRequest srv_req;
   dynamic_reconfigure::ReconfigureResponse srv_resp;
   dynamic_reconfigure::IntParameter int_param;
@@ -42,23 +38,32 @@ bool rosk4aExposureTuningCallback(azure_kinect_ros_driver::k4a_exposure_tuning::
                                   azure_kinect_ros_driver::k4a_exposure_tuning::Response &res)
 {
   // prepare response
-  ROS_ERROR("HEY WE GOT A REQUEST [%d]", req.new_exp);
-  res.success = true;
   res.message = "";
-
-  ROS_ERROR("ATTEMPTIN UPDATIN THE EXPOSURE TO [%d] yeye", res.updated_exp);
-  bool tuningRes = k4aExposureTuning(req.new_exp);
   
-  if(!tuningRes)
+  ROS_ERROR("Received exposure tuning request: [%d]", req.new_exp);
+  if(req.new_exp < 488 || req.new_exp > 1,000,000)
   {
-    res.success = false;
-    res.message += "\nUnable to change exposure_time";
+    res.success = false
+    res.message += "Requested exposure out of range (488-1,000,000)";
     return false;
   }
   else
   {
-    res.updated_exp = req.new_exp;
-    res.message += "Exposure updated";
+    ROS_ERROR("Updating exposure to: [%d]", res.updated_exp);
+    bool tuningRes = k4aExposureTuning(req.new_exp);
+    
+    if(!tuningRes)
+    {
+      res.success = false;
+      res.message += "\nUnable to change exposure_time";
+      return false;
+    }
+    else
+    {
+      res.success = true;
+      res.updated_exp = req.new_exp;
+      res.message += "Exposure updated";
+    }
   }
 
   ROS_ERROR("Sending back response...");
