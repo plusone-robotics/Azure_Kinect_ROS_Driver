@@ -14,6 +14,7 @@ option(CUDA_SUPPORT "use CUDA support onnxruntime library" ON)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   std_msgs
+  message_generation
   sensor_msgs
   image_transport
   image_geometry
@@ -34,6 +35,18 @@ find_package(OpenCV REQUIRED)
 generate_dynamic_reconfigure_options(
   cfg/AzureKinectParams.cfg
 )
+add_service_files(
+  FILES
+  k4a_exposure_tuning.srv
+)
+add_message_files(
+  FILES
+  exp_cal.msg
+)
+generate_messages(
+  DEPENDENCIES
+  std_msgs
+)
 
 ###################################
 ## catkin specific configuration ##
@@ -45,10 +58,10 @@ generate_dynamic_reconfigure_options(
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES k4a_ros_bridge
-#  CATKIN_DEPENDS roscpp std_msgs
-#  DEPENDS system_lib
+ # INCLUDE_DIRS include
+ # LIBRARIES k4a_ros_bridge k4a_exposure_calibration
+ # CATKIN_DEPENDS roscpp std_msgs message_runtime
+ # DEPENDS system_lib
 )
 
 ###########
@@ -65,8 +78,13 @@ add_executable(${PROJECT_NAME}_node
   src/k4a_ros_device_params.cpp
   src/k4a_calibration_transform_data.cpp
   )
+add_executable(k4a_exposure_calibration_node
+  src/k4a_exposure_calibration_node.cpp
+  )
 add_dependencies(${PROJECT_NAME}_node ${PROJECT_NAME}_gencfg)
+add_dependencies(k4a_exposure_calibration_node ${PROJECT_NAME}_gencfg)
 target_compile_features(${PROJECT_NAME}_node PUBLIC cxx_std_11)
+target_compile_features(k4a_exposure_calibration_node PUBLIC cxx_std_11)
 
 add_library(${PROJECT_NAME}_nodelet
   src/k4a_ros_bridge_nodelet.cpp
@@ -215,6 +233,13 @@ if(MSVC AND NOT k4abt_FOUND)
   endif()
 endif()
 
+# Testing
+if(CATKIN_ENABLE_TESTING)
+  find_package(rostest REQUIRED)
+  add_rostest_gtest(utest_node test/utest_launch.test src/test/utest.cpp)
+  target_link_libraries(utest_node ${catkin_LIBRARIES})
+endif()
+
 # This reads the K4A_LIBS and K4A_INSTALL_REQUIRED variables and decides how to install
 # the various shared objects / DLLs
 include(Installk4a)
@@ -228,6 +253,12 @@ include_directories(
 )
 
 target_link_libraries(${PROJECT_NAME}_node
+  ${K4A_LIBS}
+  ${catkin_LIBRARIES}
+  ${OpenCV_LIBS}
+)
+
+target_link_libraries(k4a_exposure_calibration_node
   ${K4A_LIBS}
   ${catkin_LIBRARIES}
   ${OpenCV_LIBS}
@@ -248,6 +279,12 @@ target_link_libraries(${PROJECT_NAME}_nodelet
 
 ## Mark executables and/or libraries for installation
 install(TARGETS ${PROJECT_NAME}_node
+  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+
+install(TARGETS k4a_exposure_calibration_node
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
