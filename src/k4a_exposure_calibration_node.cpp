@@ -17,7 +17,7 @@ void rgbRawCallback(const sensor_msgs::Image& msg)
 
 bool k4aExposureTuning(int reqExposure)
 {
-  ROS_ERROR("Adjusting exposure_time");
+  ROS_INFO("Adjusting exposure_time");
 
   dynamic_reconfigure::ReconfigureRequest srv_req;
   dynamic_reconfigure::ReconfigureResponse srv_resp;
@@ -40,8 +40,8 @@ bool rosk4aExposureTuningCallback(azure_kinect_ros_driver::k4a_exposure_tuning::
   // prepare response
   res.message = "";
 
-  ROS_ERROR("Received exposure tuning request: [%d]", req.new_exp);
-  ROS_ERROR("Requesting exposure update to: [%d]", req.new_exp);
+  ROS_INFO("Received exposure tuning request: [%d]", req.new_exp);
+  ROS_INFO("Requesting exposure update to: [%d]", req.new_exp);
 
   // check exposure limits
   uint32_t req_exposure = req.new_exp;
@@ -57,7 +57,7 @@ bool rosk4aExposureTuningCallback(azure_kinect_ros_driver::k4a_exposure_tuning::
   
   bool tuningRes = k4aExposureTuning(req.new_exp);
   
-  ROS_ERROR("Sending back response...");
+  ROS_INFO("Sending back response...");
 
   if(!tuningRes)
   {
@@ -78,13 +78,13 @@ int main(int argc, char **argv)
 {
   ros::init(argc, argv, "k4a_exposure_calibration");
   
-  ROS_ERROR("Initialized Exposure Calibration");
+  ROS_INFO("Initialized Exposure Calibration");
   
   ros::NodeHandle nh;
   ros::Subscriber subPC = nh.subscribe("/points2", 100, p2Callback);
   ros::Subscriber subRGBRaw = nh.subscribe("/rgb/raw/image", 100, rgbRawCallback);
   
-  ROS_ERROR("Exposure Calibration subscribed to /points2 and /rgb/raw/image");
+  ROS_INFO("Exposure Calibration subscribed to /points2 and /rgb/raw/image");
 
   // Advertise calibrate_exposure service
   ros::ServiceServer service = nh.advertiseService("k4a_exposure_tuning", rosk4aExposureTuningCallback);
@@ -92,7 +92,7 @@ int main(int argc, char **argv)
   ros::Rate r(0.2);
   r.sleep();
 
-  ROS_ERROR("Spinning Exposure Calibration Node");
+  ROS_INFO("Spinning Exposure Calibration Node");
   ros::spin();
   return 0;
 }
