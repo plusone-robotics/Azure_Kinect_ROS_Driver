@@ -52,7 +52,7 @@ void rosk4aExposureTuningCallback(azure_kinect_ros_driver::k4a_exposure_tuning::
   if(!tuningRes)
   {
     res.success = false;
-    res.message += "\nUnable to change exposure_time"
+    res.message += "\nUnable to change exposure_time";
   }
   else
   {
@@ -61,9 +61,6 @@ void rosk4aExposureTuningCallback(azure_kinect_ros_driver::k4a_exposure_tuning::
   }
 
   ROS_ERROR("Sending back response...");
-
-  return true;
-
 }
 
 int main(int argc, char **argv)
