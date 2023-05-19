@@ -54,7 +54,7 @@ bool rosk4aExposureTuningCallback(azure_kinect_ros_driver::k4a_exposure_tuning::
   // check exposure limits
   uint32_t req_exposure = req.new_exp;
   uint32_t min_exposure = 488;
-  uint32_t max_exposure = 1,000,000;
+  uint32_t max_exposure = 1000000;
 
   if(req_exposure < min_exposure || req_exposure > max_exposure)
   {
