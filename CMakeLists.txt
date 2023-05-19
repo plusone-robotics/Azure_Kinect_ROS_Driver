@@ -61,7 +61,7 @@ catkin_package(
  # INCLUDE_DIRS include
  # LIBRARIES k4a_ros_bridge k4a_exposure_calibration
  # CATKIN_DEPENDS roscpp std_msgs message_runtime
- #  DEPENDS system_lib
+ # DEPENDS system_lib
 )
 
 ###########

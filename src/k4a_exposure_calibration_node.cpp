@@ -19,19 +19,27 @@ bool k4aExposureTuning(int reqExposure)
 {
   ROS_ERROR("Adjusting exposure_time");
 
-  dynamic_reconfigure::ReconfigureRequest srv_req;
-  dynamic_reconfigure::ReconfigureResponse srv_resp;
-  dynamic_reconfigure::IntParameter int_param;
-  dynamic_reconfigure::Config conf;
+  if(reqExposure < 488)
+  {
+    ROS_ERROR("Requested exposure out of range (488-1,000,000)");
+    return false;
+  }
+  else
+  {
+    dynamic_reconfigure::ReconfigureRequest srv_req;
+    dynamic_reconfigure::ReconfigureResponse srv_resp;
+    dynamic_reconfigure::IntParameter int_param;
+    dynamic_reconfigure::Config conf;
 
-  int_param.name = "exposure_time";
-  int_param.value = reqExposure;
-  conf.ints.push_back(int_param);
+    int_param.name = "exposure_time";
+    int_param.value = reqExposure;
+    conf.ints.push_back(int_param);
 
-  srv_req.config = conf;
-  ros::service::call("/k4a_nodelet_manager/set_parameters", srv_req, srv_resp);
+    srv_req.config = conf;
+    ros::service::call("/k4a_nodelet_manager/set_parameters", srv_req, srv_resp);
 
-  return true;
+    return true;
+  }
 }
 
 bool rosk4aExposureTuningCallback(azure_kinect_ros_driver::k4a_exposure_tuning::Request &req,
@@ -41,30 +49,21 @@ bool rosk4aExposureTuningCallback(azure_kinect_ros_driver::k4a_exposure_tuning::
   res.message = "";
   
   ROS_ERROR("Received exposure tuning request: [%d]", req.new_exp);
-  if(req.new_exp < 488 || req.new_exp > 1,000,000)
+  ROS_ERROR("Requesting exposure update to: [%d]", req.new_exp);
+  bool tuningRes = k4aExposureTuning(req.new_exp);
+  
+  if(!tuningRes)
   {
     res.success = false;
-    res.message += "Requested exposure out of range (488-1,000,000)";
+    res.updated_exp = 15625;
+    res.message += "\nUnable to change exposure_time";
     return false;
   }
   else
   {
-    ROS_ERROR("Updating exposure to: [%d]", req.new_exp);
-    bool tuningRes = k4aExposureTuning(req.new_exp);
-    
-    if(!tuningRes)
-    {
-      res.success = false;
-      res.updated_exp = 15625;
-      res.message += "\nUnable to change exposure_time";
-      return false;
-    }
-    else
-    {
-      res.success = true;
-      res.updated_exp = req.new_exp;
-      res.message += "Exposure updated";
-    }
+    res.success = true;
+    res.updated_exp = req.new_exp;
+    res.message += "Exposure updated";
   }
 
   ROS_ERROR("Sending back response...");
