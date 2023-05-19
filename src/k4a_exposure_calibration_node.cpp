@@ -43,7 +43,7 @@ bool rosk4aExposureTuningCallback(azure_kinect_ros_driver::k4a_exposure_tuning::
   ROS_ERROR("Received exposure tuning request: [%d]", req.new_exp);
   if(req.new_exp < 488 || req.new_exp > 1,000,000)
   {
-    res.success = false
+    res.success = false;
     res.message += "Requested exposure out of range (488-1,000,000)";
     return false;
   }
