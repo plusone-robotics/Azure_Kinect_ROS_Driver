@@ -15,7 +15,7 @@ void rgbRawCallback(const sensor_msgs::Image& msg)
   ROS_DEBUG("exposure_calibration hearing /rgb/raw/image");
 }
 
-bool k4aExposureTuning(uint_32 reqExposure)
+bool k4aExposureTuning(int reqExposure)
 {
   ROS_ERROR("Adjusting exposure_time");
   if(reqExposure < 488 || reqExposure > 1,000,000)
