@@ -85,6 +85,9 @@ int main(int argc, char **argv)
   // Advertise calibrate_exposure service
   ros::ServiceServer service = nh.advertiseService("k4a_exposure_tuning", rosk4aExposureTuningCallback);
   
+  ros::Rate r(0.2);
+  r.sleep();
+
   ROS_ERROR("Spinning Exposure Calibration Node");
   ros::spin();
   return 0;
