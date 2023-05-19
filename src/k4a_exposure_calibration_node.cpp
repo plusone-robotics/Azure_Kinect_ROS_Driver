@@ -19,27 +19,19 @@ bool k4aExposureTuning(int reqExposure)
 {
   ROS_ERROR("Adjusting exposure_time");
 
-  if(reqExposure < 488)
-  {
-    ROS_ERROR("Requested exposure out of range (488-1,000,000)");
-    return false;
-  }
-  else
-  {
-    dynamic_reconfigure::ReconfigureRequest srv_req;
-    dynamic_reconfigure::ReconfigureResponse srv_resp;
-    dynamic_reconfigure::IntParameter int_param;
-    dynamic_reconfigure::Config conf;
+  dynamic_reconfigure::ReconfigureRequest srv_req;
+  dynamic_reconfigure::ReconfigureResponse srv_resp;
+  dynamic_reconfigure::IntParameter int_param;
+  dynamic_reconfigure::Config conf;
 
-    int_param.name = "exposure_time";
-    int_param.value = reqExposure;
-    conf.ints.push_back(int_param);
+  int_param.name = "exposure_time";
+  int_param.value = reqExposure;
+  conf.ints.push_back(int_param);
 
-    srv_req.config = conf;
-    ros::service::call("/k4a_nodelet_manager/set_parameters", srv_req, srv_resp);
+  srv_req.config = conf;
+  ros::service::call("/k4a_nodelet_manager/set_parameters", srv_req, srv_resp);
 
-    return true;
-  }
+  return true;
 }
 
 bool rosk4aExposureTuningCallback(azure_kinect_ros_driver::k4a_exposure_tuning::Request &req,
@@ -70,8 +62,7 @@ bool rosk4aExposureTuningCallback(azure_kinect_ros_driver::k4a_exposure_tuning::
   if(!tuningRes)
   {
     res.success = false;
-    res.updated_exp = 15625;
-    res.message += "\nUnable to change exposure_time";
+    res.message += "Unable to change exposure_time";
     return true;
   }
   else
