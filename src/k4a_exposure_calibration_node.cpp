@@ -7,12 +7,12 @@
 
 void p2Callback(const sensor_msgs::PointCloud2& msg)
 {
-  ROS_ERROR("exposure_calibration hearing /points2");
+  ROS_DEBUG("exposure_calibration hearing /points2");
 }
 
 void rgbRawCallback(const sensor_msgs::Image& msg)
 {
-  ROS_ERROR("exposure_calibration hearing /rgb/raw/image");
+  ROS_DEBUG("exposure_calibration hearing /rgb/raw/image");
 }
 
 bool k4aExposureTuning(uint_32 reqExposure)
