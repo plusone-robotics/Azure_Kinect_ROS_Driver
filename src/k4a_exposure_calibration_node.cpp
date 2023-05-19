@@ -55,6 +55,7 @@ bool rosk4aExposureTuningCallback(azure_kinect_ros_driver::k4a_exposure_tuning::
     if(!tuningRes)
     {
       res.success = false;
+      res.updated_exp = 15625;
       res.message += "\nUnable to change exposure_time";
       return false;
     }
