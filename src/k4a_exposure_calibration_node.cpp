@@ -109,7 +109,7 @@ int main(int argc, char **argv)
   image_transport::ImageTransport it(nh);
   
   ros::Subscriber subPC = nh.subscribe("/points2", 100, p2Callback);
-  image_transport::Subscriber subRGBRaw = nh.subscribe("/rgb/raw/image", 100, rgbRawImageCallback);
+  image_transport::Subscriber subRGBRaw = it.subscribe("/rgb/raw/image", 100, rgbRawImageCallback);
   ROS_INFO("Exposure Calibration subscribed to /points2 and /rgb/raw/image");
 
   // Advertise calibrate_exposure service
