@@ -27,7 +27,7 @@ void rgbRawImageCallback(const sensor_msgs::ImageConstPtr& msg)
   try
   {
     // convert ROS image message to OpenCV
-    cv_bridge::CVImageConstPtr CvImagePtr = cv_bridge::toCvShare(msg, sensor_msgs::image_encodings::BGR8);
+    cv_bridge::CvImageConstPtr CvImagePtr = cv_bridge::toCvShare(msg, sensor_msgs::image_encodings::BGR8);
     cv::Mat cvImage = CvImagePtr->image;
 
     ROS_ERROR("PRINTING IMAGE FOR FUNSIES");
