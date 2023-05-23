@@ -1,18 +1,50 @@
-#include "ros/ros.h"
-#include "sensor_msgs/PointCloud2.h"
-#include "sensor_msgs/Image.h"
-#include "dynamic_reconfigure/server.h"
+// Plus One Robotics
+// Author: Shannon Stoehr
+// email:  shannon.stoehr@plusonerobotics.com
+
+// Associated headers
 #include "azure_kinect_ros_driver/AzureKinectParamsConfig.h"
 #include "azure_kinect_ros_driver/k4a_exposure_tuning.h"
+
+// Library headers
+#include <ros/ros.h>
+#include <sensor_msgs/PointCloud2.h>
+#include <sensor_msgs/Image.h>
+#include <image_transport/image_transport.h>
+#include <cv_bridge/cv_bridge.h>
+#include <dynamic_reconfigure/server.h>
+#include <k4a/k4a.h>
+#include <opencv2/opencv.hpp>
 
 void p2Callback(const sensor_msgs::PointCloud2& msg)
 {
   ROS_DEBUG("exposure_calibration hearing /points2");
 }
 
-void rgbRawCallback(const sensor_msgs::Image& msg)
+void rgbRawImageCallback(const sensor_msgs::ImageConstPtr& msg)
 {
   ROS_DEBUG("exposure_calibration hearing /rgb/raw/image");
+  try
+  {
+    // convert ROS image message to OpenCV
+    cv_bridge::CVImageConstPtr CvImagePtr = cv_bridge::toCvShare(msg, sensor_msgs::image_encodings::BGR8);
+    cv::Mat cvImage = CvImagePtr->image;
+
+    ROS_ERROR("PRINTING IMAGE FOR FUNSIES");
+    cv::imshow("RGB Raw Image", cvImage);
+    cv::waitKey(1);
+  }
+  catch(cv_bridge::Exception& e)
+  {
+    ROS_ERROR("cv_bridge exception: [%s]", e.what());
+  }
+}
+
+// convert k4a image to OpenCV mat
+cv::Mat convertk4aToOpenCV(k4a_image_t k4aImage)
+{
+  k4a_image_format_t format = k4a_image_get_format
+
 }
 
 bool k4aExposureTuning(int reqExposure)
@@ -81,9 +113,10 @@ int main(int argc, char **argv)
   ROS_INFO("Initialized Exposure Calibration");
   
   ros::NodeHandle nh;
-  ros::Subscriber subPC = nh.subscribe("/points2", 100, p2Callback);
-  ros::Subscriber subRGBRaw = nh.subscribe("/rgb/raw/image", 100, rgbRawCallback);
+  image_transport::ImageTransport it(nh);
   
+  ros::Subscriber subPC = nh.subscribe("/points2", 100, p2Callback);
+  image_transport::Subscriber subRGBRaw = nh.subscribe("/rgb/raw/image", 100, rgbRawImageCallback);
   ROS_INFO("Exposure Calibration subscribed to /points2 and /rgb/raw/image");
 
   // Advertise calibrate_exposure service
