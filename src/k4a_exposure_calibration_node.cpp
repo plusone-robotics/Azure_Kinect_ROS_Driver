@@ -40,13 +40,6 @@ void rgbRawImageCallback(const sensor_msgs::ImageConstPtr& msg)
   }
 }
 
-// convert k4a image to OpenCV mat
-cv::Mat convertk4aToOpenCV(k4a_image_t k4aImage)
-{
-  k4a_image_format_t format = k4a_image_get_format
-
-}
-
 bool k4aExposureTuning(int reqExposure)
 {
   ROS_INFO("Adjusting exposure_time");
