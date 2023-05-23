@@ -32,7 +32,7 @@ void rgbRawImageCallback(const sensor_msgs::ImageConstPtr& msg)
 
     ROS_ERROR("PRINTING IMAGE FOR FUNSIES");
     cv::imshow("RGB Raw Image", cvImage);
-    cv::waitKey(1);
+    cv::waitKey(0);
   }
   catch(cv_bridge::Exception& e)
   {
