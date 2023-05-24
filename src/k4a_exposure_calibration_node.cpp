@@ -144,8 +144,9 @@ void rgbRawImageCallback(const sensor_msgs::ImageConstPtr& msg)
         cv::imshow("First Image", cvImage);
         cv::waitKey(0);
         firstk4aImageForExposureTuning = true;
-        ROS_ERROR("Attempting autoTune with blue value of 60");
-        bool autoTuneAttempt = autoExposureTuning(cvImage, 60);
+        int blue_value_requested;
+        ROS_ERROR("Attempting autoTune with blue value of [%d]", blue_value_requested);
+        bool autoTuneAttempt = autoExposureTuning(cvImage, blue_value_requested);
       }
     }
     catch(cv_bridge::Exception& e)
