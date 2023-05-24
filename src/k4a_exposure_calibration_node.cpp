@@ -41,7 +41,8 @@ bool autoExposureTuning(cv::Mat &cvMat, int target_blue_value)
 {
   ROS_ERROR("Starting auto exposure tuning...");
   // split OpenCV mat into three color channels
-  std::vector<cv::Mat> color_channels = cv::split(cvMat);
+  cv::Mat color_channels[3];
+  cv::split(cvMat, color_channels);
   // reminders: default exposure is 15625, min 488 max 1000000
   int total_blue = 0;
   int pixel_count = cvMat.rows * cvMat.cols;
