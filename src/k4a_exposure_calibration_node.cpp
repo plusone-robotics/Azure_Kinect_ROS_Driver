@@ -26,7 +26,7 @@ void p2Callback(const sensor_msgs::PointCloud2& msg)
 void rgbRawImageCallback(const sensor_msgs::ImageConstPtr& msg)
 {
   ROS_DEBUG("exposure_calibration subscribed to /rgb/raw/image");
-  if(!firstk4aImage)
+  if(!firstk4aImageForExposureTuning)
   {
     cv::Mat convertedImage = convertk4aToOpenCV(msg);
     // check if conversion worked
