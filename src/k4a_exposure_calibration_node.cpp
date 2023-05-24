@@ -18,24 +18,6 @@
 
 bool firstk4aImageForExposureTuning = false;
 
-// convert ROS image message to OpenCV Mat
-cv::Mat convertk4aToOpenCV(const sensor_msgs::ImageConstPtr& msg)
-{
-  try
-  {
-    // successful conversion returns Mat
-    cv_bridge::CvImageConstPtr CvImagePtr = cv_bridge::toCvShare(msg, sensor_msgs::image_encodings::BGR8);
-    cv::Mat cvImage = CvImagePtr->image;
-    return cvImage;
-  }
-  catch(cv_bridge::Exception& e)
-  {
-    // unsuccessful conversion returns empty Mat
-    ROS_ERROR("cv_bridge exception: [%s]", e.what());
-    return cv::Mat{};
-  }
-}
-
 void p2Callback(const sensor_msgs::PointCloud2& msg)
 {
   ROS_DEBUG("exposure_calibration subscribed to /points2");
@@ -46,16 +28,27 @@ void rgbRawImageCallback(const sensor_msgs::ImageConstPtr& msg)
   ROS_DEBUG("exposure_calibration subscribed to /rgb/raw/image");
   if(!firstk4aImageForExposureTuning)
   {
-    cv::Mat convertedImage = convertk4aToOpenCV(msg);
-    // check if conversion worked
-    if(convertedImage.empty())
+    try
     {
-      ROS_ERROR("Failed to convert k4a image to OpenCV mat");
+      // convert ROS image message to OpenCV
+      cv_bridge::CvImageConstPtr CvImagePtr = cv_bridge::toCvShare(msg, sensor_msgs::image_encodings::BGR8);
+      cv::Mat cvImage = CvImagePtr->image;
+
+      // check if conversion worked
+      if(cvImage.empty())
+      {
+        ROS_ERROR("Failed to convert k4a image to OpenCV mat");
+      }
+      else
+      {
+        ROS_ERROR("PRINTING IMAGE FOR FUNSIES");
+        cv::imshow("First Image", cvImage);
+        firstk4aImageForExposureTuning = true;
+      }
     }
-    else
+    catch(cv_bridge::Exception& e)
     {
-      cv::imshow("First Image", convertedImage);
-      firstk4aImageForExposureTuning = true;
+      ROS_ERROR("cv_bridge exception: [%s]", e.what());
     }
   }
 }
