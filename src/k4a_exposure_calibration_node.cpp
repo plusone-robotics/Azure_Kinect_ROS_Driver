@@ -20,7 +20,7 @@ bool firstk4aImageForExposureTuning = false;
 
 bool k4aExposureTuning(int reqExposure)
 {
-  ROS_INFO("Adjusting exposure_time");
+  ROS_INFO("Adjusting exposure_time to: [%d]", reqExposure);
 
   dynamic_reconfigure::ReconfigureRequest srv_req;
   dynamic_reconfigure::ReconfigureResponse srv_resp;
