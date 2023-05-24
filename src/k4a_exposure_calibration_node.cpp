@@ -37,7 +37,7 @@ bool k4aExposureTuning(int reqExposure)
   return true;
 }
 
-bool autoExposureTuning(cv::Mat cvMat, int target_blue_value)
+bool autoExposureTuning(cv::Mat &cvMat, int target_blue_value)
 {
   ROS_ERROR("Starting auto exposure tuning...");
   // split OpenCV mat into three color channels
