@@ -43,6 +43,7 @@ void rgbRawImageCallback(const sensor_msgs::ImageConstPtr& msg)
       {
         ROS_ERROR("PRINTING IMAGE FOR FUNSIES");
         cv::imshow("First Image", cvImage);
+        cv::waitKey(0);
         firstk4aImageForExposureTuning = true;
       }
     }
