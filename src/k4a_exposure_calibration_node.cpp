@@ -45,6 +45,8 @@ void rgbRawImageCallback(const sensor_msgs::ImageConstPtr& msg)
         cv::imshow("First Image", cvImage);
         cv::waitKey(0);
         firstk4aImageForExposureTuning = true;
+        ROS_ERROR("Attempting autoTune with blue value of 60");
+        bool autoTuneAttempt = autoExposureTuning(cvImage, 60);
       }
     }
     catch(cv_bridge::Exception& e)
@@ -71,6 +73,45 @@ bool k4aExposureTuning(int reqExposure)
   ros::service::call("/k4a_nodelet_manager/set_parameters", srv_req, srv_resp);
 
   return true;
+}
+
+bool autoExposureTuning(cv::Mat cvMat, int target_blue_value)
+{
+  ROS_ERROR("Starting auto exposure tuning...");
+  // split OpenCV mat into three color channels
+  std::vector<cv::Mat> color_channels = cv::split(cvMat);
+  // reminders: default exposure is 15625, min 488 max 1000000
+  int total_blue = 0;
+  int pixel_count = cvMat.rows * cvMat.cols;
+  // exposure loop
+  for(int exp=488; exp<1000000; exp+=500)
+  {
+    bool autoTune = k4aExposureTuning(exp);
+    if(!autoTune)
+    {
+      ROS_ERROR("Unable to update exposure in autoExposureTuning");
+      return false;
+    }
+    // calculate average blue value
+    else{
+      for(int i=0; i<cvMat.rows; i++)
+      {
+        for(int j=0; j<cvMat.cols; j++)
+        {
+          total_blue += color_channels[0].at<uchar>(i,j);
+        }
+      }
+    }
+    // calculate average blue value
+    int current_avg_blue_value = total_blue / pixel_count;
+    // did we achieve appropriate blue at this exposure
+    if(current_avg_blue_value >= target_blue_value)
+    {
+      ROS_ERROR("Successfully calibrated to blue value of [%d]", target_blue_value);
+      break;
+    }
+  }
+
 }
 
 bool rosk4aExposureTuningCallback(azure_kinect_ros_driver::k4a_exposure_tuning::Request &req,
