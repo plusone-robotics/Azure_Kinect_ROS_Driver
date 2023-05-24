@@ -18,44 +18,6 @@
 
 bool firstk4aImageForExposureTuning = false;
 
-void p2Callback(const sensor_msgs::PointCloud2& msg)
-{
-  ROS_DEBUG("exposure_calibration subscribed to /points2");
-}
-
-void rgbRawImageCallback(const sensor_msgs::ImageConstPtr& msg)
-{
-  ROS_DEBUG("exposure_calibration subscribed to /rgb/raw/image");
-  if(!firstk4aImageForExposureTuning)
-  {
-    try
-    {
-      // convert ROS image message to OpenCV
-      cv_bridge::CvImageConstPtr CvImagePtr = cv_bridge::toCvShare(msg, sensor_msgs::image_encodings::BGR8);
-      cv::Mat cvImage = CvImagePtr->image;
-
-      // check if conversion worked
-      if(cvImage.empty())
-      {
-        ROS_ERROR("Failed to convert k4a image to OpenCV mat");
-      }
-      else
-      {
-        ROS_ERROR("PRINTING IMAGE FOR FUNSIES");
-        cv::imshow("First Image", cvImage);
-        cv::waitKey(0);
-        firstk4aImageForExposureTuning = true;
-        ROS_ERROR("Attempting autoTune with blue value of 60");
-        bool autoTuneAttempt = autoExposureTuning(cvImage, 60);
-      }
-    }
-    catch(cv_bridge::Exception& e)
-    {
-      ROS_ERROR("cv_bridge exception: [%s]", e.what());
-    }
-  }
-}
-
 bool k4aExposureTuning(int reqExposure)
 {
   ROS_INFO("Adjusting exposure_time");
@@ -151,6 +113,44 @@ bool rosk4aExposureTuningCallback(azure_kinect_ros_driver::k4a_exposure_tuning::
     res.updated_exp = req.new_exp;
     res.message += "Exposure updated";
     return true;
+  }
+}
+
+void p2Callback(const sensor_msgs::PointCloud2& msg)
+{
+  ROS_DEBUG("exposure_calibration subscribed to /points2");
+}
+
+void rgbRawImageCallback(const sensor_msgs::ImageConstPtr& msg)
+{
+  ROS_DEBUG("exposure_calibration subscribed to /rgb/raw/image");
+  if(!firstk4aImageForExposureTuning)
+  {
+    try
+    {
+      // convert ROS image message to OpenCV
+      cv_bridge::CvImageConstPtr CvImagePtr = cv_bridge::toCvShare(msg, sensor_msgs::image_encodings::BGR8);
+      cv::Mat cvImage = CvImagePtr->image;
+
+      // check if conversion worked
+      if(cvImage.empty())
+      {
+        ROS_ERROR("Failed to convert k4a image to OpenCV mat");
+      }
+      else
+      {
+        ROS_ERROR("PRINTING IMAGE FOR FUNSIES");
+        cv::imshow("First Image", cvImage);
+        cv::waitKey(0);
+        firstk4aImageForExposureTuning = true;
+        ROS_ERROR("Attempting autoTune with blue value of 60");
+        bool autoTuneAttempt = autoExposureTuning(cvImage, 60);
+      }
+    }
+    catch(cv_bridge::Exception& e)
+    {
+      ROS_ERROR("cv_bridge exception: [%s]", e.what());
+    }
   }
 }
 
