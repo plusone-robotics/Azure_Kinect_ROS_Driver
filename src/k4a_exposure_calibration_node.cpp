@@ -183,8 +183,8 @@ void rgbRawImageCallback(const sensor_msgs::ImageConstPtr& msg)
 {
   ROS_DEBUG("exposure_calibration subscribed to /rgb/raw/image");
   // do we need to update our image
-  if(fetch_latest_k4a_image)
-  {
+  //if(fetch_latest_k4a_image)
+  //{
     try
     {
       // convert ROS image message to OpenCV
@@ -208,7 +208,7 @@ void rgbRawImageCallback(const sensor_msgs::ImageConstPtr& msg)
     {
       ROS_ERROR("cv_bridge exception: [%s]", e.what());
     }
-  }
+  //}
 }
 
 int main(int argc, char **argv)
