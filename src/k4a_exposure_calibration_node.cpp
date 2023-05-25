@@ -40,6 +40,8 @@ bool k4aUpdateExposure(int reqExposure)
 
   srv_req.config = conf;
   ros::service::call("/k4a_nodelet_manager/set_parameters", srv_req, srv_resp);
+  // after updating the exposure we will need an updated latest image
+  fetch_latest_k4a_image = true;
   return true;
 }
 
@@ -80,9 +82,13 @@ bool k4aAutoTuneExposure(int target_blue_value)
     if(current_avg_blue_value >= target_blue_value)
     {
       ROS_ERROR("Successfully calibrated exposure for blue value of [%d]", target_blue_value);
+      // after updating the exposure we will need an updated latest image
+      fetch_latest_k4a_image = true;
       break;
     }
   }
+  // after updating the exposure we will need an updated latest image
+  fetch_latest_k4a_image = true;
   return true;
 }
 
@@ -162,6 +168,8 @@ bool k4aAutoTuneExposureCallback(azure_kinect_ros_driver::k4a_auto_tune_exposure
   {
     res.success = true;
     res.message += "Exposure updated";
+    // after updating the exposure we will need an updated latest image
+    fetch_latest_k4a_image = true;
     return true;
   }
 }
