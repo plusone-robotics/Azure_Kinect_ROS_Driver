@@ -1,0 +1,6 @@
+uint32 target_blue_val
+---
+uint32 updated_exp
+bool success
+string message
+int8 coded_message
