@@ -46,8 +46,7 @@ bool k4aUpdateExposure(int reqExposure)
 }
 
 // auto tune exposure with given target blue value
-bool k4aAutoTuneExposure(azure_kinect_ros_driver::AzureKinectParamsConfig &config,
-                         int target_blue_value)
+bool k4aAutoTuneExposure(int target_blue_value)
 {
   ROS_ERROR("Starting auto exposure tuning...");
   // exposure loop
@@ -58,8 +57,8 @@ bool k4aAutoTuneExposure(azure_kinect_ros_driver::AzureKinectParamsConfig &confi
     cv::split(*latest_k4a_image_ptr, color_channels);
     // reminders: default exposure is 15625, min 488 max 1000000
     int total_blue = 0;
-    int rows = *latest_k4a_image_ptr.rows
-    int cols = *latest_k4a_image_ptr.cols
+    int rows = *latest_k4a_image_ptr->rows
+    int cols = *latest_k4a_image_ptr->cols
     int pixel_count = rows * cols;
     bool autoTune = k4aUpdateExposure(exp);
     if(!autoTune)
@@ -89,9 +88,8 @@ bool k4aAutoTuneExposure(azure_kinect_ros_driver::AzureKinectParamsConfig &confi
   return true;
 }
 
-bool k4aUpdateExposureCallback(azure_kinect_ros_driver::AzureKinectParamsConfig &config,
-                               azure_kinect_ros_driver::k4a_exposure_tuning::Request &req,
-                               azure_kinect_ros_driver::k4a_exposure_tuning::Response &res)
+bool k4aUpdateExposureCallback(azure_kinect_ros_driver::k4a_update_exposure::Request &req,
+                               azure_kinect_ros_driver::k4a_update_exposure::Response &res)
 {
   // prepare response
   res.message = "";
@@ -100,8 +98,8 @@ bool k4aUpdateExposureCallback(azure_kinect_ros_driver::AzureKinectParamsConfig 
 
   // check exposure limits
   uint32_t req_exposure = req.new_exp;
-  uint32_t min_exposure = config.exposure_time.min;
-  uint32_t max_exposure = config.exposure_time.max;
+  uint32_t min_exposure = 488;
+  uint32_t max_exposure = 1000000;
 
   if(req_exposure < min_exposure || req_exposure > max_exposure)
   {
@@ -130,8 +128,8 @@ bool k4aUpdateExposureCallback(azure_kinect_ros_driver::AzureKinectParamsConfig 
 }
 
 // insert lil wayne noises
-bool k4aAutoTuneExposureCallback(azure_kinect_ros_driver::k4a_exposure_tuning::Request &req,
-                                 azure_kinect_ros_driver::k4a_exposure_tuning::Response &res)
+bool k4aAutoTuneExposureCallback(azure_kinect_ros_driver::k4a_auto_tune_exposure::Request &req,
+                                 azure_kinect_ros_driver::k4a_auto_tune_exposure::Response &res)
 {
   // prepare response
   res.message = "";
