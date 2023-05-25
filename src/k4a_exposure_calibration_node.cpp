@@ -50,17 +50,17 @@ bool k4aAutoTuneExposure(int target_blue_value)
 {
   ROS_ERROR("Starting auto exposure tuning...");
   // exposure loop
-  for(int exp=488; exp<1000000; exp+=500)
+  int total_blue = 0;
+  for(int exp=488; exp<1000000; exp+=2)
   {
     // split OpenCV mat into three color channels
     cv::Mat color_channels[3];
     cv::split(*latest_k4a_image_ptr, color_channels);
     // reminders: default exposure is 15625, min 488 max 1000000
-    int total_blue = 0;
+    bool autoTune = k4aUpdateExposure(exp);
     int rows = latest_k4a_image.rows;
     int cols = latest_k4a_image.cols;
     int pixel_count = rows * cols;
-    bool autoTune = k4aUpdateExposure(exp);
     if(!autoTune)
     {
       ROS_ERROR("Unable to update exposure in k4aAutoTuneExposure");
