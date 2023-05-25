@@ -40,8 +40,6 @@ bool k4aUpdateExposure(int reqExposure)
 
   srv_req.config = conf;
   ros::service::call("/k4a_nodelet_manager/set_parameters", srv_req, srv_resp);
-  // after updating the exposure we will need an updated latest image
-  fetch_latest_k4a_image = true;
   return true;
 }
 
@@ -123,6 +121,8 @@ bool k4aUpdateExposureCallback(azure_kinect_ros_driver::k4a_update_exposure::Req
     res.success = true;
     res.updated_exp = req.new_exp;
     res.message += "Exposure updated";
+    // after updating the exposure we will need an updated latest image
+    fetch_latest_k4a_image = true;
     return true;
   }
 }
