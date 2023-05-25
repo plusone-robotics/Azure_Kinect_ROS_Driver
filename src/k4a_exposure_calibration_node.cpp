@@ -57,8 +57,8 @@ bool k4aAutoTuneExposure(int target_blue_value)
     cv::split(*latest_k4a_image_ptr, color_channels);
     // reminders: default exposure is 15625, min 488 max 1000000
     int total_blue = 0;
-    int rows = *latest_k4a_image_ptr->rows
-    int cols = *latest_k4a_image_ptr->cols
+    int rows = *latest_k4a_image_ptr->rows;
+    int cols = *latest_k4a_image_ptr->cols;
     int pixel_count = rows * cols;
     bool autoTune = k4aUpdateExposure(exp);
     if(!autoTune)
@@ -161,7 +161,6 @@ bool k4aAutoTuneExposureCallback(azure_kinect_ros_driver::k4a_auto_tune_exposure
   else
   {
     res.success = true;
-    res.updated_exp = req.new_exp;
     res.message += "Exposure updated";
     return true;
   }
