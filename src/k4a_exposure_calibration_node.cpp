@@ -2,10 +2,6 @@
 // Author: Shannon Stoehr
 // email:  shannon.stoehr@plusonerobotics.com
 
-// Associated headers
-#include "azure_kinect_ros_driver/AzureKinectParamsConfig.h"
-#include "azure_kinect_ros_driver/k4a_exposure_tuning.h"
-
 // Library headers
 #include <ros/ros.h>
 #include <sensor_msgs/PointCloud2.h>
@@ -15,6 +11,11 @@
 #include <dynamic_reconfigure/server.h>
 #include <k4a/k4a.h>
 #include <opencv2/opencv.hpp>
+
+// Associated headers
+#include "azure_kinect_ros_driver/AzureKinectParamsConfig.h"
+#include "azure_kinect_ros_driver/k4a_update_exposure.h"
+#include "azure_kinect_ros_driver/k4a_auto_tune_exposure.h"
 
 // make memory space to store latest image
 cv::Mat latest_k4a_image;
