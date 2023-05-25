@@ -22,7 +22,6 @@ cv::Mat latest_k4a_image;
 cv::Mat* latest_k4a_image_ptr = &latest_k4a_image;
 // do we need to fetch latest image? true = yes
 // see sensor_manager.cpp lines 464/2018
-bool fetch_latest_k4a_image = true;
 
 // call k4a_nodelet_manager/set_parameters to update exposure value
 bool k4aUpdateExposure(int reqExposure)
@@ -41,7 +40,6 @@ bool k4aUpdateExposure(int reqExposure)
   srv_req.config = conf;
   ros::service::call("/k4a_nodelet_manager/set_parameters", srv_req, srv_resp);
   // after updating the exposure we will need an updated latest image
-  fetch_latest_k4a_image = true;
   return true;
 }
 
@@ -49,6 +47,11 @@ bool k4aUpdateExposure(int reqExposure)
 bool k4aAutoTuneExposure(int target_blue_value)
 {
   ROS_ERROR("Starting auto exposure tuning...");
+
+  ROS_ERROR("PRINTING STARTING IMAGE FOR k4aAutoTuneExposure");
+  cv::imshow("Starting Image k4aAutoTuneExposure", latest_k4a_image);
+  cv::waitKey(0);
+
   // exposure loop
   int total_blue = 0;
   for(int exp=488; exp<1000000; exp+=2)
@@ -82,13 +85,9 @@ bool k4aAutoTuneExposure(int target_blue_value)
     if(current_avg_blue_value >= target_blue_value)
     {
       ROS_ERROR("Successfully calibrated exposure for blue value of [%d]", target_blue_value);
-      // after updating the exposure we will need an updated latest image
-      fetch_latest_k4a_image = true;
       break;
     }
   }
-  // after updating the exposure we will need an updated latest image
-  fetch_latest_k4a_image = true;
   return true;
 }
 
@@ -127,8 +126,6 @@ bool k4aUpdateExposureCallback(azure_kinect_ros_driver::k4a_update_exposure::Req
     res.success = true;
     res.updated_exp = req.new_exp;
     res.message += "Exposure updated";
-    // after updating the exposure we will need an updated latest image
-    fetch_latest_k4a_image = true;
     return true;
   }
 }
@@ -141,6 +138,10 @@ bool k4aAutoTuneExposureCallback(azure_kinect_ros_driver::k4a_auto_tune_exposure
   res.message = "";
 
   ROS_INFO("Received exposure auto tuning request: [%d]", req.target_blue_val);
+
+  ROS_ERROR("PRINTING STARTING IMAGE FOR k4aAutoTuneExposureCallback");
+  cv::imshow("Latest Image", latest_k4a_image);
+  cv::waitKey(0);
 
   // check exposure limits
   uint32_t req_blue = req.target_blue_val;
@@ -168,8 +169,6 @@ bool k4aAutoTuneExposureCallback(azure_kinect_ros_driver::k4a_auto_tune_exposure
   {
     res.success = true;
     res.message += "Exposure updated";
-    // after updating the exposure we will need an updated latest image
-    fetch_latest_k4a_image = true;
     return true;
   }
 }
@@ -182,32 +181,25 @@ void p2Callback(const sensor_msgs::PointCloud2& msg)
 void rgbRawImageCallback(const sensor_msgs::ImageConstPtr& msg)
 {
   ROS_DEBUG("exposure_calibration subscribed to /rgb/raw/image");
-  // do we need to update our image
-  if(fetch_latest_k4a_image)
+  try
   {
-    try
-    {
-      // convert ROS image message to OpenCV
-      cv_bridge::CvImageConstPtr CvImagePtr = cv_bridge::toCvShare(msg, sensor_msgs::image_encodings::BGR8);
-      *latest_k4a_image_ptr = CvImagePtr->image;
+    // convert ROS image message to OpenCV
+    cv_bridge::CvImageConstPtr CvImagePtr = cv_bridge::toCvShare(msg, sensor_msgs::image_encodings::BGR8);
+    *latest_k4a_image_ptr = CvImagePtr->image;
 
-      // check if conversion worked
-      if(latest_k4a_image.empty())
-      {
-        ROS_ERROR("Failed to convert k4a rgb image to OpenCV mat");
-      }
-      else
-      {
-        //ROS_ERROR("PRINTING IMAGE FOR FUNSIES");
-        //cv::imshow("Latest Image", latest_k4a_image);
-        //cv::waitKey(0);
-        fetch_latest_k4a_image = false;
-      }
-    }
-    catch(cv_bridge::Exception& e)
+    // check if conversion worked
+    if(latest_k4a_image.empty())
     {
-      ROS_ERROR("cv_bridge exception: [%s]", e.what());
+      ROS_ERROR("Failed to convert k4a rgb image to OpenCV mat");
     }
+    else
+    {
+      ROS_INFO("Updated latest_k4a_image");
+    }
+  }
+  catch(cv_bridge::Exception& e)
+  {
+    ROS_ERROR("cv_bridge exception: [%s]", e.what());
   }
 }
 
