@@ -41,6 +41,9 @@ bool k4aUpdateExposure(int reqExposure)
   srv_req.config = conf;
   ros::service::call("/k4a_nodelet_manager/set_parameters", srv_req, srv_resp);
   // after updating the exposure we will need an updated latest image
+  ROS_ERROR("PRINTING IMAGE FOR FUNSIES");
+  cv::imshow("Latest Image", latest_k4a_image);
+  cv::waitKey(0);
   fetch_latest_k4a_image = true;
   return true;
 }
@@ -88,6 +91,9 @@ bool k4aAutoTuneExposure(int target_blue_value)
     }
   }
   // after updating the exposure we will need an updated latest image
+  ROS_ERROR("PRINTING IMAGE FOR FUNSIES");
+  cv::imshow("Latest Image", latest_k4a_image);
+  cv::waitKey(0);
   fetch_latest_k4a_image = true;
   return true;
 }
@@ -128,6 +134,9 @@ bool k4aUpdateExposureCallback(azure_kinect_ros_driver::k4a_update_exposure::Req
     res.updated_exp = req.new_exp;
     res.message += "Exposure updated";
     // after updating the exposure we will need an updated latest image
+    ROS_ERROR("PRINTING IMAGE FOR FUNSIES");
+    cv::imshow("Latest Image", latest_k4a_image);
+    cv::waitKey(0);
     fetch_latest_k4a_image = true;
     return true;
   }
@@ -170,6 +179,9 @@ bool k4aAutoTuneExposureCallback(azure_kinect_ros_driver::k4a_auto_tune_exposure
     res.message += "Exposure updated";
     // after updating the exposure we will need an updated latest image
     fetch_latest_k4a_image = true;
+    ROS_ERROR("PRINTING IMAGE FOR FUNSIES");
+    cv::imshow("Latest Image", latest_k4a_image);
+    cv::waitKey(0);
     return true;
   }
 }
@@ -198,9 +210,9 @@ void rgbRawImageCallback(const sensor_msgs::ImageConstPtr& msg)
       }
       else
       {
-        ROS_ERROR("PRINTING IMAGE FOR FUNSIES");
-        cv::imshow("Latest Image", latest_k4a_image);
-        cv::waitKey(0);
+        //ROS_ERROR("PRINTING IMAGE FOR FUNSIES");
+        //cv::imshow("Latest Image", latest_k4a_image);
+        //cv::waitKey(0);
         fetch_latest_k4a_image = false;
       }
     }
