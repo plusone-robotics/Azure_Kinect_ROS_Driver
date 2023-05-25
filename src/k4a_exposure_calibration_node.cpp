@@ -174,6 +174,7 @@ void p2Callback(const sensor_msgs::PointCloud2& msg)
 void rgbRawImageCallback(const sensor_msgs::ImageConstPtr& msg)
 {
   ROS_DEBUG("exposure_calibration subscribed to /rgb/raw/image");
+  // do we need to update our image
   if(fetch_latest_k4a_image)
   {
     try
