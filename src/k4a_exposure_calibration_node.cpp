@@ -220,6 +220,8 @@ int main(int argc, char **argv)
   ros::ServiceServer auto_tune_exposure_service = nh.advertiseService("k4a_auto_tune_exposure", k4aAutoTuneExposureCallback);
 
   ROS_INFO("Spinning Exposure Calibration Node");
-  ros::spin();
+  ros::AsyncSpinner spinner(4); // Use 4 threads
+  spinner.start();
+  ros::waitForShutdown();
   return 0;
 }
