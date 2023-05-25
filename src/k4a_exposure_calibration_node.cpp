@@ -57,8 +57,8 @@ bool k4aAutoTuneExposure(int target_blue_value)
     cv::split(*latest_k4a_image_ptr, color_channels);
     // reminders: default exposure is 15625, min 488 max 1000000
     int total_blue = 0;
-    int rows = *latest_k4a_image_ptr->rows;
-    int cols = *latest_k4a_image_ptr->cols;
+    int rows = latest_k4a_image.rows;
+    int cols = latest_k4a_image.cols;
     int pixel_count = rows * cols;
     bool autoTune = k4aUpdateExposure(exp);
     if(!autoTune)
