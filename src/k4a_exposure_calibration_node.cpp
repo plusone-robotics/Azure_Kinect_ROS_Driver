@@ -20,7 +20,6 @@
 // make memory space to store latest image
 cv::Mat latest_k4a_image;
 cv::Mat* latest_k4a_image_ptr = &latest_k4a_image;
-// do we need to fetch latest image? true = yes
 // see sensor_manager.cpp lines 464/2018
 
 // call k4a_nodelet_manager/set_parameters to update exposure value
@@ -180,7 +179,7 @@ void p2Callback(const sensor_msgs::PointCloud2& msg)
 
 void rgbRawImageCallback(const sensor_msgs::ImageConstPtr& msg)
 {
-  ROS_DEBUG("exposure_calibration subscribed to /rgb/raw/image");
+  ROS_ERROR("exposure_calibration subscribed to /rgb/raw/image");
   try
   {
     // convert ROS image message to OpenCV
