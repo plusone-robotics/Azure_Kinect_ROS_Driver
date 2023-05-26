@@ -37,10 +37,9 @@ bool k4aUpdateExposure(int reqExposure)
   int_param.name = "exposure_time";
   int_param.value = reqExposure;
   conf.ints.push_back(int_param);
-
   srv_req.config = conf;
   ros::service::call("/k4a_nodelet_manager/set_parameters", srv_req, srv_resp);
-  // after updating the exposure we will need an updated latest image
+
   return true;
 }
 
@@ -48,10 +47,6 @@ bool k4aUpdateExposure(int reqExposure)
 bool k4aAutoTuneExposure(int target_blue_value)
 {
   ROS_ERROR("Starting auto exposure tuning...");
-  
-  ROS_ERROR("PRINTING STARTING IMAGE FOR k4aAutoTuneExposure");
-  cv::imshow("Starting Image k4aAutoTuneExposure", latest_k4a_image);
-  cv::waitKey(0);
 
   // exposure loop
   int total_blue = 0;
@@ -131,7 +126,6 @@ bool k4aUpdateExposureCallback(azure_kinect_ros_driver::k4a_update_exposure::Req
   }
 }
 
-// insert lil wayne noises
 bool k4aAutoTuneExposureCallback(azure_kinect_ros_driver::k4a_auto_tune_exposure::Request &req,
                                  azure_kinect_ros_driver::k4a_auto_tune_exposure::Response &res)
 {
@@ -140,11 +134,7 @@ bool k4aAutoTuneExposureCallback(azure_kinect_ros_driver::k4a_auto_tune_exposure
 
   ROS_INFO("Received exposure auto tuning request: [%d]", req.target_blue_val);
 
-  ROS_ERROR("PRINTING STARTING IMAGE FOR k4aAutoTuneExposureCallback");
-  cv::imshow("Latest Image", latest_k4a_image);
-  cv::waitKey(0);
-
-  // check exposure limits
+  // check blue value limits
   uint32_t req_blue = req.target_blue_val;
   uint32_t min_blue = 0;
   uint32_t max_blue = 255;
@@ -196,7 +186,7 @@ void rgbRawImageCallback(const sensor_msgs::ImageConstPtr& msg)
     }
     else
     {
-      ROS_INFO("Updated latest_k4a_image");
+      ROS_DEBUG("Updated latest_k4a_image");
     }
   }
   catch(cv_bridge::Exception& e)
