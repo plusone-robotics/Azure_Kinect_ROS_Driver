@@ -21,6 +21,7 @@
 // make memory space to store latest image
 cv::Mat latest_k4a_image;
 cv::Mat* latest_k4a_image_ptr = &latest_k4a_image;
+cv_bridge::CvImageConstPtr CvImagePtr;
 // see sensor_manager.cpp lines 464/2018
 std::mutex latest_k4a_image_mutex;
 
@@ -175,7 +176,7 @@ void rgbRawImageCallback(const sensor_msgs::ImageConstPtr& msg)
   try
   {
     // convert ROS image message to OpenCV
-    cv_bridge::CvImageConstPtr CvImagePtr = cv_bridge::toCvShare(msg, sensor_msgs::image_encodings::BGR8);
+    CvImagePtr = cv_bridge::toCvShare(msg, sensor_msgs::image_encodings::BGR8);
     std::lock_guard<std::mutex> lock(latest_k4a_image_mutex);
     *latest_k4a_image_ptr = CvImagePtr->image;
 
