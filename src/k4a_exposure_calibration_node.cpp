@@ -11,6 +11,7 @@
 #include <dynamic_reconfigure/server.h>
 #include <k4a/k4a.h>
 #include <opencv2/opencv.hpp>
+#include <mutex>
 
 // Associated headers
 #include "azure_kinect_ros_driver/AzureKinectParamsConfig.h"
@@ -21,7 +22,7 @@
 cv::Mat latest_k4a_image;
 cv::Mat* latest_k4a_image_ptr = &latest_k4a_image;
 // see sensor_manager.cpp lines 464/2018
-std::shared_ptr<std::mutex>& mutex_;
+std::mutex mutex_;
 
 // call k4a_nodelet_manager/set_parameters to update exposure value
 bool k4aUpdateExposure(int reqExposure)
@@ -181,7 +182,7 @@ void p2Callback(const sensor_msgs::PointCloud2& msg)
 void rgbRawImageCallback(const sensor_msgs::ImageConstPtr& msg)
 {
   ROS_ERROR("exposure_calibration subscribed to /rgb/raw/image");
-  std::lock_guard<std::mutex> lock(*mutex_);
+  std::lock_guard<std::mutex> lock(mutex_);
   try
   {
     // convert ROS image message to OpenCV
