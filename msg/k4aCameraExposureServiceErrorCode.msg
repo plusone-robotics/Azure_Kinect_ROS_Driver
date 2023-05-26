@@ -1,5 +1,3 @@
-uint32 new_exp_cal
-
 # Overall successful exposure calibration
 int8 SUCCESS = 1
 
