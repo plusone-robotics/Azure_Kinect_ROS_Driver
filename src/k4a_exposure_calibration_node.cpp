@@ -21,7 +21,7 @@
 cv::Mat latest_k4a_image;
 cv::Mat* latest_k4a_image_ptr = &latest_k4a_image;
 // see sensor_manager.cpp lines 464/2018
-std::mutex mutex_;
+std::shared_ptr<std::mutex>& mutex_;
 
 // call k4a_nodelet_manager/set_parameters to update exposure value
 bool k4aUpdateExposure(int reqExposure)
@@ -181,7 +181,7 @@ void p2Callback(const sensor_msgs::PointCloud2& msg)
 void rgbRawImageCallback(const sensor_msgs::ImageConstPtr& msg)
 {
   ROS_ERROR("exposure_calibration subscribed to /rgb/raw/image");
-  const std::lock_guard<std::mutex> lock(mutex_);
+  std::lock_guard<std::mutex> lock(*mutex_);
   try
   {
     // convert ROS image message to OpenCV
