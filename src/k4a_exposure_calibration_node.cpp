@@ -51,7 +51,7 @@ bool k4aAutoTuneExposure(int target_blue_value)
 
   // exposure loop
   int total_blue = 0;
-  for(int exp=488; exp<1000000; exp+=100)
+  for(int exp=488; exp<1000000; exp+=500)
   {
     // split OpenCV mat into three color channels
     cv::Mat color_channels[3];
