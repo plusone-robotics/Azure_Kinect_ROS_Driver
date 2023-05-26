@@ -42,7 +42,7 @@ add_service_files(
 )
 add_message_files(
   FILES
-  exp_cal.msg
+  k4aExposureServiceErrorCode.msg
 )
 generate_messages(
   DEPENDENCIES
