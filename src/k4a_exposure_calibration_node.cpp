@@ -175,8 +175,8 @@ void rgbRawImageCallback(const sensor_msgs::ImageConstPtr& msg)
   try
   {
     // convert ROS image message to OpenCV
-    std::lock_guard<std::mutex> lock(latest_k4a_image_mutex);
     cv_bridge::CvImageConstPtr CvImagePtr = cv_bridge::toCvShare(msg, sensor_msgs::image_encodings::BGR8);
+    std::lock_guard<std::mutex> lock(latest_k4a_image_mutex);
     *latest_k4a_image_ptr = CvImagePtr->image;
 
     // check if conversion worked
