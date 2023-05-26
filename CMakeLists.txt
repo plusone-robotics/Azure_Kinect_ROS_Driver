@@ -42,7 +42,7 @@ add_service_files(
 )
 add_message_files(
   FILES
-  k4a_msgs/k4aCameraExposureServiceErrorCode.msg
+  k4aCameraExposureServiceErrorCode.msg
 )
 generate_messages(
   DEPENDENCIES
