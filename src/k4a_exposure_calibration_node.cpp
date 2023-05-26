@@ -55,6 +55,7 @@ bool k4aAutoTuneExposure(int target_blue_value)
   {
     // split OpenCV mat into three color channels
     cv::Mat color_channels[3];
+    std::lock_guard<std::mutex> lock(latest_k4a_image_mutex);
     cv::split(*latest_k4a_image_ptr, color_channels);
     // reminders: default exposure is 15625, min 488 max 1000000
     bool autoTune = k4aUpdateExposure(exp);
