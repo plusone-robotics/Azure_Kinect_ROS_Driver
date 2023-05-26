@@ -171,7 +171,7 @@ void p2Callback(const sensor_msgs::PointCloud2& msg)
 
 void rgbRawImageCallback(const sensor_msgs::ImageConstPtr& msg)
 {
-  ROS_ERROR("exposure_calibration subscribed to /rgb/raw/image");
+  ROS_DEBUG("exposure_calibration subscribed to /rgb/raw/image");
   try
   {
     // convert ROS image message to OpenCV
