@@ -9,6 +9,7 @@
 #include <image_transport/image_transport.h>
 #include <cv_bridge/cv_bridge.h>
 #include <dynamic_reconfigure/server.h>
+#include <dynamic_reconfigure/client.h>
 #include <k4a/k4a.h>
 #include <opencv2/opencv.hpp>
 #include <mutex>
@@ -38,7 +39,7 @@ bool k4aUpdateExposure(int reqExposure)
 
   int_param.name = "exposure_time";
   int_param.value = reqExposure;
-  conf.ints.push_back(int_param);
+  req_conf.ints.push_back(int_param);
   srv_req.config = req_conf;
   ros::service::call("/k4a_nodelet_manager/set_parameters", srv_req, srv_resp);
   // check to make sure parameter was actually set
