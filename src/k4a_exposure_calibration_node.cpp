@@ -25,7 +25,7 @@ cv::Mat* latest_k4a_image_ptr = &latest_k4a_image;
 cv_bridge::CvImageConstPtr CvImagePtr;
 // see sensor_manager.cpp lines 464/2018
 std::mutex latest_k4a_image_mutex;
-k4aCameraExposureServiceErrorCode::int k4a_error_code;
+k4aCameraExposureServiceErrorCode::int8 k4a_error_code;
 
 // call k4a_nodelet_manager/set_parameters to update exposure value
 bool k4aUpdateExposure(int req_exposure)
@@ -222,10 +222,8 @@ void rgbRawImageCallback(const sensor_msgs::ImageConstPtr& msg)
   {
     // convert ROS image message to OpenCV
     CvImagePtr = cv_bridge::toCvShare(msg, sensor_msgs::image_encodings::BGR8);
-    (
     std::lock_guard<std::mutex> lock(latest_k4a_image_mutex);
     *latest_k4a_image_ptr = CvImagePtr->image;
-    )
 
     // check if conversion worked
     if(latest_k4a_image.empty())
