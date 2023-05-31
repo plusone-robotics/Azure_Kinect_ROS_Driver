@@ -43,9 +43,9 @@ bool k4aUpdateExposure(int reqExposure)
   ros::service::call("/k4a_nodelet_manager/set_parameters", srv_req, srv_resp);
   // check to make sure parameter was actually set
   std::string param_name;
-  if(srv_resp.config.ints.exposure_time == reqExposure)
+  if(srv_resp.config.ints("exposure_time") == reqExposure)
   {
-    ROS_INFO("Exposure successfully updated to [%d]", srv_resp.config.ints.exposure_time);
+    ROS_INFO("Exposure successfully updated to [%d]", srv_resp.config.ints("exposure_time"));
     return true;
   }
   else
