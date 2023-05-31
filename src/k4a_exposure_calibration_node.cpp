@@ -27,9 +27,9 @@ cv_bridge::CvImageConstPtr CvImagePtr;
 std::mutex latest_k4a_image_mutex;
 
 // call k4a_nodelet_manager/set_parameters to update exposure value
-bool k4aUpdateExposure(int reqExposure)
+bool k4aUpdateExposure(int req_exposure)
 {
-  ROS_INFO("Updating exposure_time to: [%d]", reqExposure);
+  ROS_INFO("Updating exposure_time to: [%d]", req_exposure);
 
   dynamic_reconfigure::ReconfigureRequest srv_req;
   dynamic_reconfigure::ReconfigureResponse srv_resp;
@@ -37,32 +37,30 @@ bool k4aUpdateExposure(int reqExposure)
   dynamic_reconfigure::Config req_conf;
 
   int_param.name = "exposure_time";
-  int_param.value = reqExposure;
+  int_param.value = req_exposure;
   req_conf.ints.push_back(int_param);
   srv_req.config = req_conf;
   ros::service::call("/k4a_nodelet_manager/set_parameters", srv_req, srv_resp);
   // check to make sure parameter was actually set
-  //dynamic_reconfigure::Config res_conf;
-  ROS_INFO(srv_resp.config.ints);
-  // bool updated_conf = dynamic_reconfigure::getCurrentConfiguration(&res_conf);
-  // if(!updated_conf)
-  // {
-  //   ROS_INFO("failed to retrieve updated configuration");
-  //   return false;
-  // }
-  // else
-  // {
-  //   if(updated_conf.exposure_time != reqExposure)
-  //   {
-  //     ROS_INFO("exposure_time update failed");
-  //     return false;
-  //   }
-  //   else
-  //   {
-  //     ROS_INFO("Exposure successfully updated to [%d]", res_conf.exposure_time);
-  //     return true;
-  //   }
-  // }
+  int updated_exposure = -1;
+  for(const auto& param : srv_resp.config.ints)
+  {
+    if(param.name == "exposure_time")
+    {
+      updated_exposure = param.value;
+      break;
+    }
+  }
+  if(updated_exposure != req_exposure || updated_exposure == -1)
+  {
+    ROS_INFO("Failed to update exposure in k4aUpdateExposure");
+    return false;
+  }
+  else
+  {
+    ROS_INFO("Updated exposure to: [%d]", updated_exposure);
+    return true;
+  }
 }
 
 // auto tune exposure with given target blue value
@@ -147,7 +145,7 @@ bool k4aUpdateExposureCallback(azure_kinect_ros_driver::k4a_update_exposure::Req
   if(req_exposure < min_exposure || req_exposure > max_exposure)
   {
     res.message += ("Requested exposure out of range [%d] - [%d]", min_exposure, max_exposure);
-    res.k4aExposureServiceErrorCode = REQUESTED_CAMERA_EXPOSURE_OUT_OF_BOUNDS_FAILURE;
+    res.k4aExposureServiceErrorCode = k4a_msgs::k4aCameraExposureServiceErrorCode::REQUESTED_CAMERA_EXPOSURE_OUT_OF_BOUNDS_FAILURE;
     return true;
   }
   
@@ -158,7 +156,7 @@ bool k4aUpdateExposureCallback(azure_kinect_ros_driver::k4a_update_exposure::Req
   if(!tuningRes)
   {
     res.message += "Unable to update exposure_time, k4aUpdateExposure failed";
-    res.k4aExposureServiceErrorCode = CAMERA_EXPOSURE_SET_FAILURE;
+    res.k4aExposureServiceErrorCode = k4a_msgs::k4aCameraExposureServiceErrorCode::CAMERA_EXPOSURE_SET_FAILURE;
     return true;
   }
   else
@@ -189,7 +187,7 @@ bool k4aAutoTuneExposureCallback(azure_kinect_ros_driver::k4a_auto_tune_exposure
   if(req_blue < min_blue || req_blue > max_blue)
   {
     res.message += ("Requested blue value out of range [%d] - [%d]", min_blue, max_blue);
-    res.k4aExposureServiceErrorCode = REQUESTED_CAMERA_BLUE_VALUE_OUT_OF_BOUNDS_FAILURE;
+    res.k4aExposureServiceErrorCode = k4a_msgs::k4aCameraExposureServiceErrorCode::REQUESTED_CAMERA_BLUE_VALUE_OUT_OF_BOUNDS_FAILURE;
     return true;
   }
   
@@ -200,13 +198,13 @@ bool k4aAutoTuneExposureCallback(azure_kinect_ros_driver::k4a_auto_tune_exposure
   if(!autoTuningRes)
   {
     res.message += "Unable to auto tune exposure_time, k4aAutoTuneExposure failed";
-    res.k4aExposureServiceErrorCode = CAMERA_EXPOSURE_SET_FAILURE;
+    res.k4aExposureServiceErrorCode = k4a_msgs::k4aCameraExposureServiceErrorCode::CAMERA_EXPOSURE_SET_FAILURE;
     return true;
   }
   else
   {
     res.message += "Exposure updated, target blue value achieved";
-    res.k4aExposureServiceErrorCode = SUCCESS;
+    res.k4aExposureServiceErrorCode = k4a_msgs::k4aCameraExposureServiceErrorCode::SUCCESS;
     return true;
   }
 }
