@@ -19,7 +19,7 @@
 #include "azure_kinect_ros_driver/k4a_auto_tune_exposure.h"
 #include "azure_kinect_ros_driver/k4aCameraExposureServiceErrorCode.h"
 
-// make memory space to store latest image
+// allocate memory space to store latest image
 cv::Mat latest_k4a_image;
 cv::Mat* latest_k4a_image_ptr = &latest_k4a_image;
 cv_bridge::CvImageConstPtr CvImagePtr;
@@ -41,8 +41,18 @@ bool k4aUpdateExposure(int reqExposure)
   conf.ints.push_back(int_param);
   srv_req.config = conf;
   ros::service::call("/k4a_nodelet_manager/set_parameters", srv_req, srv_resp);
-
-  return true;
+  // check to make sure parameter was actually set
+  std::string param_name;
+  if(srv_resp.config["exposure_time"] == reqExposure)
+  {
+    ROS_INFO("Exposure successfully updated to [%d]", srv_resp.config["exposure_time"]);
+    return true;
+  }
+  else
+  {
+    ROS_INFO("exposure_time update failed");
+    return false;
+  }
 }
 
 // auto tune exposure with given target blue value
@@ -56,8 +66,10 @@ bool k4aAutoTuneExposure(int target_blue_value, int& final_exposure, int& error_
   {
     // split OpenCV mat into three color channels
     cv::Mat color_channels[3];
+    (
     std::lock_guard<std::mutex> lock(latest_k4a_image_mutex);
     cv::split(*latest_k4a_image_ptr, color_channels);
+    )
     int rows = latest_k4a_image.rows;
     int cols = latest_k4a_image.cols;
     int pixel_count = rows * cols;
@@ -155,7 +167,7 @@ bool k4aAutoTuneExposureCallback(azure_kinect_ros_driver::k4a_auto_tune_exposure
   int error_code, calibrated_exposure;
   std::string res_msg;
 
-  ROS_INFO("Received K4A exposure auto tuning request: [%d]", req.target_blue_val);
+  ROS_INFO("Received K4A exposure auto tuning request for blue value: [%d]", req.target_blue_val);
 
   // check blue value limits
   uint32_t req_blue = req.target_blue_val;
@@ -166,7 +178,7 @@ bool k4aAutoTuneExposureCallback(azure_kinect_ros_driver::k4a_auto_tune_exposure
 
   if(req_blue < min_blue || req_blue > max_blue)
   {
-    res.message += ("Requested blue out of range [%d] - [%d]", min_blue, max_blue);
+    res.message += ("Requested blue value out of range [%d] - [%d]", min_blue, max_blue);
     res.k4aExposureServiceErrorCode = REQUESTED_CAMERA_BLUE_VALUE_OUT_OF_BOUNDS_FAILURE;
     return true;
   }
@@ -201,8 +213,10 @@ void rgbRawImageCallback(const sensor_msgs::ImageConstPtr& msg)
   {
     // convert ROS image message to OpenCV
     CvImagePtr = cv_bridge::toCvShare(msg, sensor_msgs::image_encodings::BGR8);
+    (
     std::lock_guard<std::mutex> lock(latest_k4a_image_mutex);
     *latest_k4a_image_ptr = CvImagePtr->image;
+    )
 
     // check if conversion worked
     if(latest_k4a_image.empty())
