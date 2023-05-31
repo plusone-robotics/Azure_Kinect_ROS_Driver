@@ -74,17 +74,16 @@ bool k4aAutoTuneExposure(int target_blue_value, int& final_exposure, int& error_
   {
     // split OpenCV mat into three color channels
     cv::Mat color_channels[3];
-    (
     std::lock_guard<std::mutex> lock(latest_k4a_image_mutex);
     cv::split(*latest_k4a_image_ptr, color_channels);
-    )
+
     int rows = latest_k4a_image.rows;
     int cols = latest_k4a_image.cols;
     int pixel_count = rows * cols;
     if(rows <= 0 || cols <= 0)
     {
       std::string error_msg = "Failed to retrieve latest image in k4aAutoTuneExposure";
-      ROS_ERROR(error_msg);
+      ROS_ERROR("Failed to retrieve latest image in k4aAutoTuneExposure");
       res_msg = error_msg;
       error_code = k4a_msgs::k4aCameraExposureServiceErrorCode::IMAGE_NOT_RECEIVED_FAILURE;
       final_exposure = 15625;
@@ -96,7 +95,7 @@ bool k4aAutoTuneExposure(int target_blue_value, int& final_exposure, int& error_
     if(!autoTune)
     {
       std::string error_msg = "Unable to update exposure in k4aAutoTuneExposure";
-      ROS_ERROR(error_msg);
+      ROS_ERROR("Unable to update exposure in k4aAutoTuneExposure");
       res_msg = error_msg;
       error_code = k4a_msgs::k4aCameraExposureServiceErrorCode::CAMERA_EXPOSURE_SET_FAILURE;
       final_exposure = 15625;
@@ -119,7 +118,7 @@ bool k4aAutoTuneExposure(int target_blue_value, int& final_exposure, int& error_
     if(current_avg_blue_value >= target_blue_value)
     {
       std::string error_msg = ("Successfully calibrated exposure for blue value of [%d]", target_blue_value);
-      ROS_ERROR(error_msg);
+      ROS_ERROR("Successfully calibrated exposure for blue value of [%d]", target_blue_value);
       res_msg = error_msg;
       error_code = k4a_msgs::k4aCameraExposureServiceErrorCode::SUCCESS;
       final_exposure = exp;
