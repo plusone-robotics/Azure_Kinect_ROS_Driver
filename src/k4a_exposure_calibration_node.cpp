@@ -8,7 +8,6 @@
 #include <sensor_msgs/Image.h>
 #include <image_transport/image_transport.h>
 #include <cv_bridge/cv_bridge.h>
-#include <dynamic_reconfigure/server.h>
 #include <dynamic_reconfigure/client.h>
 #include <k4a/k4a.h>
 #include <opencv2/opencv.hpp>
@@ -43,26 +42,27 @@ bool k4aUpdateExposure(int reqExposure)
   srv_req.config = req_conf;
   ros::service::call("/k4a_nodelet_manager/set_parameters", srv_req, srv_resp);
   // check to make sure parameter was actually set
-  dynamic_reconfigure::Config res_conf;
-  bool updated_conf = dynamic_reconfigure::getCurrentConfiguration(&res_conf);
-  if(!updated_conf)
-  {
-    ROS_INFO("failed to retrieve updated configuration");
-    return false;
-  }
-  else
-  {
-    if(updated_conf.exposure_time != reqExposure)
-    {
-      ROS_INFO("exposure_time update failed");
-      return false;
-    }
-    else
-    {
-      ROS_INFO("Exposure successfully updated to [%d]", res_conf.exposure_time);
-      return true;
-    }
-  }
+  //dynamic_reconfigure::Config res_conf;
+  ROS_INFO(srv_resp);
+  // bool updated_conf = dynamic_reconfigure::getCurrentConfiguration(&res_conf);
+  // if(!updated_conf)
+  // {
+  //   ROS_INFO("failed to retrieve updated configuration");
+  //   return false;
+  // }
+  // else
+  // {
+  //   if(updated_conf.exposure_time != reqExposure)
+  //   {
+  //     ROS_INFO("exposure_time update failed");
+  //     return false;
+  //   }
+  //   else
+  //   {
+  //     ROS_INFO("Exposure successfully updated to [%d]", res_conf.exposure_time);
+  //     return true;
+  //   }
+  // }
 }
 
 // auto tune exposure with given target blue value
