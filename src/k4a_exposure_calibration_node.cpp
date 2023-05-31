@@ -145,7 +145,7 @@ bool k4aUpdateExposureCallback(azure_kinect_ros_driver::k4a_update_exposure::Req
   if(req_exposure < min_exposure || req_exposure > max_exposure)
   {
     res.message += ("Requested exposure out of range [%d] - [%d]", min_exposure, max_exposure);
-    res.k4aExposureServiceErrorCode = k4aCameraExposureServiceErrorCode::REQUESTED_CAMERA_EXPOSURE_OUT_OF_BOUNDS_FAILURE;
+    // res.k4aExposureServiceErrorCode = k4aCameraExposureServiceErrorCode::REQUESTED_CAMERA_EXPOSURE_OUT_OF_BOUNDS_FAILURE;
     return true;
   }
   
@@ -156,13 +156,13 @@ bool k4aUpdateExposureCallback(azure_kinect_ros_driver::k4a_update_exposure::Req
   if(!tuningRes)
   {
     res.message += "Unable to update exposure_time, k4aUpdateExposure failed";
-    res.k4aExposureServiceErrorCode = k4aCameraExposureServiceErrorCode::CAMERA_EXPOSURE_SET_FAILURE;
+    // res.k4aExposureServiceErrorCode = k4aCameraExposureServiceErrorCode::CAMERA_EXPOSURE_SET_FAILURE;
     return true;
   }
   else
   {
     res.message += "Exposure updated";
-    res.k4aExposureServiceErrorCode = k4aCameraExposureServiceErrorCode::SUCCESS;
+    // res.k4aExposureServiceErrorCode = k4aCameraExposureServiceErrorCode::SUCCESS;
     return true;
   }
 }
@@ -187,7 +187,7 @@ bool k4aAutoTuneExposureCallback(azure_kinect_ros_driver::k4a_auto_tune_exposure
   if(req_blue < min_blue || req_blue > max_blue)
   {
     res.message += ("Requested blue value out of range [%d] - [%d]", min_blue, max_blue);
-    res.k4aExposureServiceErrorCode = k4aCameraExposureServiceErrorCode::REQUESTED_CAMERA_BLUE_VALUE_OUT_OF_BOUNDS_FAILURE;
+    // res.k4aExposureServiceErrorCode = k4aCameraExposureServiceErrorCode::REQUESTED_CAMERA_BLUE_VALUE_OUT_OF_BOUNDS_FAILURE;
     return true;
   }
   
@@ -198,13 +198,13 @@ bool k4aAutoTuneExposureCallback(azure_kinect_ros_driver::k4a_auto_tune_exposure
   if(!autoTuningRes)
   {
     res.message += "Unable to auto tune exposure_time, k4aAutoTuneExposure failed";
-    res.k4aExposureServiceErrorCode = k4aCameraExposureServiceErrorCode::CAMERA_EXPOSURE_SET_FAILURE;
+    // res.k4aExposureServiceErrorCode = k4aCameraExposureServiceErrorCode::CAMERA_EXPOSURE_SET_FAILURE;
     return true;
   }
   else
   {
     res.message += "Exposure updated, target blue value achieved";
-    res.k4aExposureServiceErrorCode = k4aCameraExposureServiceErrorCode::SUCCESS;
+    // res.k4aExposureServiceErrorCode = k4aCameraExposureServiceErrorCode::SUCCESS;
     return true;
   }
 }
