@@ -25,7 +25,6 @@ cv::Mat* latest_k4a_image_ptr = &latest_k4a_image;
 cv_bridge::CvImageConstPtr CvImagePtr;
 // see sensor_manager.cpp lines 464/2018
 std::mutex latest_k4a_image_mutex;
-k4aCameraExposureServiceErrorCode::int8 k4a_error_code;
 
 // call k4a_nodelet_manager/set_parameters to update exposure value
 bool k4aUpdateExposure(int req_exposure)
@@ -86,7 +85,7 @@ bool k4aAutoTuneExposure(int target_blue_value, int& final_exposure, int& error_
       std::string error_msg = "Failed to retrieve latest image in k4aAutoTuneExposure";
       ROS_ERROR("Failed to retrieve latest image in k4aAutoTuneExposure");
       res_msg = error_msg;
-      error_code = k4aCameraExposureServiceErrorCode::IMAGE_NOT_RECEIVED_FAILURE;
+      // error_code = k4aCameraExposureServiceErrorCode::IMAGE_NOT_RECEIVED_FAILURE;
       final_exposure = 15625;
       return false;
     }
@@ -98,7 +97,7 @@ bool k4aAutoTuneExposure(int target_blue_value, int& final_exposure, int& error_
       std::string error_msg = "Unable to update exposure in k4aAutoTuneExposure";
       ROS_ERROR("Unable to update exposure in k4aAutoTuneExposure");
       res_msg = error_msg;
-      error_code = k4aCameraExposureServiceErrorCode::CAMERA_EXPOSURE_SET_FAILURE;
+      // error_code = k4aCameraExposureServiceErrorCode::CAMERA_EXPOSURE_SET_FAILURE;
       final_exposure = 15625;
       return false;
     }
@@ -122,7 +121,7 @@ bool k4aAutoTuneExposure(int target_blue_value, int& final_exposure, int& error_
       error_msg += ("Successfully calibrated exposure for blue value of [%d]", target_blue_value);
       ROS_ERROR("Successfully calibrated exposure for blue value of [%d]", target_blue_value);
       res_msg = error_msg;
-      error_code = k4aCameraExposureServiceErrorCode::SUCCESS;
+      // error_code = k4aCameraExposureServiceErrorCode::SUCCESS;
       final_exposure = exp;
       break;
     }
