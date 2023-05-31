@@ -17,7 +17,7 @@
 #include "azure_kinect_ros_driver/AzureKinectParamsConfig.h"
 #include "azure_kinect_ros_driver/k4a_update_exposure.h"
 #include "azure_kinect_ros_driver/k4a_auto_tune_exposure.h"
-#include "k4aCameraExposureServiceErrorCode.h"
+#include "azure_kinect_ros_driver/k4aCameraExposureServiceErrorCode.h"
 
 // allocate memory space to store latest image
 cv::Mat latest_k4a_image;
@@ -25,6 +25,7 @@ cv::Mat* latest_k4a_image_ptr = &latest_k4a_image;
 cv_bridge::CvImageConstPtr CvImagePtr;
 // see sensor_manager.cpp lines 464/2018
 std::mutex latest_k4a_image_mutex;
+k4aCameraExposureServiceErrorCode::int k4a_error_code;
 
 // call k4a_nodelet_manager/set_parameters to update exposure value
 bool k4aUpdateExposure(int req_exposure)
