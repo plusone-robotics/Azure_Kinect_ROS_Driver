@@ -34,24 +34,33 @@ bool k4aUpdateExposure(int reqExposure)
   dynamic_reconfigure::ReconfigureRequest srv_req;
   dynamic_reconfigure::ReconfigureResponse srv_resp;
   dynamic_reconfigure::IntParameter int_param;
-  dynamic_reconfigure::Config conf;
+  dynamic_reconfigure::Config req_conf;
 
   int_param.name = "exposure_time";
   int_param.value = reqExposure;
   conf.ints.push_back(int_param);
-  srv_req.config = conf;
+  srv_req.config = req_conf;
   ros::service::call("/k4a_nodelet_manager/set_parameters", srv_req, srv_resp);
   // check to make sure parameter was actually set
-  std::string param_name;
-  if(srv_resp.config.ints.exposure_time == reqExposure)
+  dynamic_reconfigure::Config res_conf;
+  bool updated_conf = dynamic_reconfigure::getCurrentConfiguration(&res_conf);
+  if(!updated_conf)
   {
-    ROS_INFO("Exposure successfully updated to [%d]", srv_resp.config.ints.exposure_time);
-    return true;
+    ROS_INFO("failed to retrieve updated configuration");
+    return false;
   }
   else
   {
-    ROS_INFO("exposure_time update failed");
-    return false;
+    if(updated_conf.exposure_time != reqExposure)
+    {
+      ROS_INFO("exposure_time update failed");
+      return false;
+    }
+    else
+    {
+      ROS_INFO("Exposure successfully updated to [%d]", res_conf.exposure_time);
+      return true;
+    }
   }
 }
 
