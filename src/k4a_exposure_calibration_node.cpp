@@ -43,7 +43,7 @@ bool k4aUpdateExposure(int reqExposure)
   ros::service::call("/k4a_nodelet_manager/set_parameters", srv_req, srv_resp);
   // check to make sure parameter was actually set
   //dynamic_reconfigure::Config res_conf;
-  ROS_INFO(srv_resp.config);
+  ROS_INFO(srv_resp.config.ints);
   // bool updated_conf = dynamic_reconfigure::getCurrentConfiguration(&res_conf);
   // if(!updated_conf)
   // {
