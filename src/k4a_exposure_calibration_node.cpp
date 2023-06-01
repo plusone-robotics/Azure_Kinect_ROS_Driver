@@ -101,7 +101,7 @@ bool k4aAutoTuneExposure(int target_blue_value, int& final_exposure, int& error_
     
     if(!autoTune)
     {
-      // k4aUpdateExposure will handle updating response for failure
+      // k4aUpdateExposure handles updating response
       ROS_ERROR("Unable to update exposure in k4aAutoTuneExposure");
       final_exposure = 15625;
       return false;
@@ -154,13 +154,14 @@ bool k4aUpdateExposureCallback(azure_kinect_ros_driver::k4a_update_exposure::Req
     return true;
   }
   
-  bool tuningRes = k4aUpdateExposure(req.new_exp);
+  bool tuningRes = k4aUpdateExposure(req.new_exp, res.k4aExposureServiceErrorCode, res.message);
   
   ROS_INFO("Sending back response...");
 
+  // k4aUpdateExposure handles updating response
   if(!tuningRes)
   {
-    res.message += "Unable to update exposure_time, k4aUpdateExposure failed";
+    ROS_ERROR("Unable to update exposure_time, k4aUpdateExposure failed");
     res.k4aExposureServiceErrorCode = azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::CAMERA_EXPOSURE_SET_FAILURE;
     return true;
   }
