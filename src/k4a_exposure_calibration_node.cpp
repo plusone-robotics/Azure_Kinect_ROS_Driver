@@ -5,14 +5,6 @@
 // Associated headers
 #include "azure_kinect_ros_driver/k4a_exposure_calibration_node.h"
 
-// allocate memory space to store latest image
-cv::Mat latest_k4a_image;
-cv::Mat* latest_k4a_image_ptr = &latest_k4a_image;
-cv_bridge::CvImageConstPtr k4aCvImagePtr;
-// see sensor_manager.cpp lines 464/2018
-std::mutex latest_k4a_image_mutex;
-azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode k4a_error_code;
-
 K4AExposureCalibration::K4AExposureCalibration() : it(nh)
 {
   latest_k4a_image_ptr = &latest_k4a_image;
@@ -257,7 +249,9 @@ int main(int argc, char **argv)
   
   ROS_INFO("Initialized K4A Exposure Calibration Node");
   
-  K4AExposureCalibration k4a_Exposure_Calibration;
-  
+
+
+  K4AExposureCalibration k4a_Exposure_Calibration();
+
   return 0;
 }
