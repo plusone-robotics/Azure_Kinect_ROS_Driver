@@ -155,7 +155,7 @@ bool k4aUpdateExposureCallback(azure_kinect_ros_driver::k4a_update_exposure::Req
     return true;
   }
   
-  bool tuningRes = k4aUpdateExposure(req.new_exp, res.k4aExposureServiceErrorCode, res.message);
+  bool tuningRes = k4aUpdateExposure(req.new_exp, &res.k4aExposureServiceErrorCode, res.message);
   
   ROS_INFO("Sending back response...");
 
