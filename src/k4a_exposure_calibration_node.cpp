@@ -11,19 +11,18 @@ K4AExposureCalibration::K4AExposureCalibration()
 {
 }
 
-K4AExposureCalibration::K4AExposureCalibration(ros::NodeHandle& nh, image_transport::ImageTransport& it)
+K4AExposureCalibration::K4AExposureCalibration(ros::NodeHandle& nh)
 {
-  init(nh, it);
+  init(nh);
 }
 
-void K4AExposureCalibration::init(ros::NodeHandle& nh, image_transport::ImageTransport& it)
+void K4AExposureCalibration::init(ros::NodeHandle& nh)
 {
   nh_ = nh;
-  it_ = it;
 
   latest_k4a_image_ptr = &latest_k4a_image;
   subPC = nh_.subscribe("/points2", 1, &K4AExposureCalibration::p2Callback, this);
-  subRGBRaw = it_.subscribe("/rgb/raw/image", 1, &K4AExposureCalibration::rgbRawImageCallback, this);
+  subRGBRaw = it.subscribe("/rgb/raw/image", 1, &K4AExposureCalibration::rgbRawImageCallback, this);
 
   // advertise services
   ros::ServiceServer update_exposure_service = nh_.advertiseService("k4a_update_exposure", &K4AExposureCalibration::k4aUpdateExposureCallback, this);
@@ -261,9 +260,8 @@ int main(int argc, char **argv)
 {
   ros::init(argc, argv, "k4a_exposure_calibration");
   ros::NodeHandle nh;
-  image_transport::ImageTransport it(nh);
   
-  K4AExposureCalibration k4a_Exposure_Calibration(nh, it);
+  K4AExposureCalibration k4a_Exposure_Calibration(nh);
   ROS_INFO("Initialized K4A Exposure Calibration Node");
 
   return 0;

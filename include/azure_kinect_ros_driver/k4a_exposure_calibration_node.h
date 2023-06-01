@@ -27,8 +27,8 @@ class K4AExposureCalibration
 {
 public:
     K4AExposureCalibration();
-    K4AExposureCalibration(ros::NodeHandle& nh, image_transport::ImageTransport& it);
-    void init(ros::NodeHandle& nh, image_transport::ImageTransport& it);
+    K4AExposureCalibration(ros::NodeHandle& nh);
+    void init(ros::NodeHandle& nh);
     bool k4aUpdateExposure(int req_exposure, int& error_code, std::string& res_msg);
     bool k4aAutoTuneExposure(int target_blue_value, int& final_exposure, int& error_code, std::string& res_msg);
 private:
@@ -36,7 +36,7 @@ private:
     void rgbRawImageCallback(const sensor_msgs::ImageConstPtr& msg);
 
     ros::NodeHandle nh_;
-    image_transport::ImageTransport it_;
+    image_transport::ImageTransport it(nh_);
     ros::Subscriber subPC;
     image_transport::Subscriber subRGBRaw;
 
