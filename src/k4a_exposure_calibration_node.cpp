@@ -25,6 +25,7 @@ cv::Mat* latest_k4a_image_ptr = &latest_k4a_image;
 cv_bridge::CvImageConstPtr CvImagePtr;
 // see sensor_manager.cpp lines 464/2018
 std::mutex latest_k4a_image_mutex;
+azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode k4a_error_code;
 
 // call k4a_nodelet_manager/set_parameters to update exposure value
 bool k4aUpdateExposure(int req_exposure)
@@ -132,6 +133,9 @@ bool k4aAutoTuneExposure(int target_blue_value, int& final_exposure, int& error_
 bool k4aUpdateExposureCallback(azure_kinect_ros_driver::k4a_update_exposure::Request &req,
                                azure_kinect_ros_driver::k4a_update_exposure::Response &res)
 {
+  // prepare response
+  res.message = "";
+
   ROS_INFO("Received K4A exposure update request: [%d]", req.new_exp);
 
   // check exposure limits
@@ -141,8 +145,8 @@ bool k4aUpdateExposureCallback(azure_kinect_ros_driver::k4a_update_exposure::Req
 
   if(req_exposure < min_exposure || req_exposure > max_exposure)
   {
-    ROS_INFO("Requested exposure out of range [%d] - [%d]", min_exposure, max_exposure);
-    res.error_code = k4aCameraExposureServiceErrorCode::REQUESTED_CAMERA_EXPOSURE_OUT_OF_BOUNDS_FAILURE;
+    res.message += ("Requested exposure out of range [%d] - [%d]", min_exposure, max_exposure);
+    // res.k4aExposureServiceErrorCode = k4aCameraExposureServiceErrorCode::REQUESTED_CAMERA_EXPOSURE_OUT_OF_BOUNDS_FAILURE;
     return true;
   }
   
@@ -152,14 +156,14 @@ bool k4aUpdateExposureCallback(azure_kinect_ros_driver::k4a_update_exposure::Req
 
   if(!tuningRes)
   {
-    ROS_ERROR("Unable to update exposure_time, k4aUpdateExposure failed");
-    res.error_code = k4aCameraExposureServiceErrorCode::CAMERA_EXPOSURE_SET_FAILURE;
+    res.message += "Unable to update exposure_time, k4aUpdateExposure failed";
+    // res.k4aExposureServiceErrorCode = k4aCameraExposureServiceErrorCode::CAMERA_EXPOSURE_SET_FAILURE;
     return true;
   }
   else
   {
-    ROS_INFO("Exposure updated");
-    res.error_code = k4aCameraExposureServiceErrorCode::SUCCESS;
+    res.message += "Exposure updated";
+    // res.k4aExposureServiceErrorCode = k4aCameraExposureServiceErrorCode::SUCCESS;
     return true;
   }
 }
