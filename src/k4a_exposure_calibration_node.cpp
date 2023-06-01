@@ -200,12 +200,14 @@ bool k4aAutoTuneExposureCallback(azure_kinect_ros_driver::k4a_auto_tune_exposure
   {
     res.message += "Unable to auto tune exposure_time, k4aAutoTuneExposure failed";
     res.k4aExposureServiceErrorCode = error_code;
+    res.calibrated_exposure = final_exposure;
     return true;
   }
   else
   {
     res.message += "Exposure updated, target blue value achieved";
     res.k4aExposureServiceErrorCode = azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::SUCCESS;
+    res.calibrated_exposure = calibrated_exposure;
     return true;
   }
 }
