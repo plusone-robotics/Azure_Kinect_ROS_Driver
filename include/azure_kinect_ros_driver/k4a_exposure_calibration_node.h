@@ -2,7 +2,8 @@
 // Author: Shannon Stoehr
 // email:  shannon.stoehr@plusonerobotics.com
 
-#pragma once
+#ifndef K4A_EXPOSURE_CALIBRATION_NODE_H
+#define K4A_EXPOSURE_CALIBRATION_NODE_H
 
 // Library headers
 #include <ros/ros.h>
@@ -21,8 +22,6 @@
 #include "azure_kinect_ros_driver/k4a_auto_tune_exposure.h"
 #include "azure_kinect_ros_driver/k4aCameraExposureServiceErrorCode.h"
 
-namespace azure_kinect_ros_driver
-{
 class K4AExposureCalibration
 {
 public:
@@ -52,4 +51,4 @@ private:
                                      azure_kinect_ros_driver::k4a_auto_tune_exposure::Response &res);
 };
 
-} // namespace azure_kinect_ros_driver
+#endif // K4A_EXPOSURE_CALIBRATION_NODE_H
