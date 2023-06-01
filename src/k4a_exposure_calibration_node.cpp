@@ -19,6 +19,7 @@ K4AExposureCalibration::K4AExposureCalibration(ros::NodeHandle& nh)
 void K4AExposureCalibration::init(ros::NodeHandle& nh)
 {
   nh_ = nh;
+  image_transport::ImageTransport it(nh_);
 
   latest_k4a_image_ptr = &latest_k4a_image;
   subPC = nh_.subscribe("/points2", 1, &K4AExposureCalibration::p2Callback, this);

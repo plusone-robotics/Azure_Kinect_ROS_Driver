@@ -36,7 +36,6 @@ private:
     void rgbRawImageCallback(const sensor_msgs::ImageConstPtr& msg);
 
     ros::NodeHandle nh_;
-    image_transport::ImageTransport it(nh_);
     ros::Subscriber subPC;
     image_transport::Subscriber subRGBRaw;
 
