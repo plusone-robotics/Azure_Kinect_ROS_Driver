@@ -5,15 +5,28 @@
 // Associated headers
 #include "azure_kinect_ros_driver/k4a_exposure_calibration_node.h"
 
-K4AExposureCalibration::K4AExposureCalibration() : it(nh)
+K4AExposureCalibration::K4AExposureCalibration()
 {
+
+}
+
+K4AExposureCalibration::K4AExposureCalibration(ros::NodeHandle& nh, image_transport::ImageTransport& it)
+{
+  init(nh, it);
+}
+
+void K4AExposureCalibration::init(ros::NodeHandle& nh, image_transport::ImageTransport& it)
+{
+  nh_ = nh;
+  it_ = it;
+
   latest_k4a_image_ptr = &latest_k4a_image;
-  subPC = nh.subscribe("/points2", 1, &K4AExposureCalibration::p2Callback, this);
-  subRGBRaw = it.subscribe("/rgb/raw/image", 1, &K4AExposureCalibration::rgbRawImageCallback, this);
+  subPC = nh_.subscribe("/points2", 1, &K4AExposureCalibration::p2Callback, this);
+  subRGBRaw = it_.subscribe("/rgb/raw/image", 1, &K4AExposureCalibration::rgbRawImageCallback, this);
 
   // advertise services
-  ros::ServiceServer update_exposure_service = nh.advertiseService("k4a_update_exposure", &K4AExposureCalibration::k4aUpdateExposureCallback, this);
-  ros::ServiceServer auto_tune_exposure_service = nh.advertiseService("k4a_auto_tune_exposure", &K4AExposureCalibration::k4aAutoTuneExposureCallback, this);
+  ros::ServiceServer update_exposure_service = nh_.advertiseService("k4a_update_exposure", &K4AExposureCalibration::k4aUpdateExposureCallback, this);
+  ros::ServiceServer auto_tune_exposure_service = nh_.advertiseService("k4a_auto_tune_exposure", &K4AExposureCalibration::k4aAutoTuneExposureCallback, this);
 
   ROS_INFO("Spinning K4A Exposure Calibration Node");
   ros::AsyncSpinner spinner(4); // Use 4 threads
@@ -246,12 +259,11 @@ void K4AExposureCalibration::rgbRawImageCallback(const sensor_msgs::ImageConstPt
 int main(int argc, char **argv)
 {
   ros::init(argc, argv, "k4a_exposure_calibration");
+  ros::NodeHandle nh;
+  image_transport::ImageTransport it(nh);
   
+  K4AExposureCalibration k4a_Exposure_Calibration(nh, it);
   ROS_INFO("Initialized K4A Exposure Calibration Node");
-  
-
-
-  K4AExposureCalibration k4a_Exposure_Calibration();
 
   return 0;
 }
