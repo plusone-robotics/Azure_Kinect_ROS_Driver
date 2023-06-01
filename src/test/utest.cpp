@@ -9,7 +9,7 @@
 #include <image_transport/image_transport.h>
 #include <cv_bridge/cv_bridge.h>
 #include <opencv2/opencv.hpp>
-#include <k4a_exposure_calibration_node.cpp>
+#include <src/k4a_exposure_calibration_node.cpp>
 
 // fake image
 cv::Mat k4aFakeImage;
