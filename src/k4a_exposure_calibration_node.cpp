@@ -55,7 +55,7 @@ bool k4aUpdateExposure(int req_exposure, int& error_code, std::string& res_msg)
   if(updated_exposure != req_exposure || updated_exposure == -1)
   {
     std::string error_msg = "Failed to update exposure in k4aUpdateExposure";
-    ROS_ERROR(error_msg);
+    ROS_ERROR("Failed to update exposure in k4aUpdateExposure");
     res_msg = error_msg;
     error_code = azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::CAMERA_EXPOSURE_SET_FAILURE;
     return false;
@@ -90,7 +90,7 @@ bool k4aAutoTuneExposure(int target_blue_value, int& final_exposure, int& error_
     if(rows <= 0 || cols <= 0)
     {
       std::string error_msg = "Failed to retrieve latest image in k4aAutoTuneExposure";
-      ROS_ERROR(error_msg);
+      ROS_ERROR("Failed to retrieve latest image in k4aAutoTuneExposure");
       res_msg = error_msg;
       error_code = azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::IMAGE_NOT_RECEIVED_FAILURE;
       final_exposure = 15625;
