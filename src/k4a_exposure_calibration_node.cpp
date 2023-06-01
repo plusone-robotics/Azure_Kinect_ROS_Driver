@@ -139,6 +139,7 @@ bool k4aUpdateExposureCallback(azure_kinect_ros_driver::k4a_update_exposure::Req
 {
   // prepare response
   res.message = "";
+  res.k4aExposureServiceErrorCode = 0;
 
   ROS_INFO("Received K4A exposure update request: [%d]", req.new_exp);
 
