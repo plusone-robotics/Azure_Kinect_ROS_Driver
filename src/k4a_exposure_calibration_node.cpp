@@ -86,7 +86,7 @@ bool k4aAutoTuneExposure(int target_blue_value, int& final_exposure, int& error_
       std::string error_msg = "Failed to retrieve latest image in k4aAutoTuneExposure";
       ROS_ERROR("Failed to retrieve latest image in k4aAutoTuneExposure");
       res_msg = error_msg;
-      // error_code = k4aCameraExposureServiceErrorCode::IMAGE_NOT_RECEIVED_FAILURE;
+      error_code = k4aCameraExposureServiceErrorCode::IMAGE_NOT_RECEIVED_FAILURE;
       final_exposure = 15625;
       return false;
     }
