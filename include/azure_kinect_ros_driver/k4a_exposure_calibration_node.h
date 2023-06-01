@@ -22,7 +22,7 @@
 #include "azure_kinect_ros_driver/k4a_auto_tune_exposure.h"
 #include "azure_kinect_ros_driver/k4aCameraExposureServiceErrorCode.h"
 
-class k4a_exposure_calibration
+class K4AExposureCalibration
 {
 public:
     K4AExposureCalibration();
