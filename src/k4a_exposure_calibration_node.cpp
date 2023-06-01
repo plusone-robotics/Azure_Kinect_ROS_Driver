@@ -139,7 +139,7 @@ bool k4aUpdateExposureCallback(azure_kinect_ros_driver::k4a_update_exposure::Req
 {
   // prepare response
   res.message = "";
-  res.k4aExposureServiceErrorCode = 0;
+  int error_code;
 
   ROS_INFO("Received K4A exposure update request: [%d]", req.new_exp);
 
@@ -155,7 +155,7 @@ bool k4aUpdateExposureCallback(azure_kinect_ros_driver::k4a_update_exposure::Req
     return true;
   }
   
-  bool tuningRes = k4aUpdateExposure(req.new_exp, &res.k4aExposureServiceErrorCode, res.message);
+  bool tuningRes = k4aUpdateExposure(req.new_exp, error_code, res.message);
   
   ROS_INFO("Sending back response...");
 
@@ -163,13 +163,13 @@ bool k4aUpdateExposureCallback(azure_kinect_ros_driver::k4a_update_exposure::Req
   if(!tuningRes)
   {
     ROS_ERROR("Unable to update exposure_time, k4aUpdateExposure failed");
-    res.k4aExposureServiceErrorCode = azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::CAMERA_EXPOSURE_SET_FAILURE;
+    res.k4aExposureServiceErrorCode = error_code;
     return true;
   }
   else
   {
     res.message += "Exposure updated";
-    res.k4aExposureServiceErrorCode = azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::SUCCESS;
+    res.k4aExposureServiceErrorCode = error_code;
     return true;
   }
 }
