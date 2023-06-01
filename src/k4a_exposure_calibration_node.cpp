@@ -187,7 +187,7 @@ bool k4aAutoTuneExposureCallback(azure_kinect_ros_driver::k4a_auto_tune_exposure
 
   if(req_blue < min_blue || req_blue > max_blue)
   {
-    res.message += ("Requested blue value out of range [%d] - [%d]", min_blue, max_blue);
+    res.message += ("Requested blue value out of range");
     res.k4aExposureServiceErrorCode = azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::REQUESTED_CAMERA_BLUE_VALUE_OUT_OF_BOUNDS_FAILURE;
     return true;
   }
