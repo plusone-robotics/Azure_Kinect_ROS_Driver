@@ -2,22 +2,8 @@
 // Author: Shannon Stoehr
 // email:  shannon.stoehr@plusonerobotics.com
 
-// Library headers
-#include <ros/ros.h>
-#include <sensor_msgs/PointCloud2.h>
-#include <sensor_msgs/Image.h>
-#include <image_transport/image_transport.h>
-#include <cv_bridge/cv_bridge.h>
-#include <dynamic_reconfigure/client.h>
-#include <k4a/k4a.h>
-#include <opencv2/opencv.hpp>
-#include <mutex>
-
 // Associated headers
-#include "azure_kinect_ros_driver/AzureKinectParamsConfig.h"
-#include "azure_kinect_ros_driver/k4a_update_exposure.h"
-#include "azure_kinect_ros_driver/k4a_auto_tune_exposure.h"
-#include "azure_kinect_ros_driver/k4aCameraExposureServiceErrorCode.h"
+#include "azure_kinect_ros_driver/k4a_exposure_calibration_node.h"
 
 // allocate memory space to store latest image
 cv::Mat latest_k4a_image;
@@ -27,8 +13,24 @@ cv_bridge::CvImageConstPtr k4aCvImagePtr;
 std::mutex latest_k4a_image_mutex;
 azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode k4a_error_code;
 
+K4AExposureCalibration::K4AExposureCalibration() : it(nh)
+{
+  latest_k4a_image_ptr = &latest_k4a_image;
+  subPC = nh.subscribe("/points2", 1, &K4AExposureCalibration::p2Callback, this);
+  subRGBRaw = it.subscribe("/rgb/raw/image", 1, &K4AExposureCalibration::rgbRawImageCallback, this);
+
+  // advertise services
+  ros::ServiceServer update_exposure_service = nh.advertiseService("k4a_update_exposure", &K4AExposureCalibration::k4aUpdateExposureCallback, this);
+  ros::ServiceServer auto_tune_exposure_service = nh.advertiseService("k4a_auto_tune_exposure", &K4AExposureCalibration::k4aAutoTuneExposureCallback, this);
+
+  ROS_INFO("Spinning K4A Exposure Calibration Node");
+  ros::AsyncSpinner spinner(4); // Use 4 threads
+  spinner.start();
+  ros::waitForShutdown();
+}
+
 // call k4a_nodelet_manager/set_parameters to update exposure value
-bool k4aUpdateExposure(int req_exposure, int& error_code, std::string& res_msg)
+bool K4AExposureCalibration::k4aUpdateExposure(int req_exposure, int& error_code, std::string& res_msg)
 {
   ROS_INFO("Updating exposure_time to: [%d]", req_exposure);
 
@@ -71,7 +73,7 @@ bool k4aUpdateExposure(int req_exposure, int& error_code, std::string& res_msg)
 }
 
 // auto tune exposure with given target blue value
-bool k4aAutoTuneExposure(int target_blue_value, int& final_exposure, int& error_code, std::string& res_msg)
+bool K4AExposureCalibration::k4aAutoTuneExposure(int target_blue_value, int& final_exposure, int& error_code, std::string& res_msg)
 {
   ROS_INFO("Starting K4A auto exposure tuning...");
 
@@ -131,7 +133,7 @@ bool k4aAutoTuneExposure(int target_blue_value, int& final_exposure, int& error_
   return true;
 }
 
-bool k4aUpdateExposureCallback(azure_kinect_ros_driver::k4a_update_exposure::Request &req,
+bool K4AExposureCalibration::k4aUpdateExposureCallback(azure_kinect_ros_driver::k4a_update_exposure::Request &req,
                                azure_kinect_ros_driver::k4a_update_exposure::Response &res)
 {
   // prepare response
@@ -172,8 +174,8 @@ bool k4aUpdateExposureCallback(azure_kinect_ros_driver::k4a_update_exposure::Req
   }
 }
 
-bool k4aAutoTuneExposureCallback(azure_kinect_ros_driver::k4a_auto_tune_exposure::Request &req,
-                                 azure_kinect_ros_driver::k4a_auto_tune_exposure::Response &res)
+bool K4AExposureCalibration::k4aAutoTuneExposureCallback(azure_kinect_ros_driver::k4a_auto_tune_exposure::Request &req,
+                                                         azure_kinect_ros_driver::k4a_auto_tune_exposure::Response &res)
 {
   // prepare response
   res.message = "";
@@ -218,12 +220,12 @@ bool k4aAutoTuneExposureCallback(azure_kinect_ros_driver::k4a_auto_tune_exposure
   }
 }
 
-void p2Callback(const sensor_msgs::PointCloud2& msg)
+void K4AExposureCalibration::p2Callback(const sensor_msgs::PointCloud2& msg)
 {
   ROS_DEBUG("k4a_exposure_calibration_node subscribed to /points2");
 }
 
-void rgbRawImageCallback(const sensor_msgs::ImageConstPtr& msg)
+void K4AExposureCalibration::rgbRawImageCallback(const sensor_msgs::ImageConstPtr& msg)
 {
   ROS_DEBUG("k4a_exposure_calibration_node subscribed to /rgb/raw/image");
   try
@@ -255,20 +257,7 @@ int main(int argc, char **argv)
   
   ROS_INFO("Initialized K4A Exposure Calibration Node");
   
-  ros::NodeHandle nh;
-  image_transport::ImageTransport it(nh);
+  K4AExposureCalibration k4a_Exposure_Calibration;
   
-  ros::Subscriber subPC = nh.subscribe("/points2", 1, p2Callback);
-  image_transport::Subscriber subRGBRaw = it.subscribe("/rgb/raw/image", 1, rgbRawImageCallback);
-  ROS_INFO("K4A Exposure Calibration Node subscribed to /points2 and /rgb/raw/image");
-
-  // Advertise services
-  ros::ServiceServer update_exposure_service = nh.advertiseService("k4a_update_exposure", k4aUpdateExposureCallback);
-  ros::ServiceServer auto_tune_exposure_service = nh.advertiseService("k4a_auto_tune_exposure", k4aAutoTuneExposureCallback);
-
-  ROS_INFO("Spinning K4A Exposure Calibration Node");
-  ros::AsyncSpinner spinner(4); // Use 4 threads
-  spinner.start();
-  ros::waitForShutdown();
   return 0;
 }
