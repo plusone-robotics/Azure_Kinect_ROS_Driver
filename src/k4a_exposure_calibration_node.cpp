@@ -147,7 +147,9 @@ bool k4aUpdateExposureCallback(azure_kinect_ros_driver::k4a_update_exposure::Req
 
   if(req_exposure < min_exposure || req_exposure > max_exposure)
   {
-    res.message += ("Requested exposure out of range [%d] - [%d]", min_exposure, max_exposure);
+    std::string error_msg = "Requested exposure out of range";
+    ROS_ERROR("Requested exposure out of range [%d] - [%d]", min_exposure, max_exposure);
+    res.message = error_msg;
     res.k4aExposureServiceErrorCode = azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::REQUESTED_CAMERA_EXPOSURE_OUT_OF_BOUNDS_FAILURE;
     return true;
   }
@@ -165,7 +167,6 @@ bool k4aUpdateExposureCallback(azure_kinect_ros_driver::k4a_update_exposure::Req
   }
   else
   {
-    res.message += "Exposure updated";
     res.k4aExposureServiceErrorCode = error_code;
     return true;
   }
