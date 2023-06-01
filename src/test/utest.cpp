@@ -67,7 +67,7 @@ TEST(ExposureCalibrationTest, UpdateExposureInRangeTest)
   // Call the k4aUpdateExposure function with a fake exposure value
   int error_code;
   std::string res_msg;
-  bool result = k4aUpdateExposure(1000, error_code, res_msg);
+  bool result = K4AExposureCalibration::k4aUpdateExposure(1000, error_code, res_msg);
 
   // Check the result
   EXPECT_TRUE(result);
@@ -89,7 +89,7 @@ TEST(ExposureCalibrationTest, UpdateExposureOutOfRangeLTTest)
   // Call the k4aUpdateExposure function with a fake exposure value
   int error_code;
   std::string res_msg;
-  bool result = k4aUpdateExposure(100, error_code, res_msg);
+  bool result = K4AExposureCalibration::k4aUpdateExposure(100, error_code, res_msg);
 
   // Check the result
   EXPECT_FALSE(result);
@@ -111,7 +111,7 @@ TEST(ExposureCalibrationTest, UpdateExposureOutOfRangeGTTest)
   // Call the k4aUpdateExposure function with a fake exposure value
   int error_code;
   std::string res_msg;
-  bool result = k4aUpdateExposure(1000005, error_code, res_msg);
+  bool result = K4AExposureCalibration::k4aUpdateExposure(1000005, error_code, res_msg);
 
   // Check the result
   EXPECT_FALSE(result);
@@ -133,7 +133,7 @@ TEST(ExposureCalibrationTest, AutoTuneExposureTest)
   // Call the k4aAutoTuneExposure function with a fake target blue value
   int final_exposure, error_code;
   std::string res_msg;
-  bool result = k4aAutoTuneExposure(150, final_exposure, error_code, res_msg);
+  bool result = K4AExposureCalibration::k4aAutoTuneExposure(150, final_exposure, error_code, res_msg);
 
   // Check the result
   EXPECT_TRUE(result);
@@ -157,7 +157,7 @@ TEST(ExposureCalibrationTest, AutoTuneExposureEmptyImageTest)
   // Call the k4aAutoTuneExposure function with a fake target blue value
   int final_exposure, error_code;
   std::string res_msg;
-  bool result = k4aAutoTuneExposure(150, final_exposure, error_code, res_msg);
+  bool result = K4AExposureCalibration::k4aAutoTuneExposure(150, final_exposure, error_code, res_msg);
 
   // Check the result
   EXPECT_FALSE(result);
@@ -180,7 +180,7 @@ TEST(ExposureCalibrationTest, AutoTuneExposureLTTest)
   // Call the k4aAutoTuneExposure function with a fake target blue value
   int final_exposure, error_code;
   std::string res_msg;
-  bool result = k4aAutoTuneExposure(-1, final_exposure, error_code, res_msg);
+  bool result = K4AExposureCalibration::k4aAutoTuneExposure(-1, final_exposure, error_code, res_msg);
 
   // Check the result
   EXPECT_FALSE(result);
@@ -203,7 +203,7 @@ TEST(ExposureCalibrationTest, AutoTuneExposureGTTest)
   // Call the k4aAutoTuneExposure function with a fake target blue value
   int final_exposure, error_code;
   std::string res_msg;
-  bool result = k4aAutoTuneExposure(256, final_exposure, error_code, res_msg);
+  bool result = K4AExposureCalibration::k4aAutoTuneExposure(256, final_exposure, error_code, res_msg);
 
   // Check the result
   EXPECT_FALSE(result);
