@@ -35,18 +35,18 @@ find_package(OpenCV REQUIRED)
 generate_dynamic_reconfigure_options(
   cfg/AzureKinectParams.cfg
 )
-add_service_files(
-  FILES
-  k4a_auto_tune_exposure.srv
-  k4a_update_exposure.srv
-)
 add_message_files(
   FILES
-  exp_cal.msg
+    k4aCameraExposureServiceErrorCode.msg
+)
+add_service_files(
+  FILES
+    k4a_auto_tune_exposure.srv
+    k4a_update_exposure.srv
 )
 generate_messages(
   DEPENDENCIES
-  std_msgs
+    std_msgs
 )
 
 ###################################
@@ -61,7 +61,10 @@ generate_messages(
 catkin_package(
  # INCLUDE_DIRS include
  # LIBRARIES k4a_ros_bridge k4a_exposure_calibration
- # CATKIN_DEPENDS roscpp std_msgs message_runtime
+  CATKIN_DEPENDS
+    roscpp
+    std_msgs
+    message_runtime
  # DEPENDS system_lib
 )
 

@@ -9,5 +9,8 @@ TEST(TestSuite, azure_kinect_ros_driver_framework)
 int main(int argc, char **argv)
 {
   testing::InitGoogleTest(&argc, argv);
+  ros::init(argc, argv, "k4a_exposure_calibration_tests");
+  ros::Time::init();
+  
   return RUN_ALL_TESTS();
 }

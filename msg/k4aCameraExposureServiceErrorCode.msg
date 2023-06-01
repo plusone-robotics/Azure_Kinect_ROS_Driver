@@ -12,3 +12,9 @@ int8 TARGET_X_Y_OUT_OF_BOUNDS_FAILURE = -3
 
 # Auto-update Config Failure
 int8 AUTO_UPDATE_CONFIG_FAILURE = -4
+
+# Requested camera exposure is out of bounds Failure
+int8 REQUESTED_CAMERA_EXPOSURE_OUT_OF_BOUNDS_FAILURE = -5
+
+# Requested camera blue value is out of bounds Failure
+int8 REQUESTED_CAMERA_BLUE_VALUE_OUT_OF_BOUNDS_FAILURE = -6

@@ -1,5 +1,5 @@
 uint32 target_blue_val
 ---
-bool success
+uint32 calibrated_exposure
 string message
-int8 coded_message
+int8 k4aExposureServiceErrorCode
