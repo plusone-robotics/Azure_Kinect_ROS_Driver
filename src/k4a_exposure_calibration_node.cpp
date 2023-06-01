@@ -22,7 +22,7 @@
 // allocate memory space to store latest image
 cv::Mat latest_k4a_image;
 cv::Mat* latest_k4a_image_ptr = &latest_k4a_image;
-cv_bridge::CvImageConstPtr CvImagePtr;
+cv_bridge::CvImageConstPtr k4aCvImagePtr;
 // see sensor_manager.cpp lines 464/2018
 std::mutex latest_k4a_image_mutex;
 azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode k4a_error_code;
@@ -227,9 +227,9 @@ void rgbRawImageCallback(const sensor_msgs::ImageConstPtr& msg)
   try
   {
     // convert ROS image message to OpenCV
-    CvImagePtr = cv_bridge::toCvShare(msg, sensor_msgs::image_encodings::BGR8);
+    k4aCvImagePtr = cv_bridge::toCvShare(msg, sensor_msgs::image_encodings::BGR8);
     std::lock_guard<std::mutex> lock(latest_k4a_image_mutex);
-    *latest_k4a_image_ptr = CvImagePtr->image;
+    *latest_k4a_image_ptr = k4aCvImagePtr->image;
 
     // check if conversion worked
     if(latest_k4a_image.empty())
