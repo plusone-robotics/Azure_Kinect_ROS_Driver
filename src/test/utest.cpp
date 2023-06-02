@@ -31,7 +31,8 @@ TEST(ExposureCalibrationTest, UpdateExposureTest)
 
   // test appropriate exposure value
   test_req.new_exp = 1000;
-  bool okExp = test_node.k4aUpdateExposure(test_req, test_res);
+
+  bool okExp = test_node.k4aUpdateExposure(test_req, test_res.error_code, test_res.message);
   ASSERT_TRUE(okExp);
   ASSERT_TRUE(test_res.k4aExposureServiceErrorCode == azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::SUCCESS);
   ASSERT_EQ(test_res.message, "Updated exposure");
