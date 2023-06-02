@@ -8,12 +8,10 @@
 // Project headers
 #include "azure_kinect_ros_driver/k4a_exposure_calibration_node.h"
 
-// fake image
-cv::Mat k4aFakeImage;
-
 void publishk4aFakeImageData(ros::NodeHandle& pub_nh)
 {
   // Create a fake RGB image (BGR8 format)
+  cv::Mat k4aFakeImage;
   cv::Mat image(480, 640, CV_8UC3, cv::Scalar(50, 0, 0));
   k4aFakeImage = image.clone();
 
@@ -33,6 +31,7 @@ void publishk4aFakeImageData(ros::NodeHandle& pub_nh)
 void publishk4aBadImageData(ros::NodeHandle& pub_nh)
 {
   // mimic failure to convert k4a image to OpenCV mat
+  cv::Mat k4aFakeImage;
   cv::Mat image;
   k4aFakeImage = image.clone();
 
@@ -61,9 +60,6 @@ TEST(ExposureCalibrationTest, UpdateExposureInRangeTest)
 
   // Publish fake image data
   publishk4aFakeImageData(pub_nh);
-
-  // Wait for the image callback to update the latest_k4a_image
-  ros::Duration(1.0).sleep();
 
   // Call the k4aUpdateExposure function with a fake exposure value
   int error_code;
