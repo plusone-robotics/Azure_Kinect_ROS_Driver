@@ -73,6 +73,7 @@ TEST(ExposureCalibrationTest, UpdateExposureInRangeTest)
   // Check the result
   EXPECT_TRUE(result);
   EXPECT_EQ(error_code, azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::SUCCESS);
+  k4aFakeImage.release();
 }
 
 // Test case for k4aUpdateExposure out of range (less than)
@@ -99,6 +100,7 @@ TEST(ExposureCalibrationTest, UpdateExposureOutOfRangeLTTest)
   // Check the result
   EXPECT_FALSE(result);
   EXPECT_EQ(error_code, azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::REQUESTED_CAMERA_EXPOSURE_OUT_OF_BOUNDS_FAILURE);
+  k4aFakeImage.release();
 }
 
 // Test case for k4aUpdateExposure out of range (greater than)
@@ -125,6 +127,7 @@ TEST(ExposureCalibrationTest, UpdateExposureOutOfRangeGTTest)
   // Check the result
   EXPECT_FALSE(result);
   EXPECT_EQ(error_code, azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::REQUESTED_CAMERA_EXPOSURE_OUT_OF_BOUNDS_FAILURE);
+  k4aFakeImage.release();
 }
 
 // Test case for k4aAutoTuneExposure
@@ -153,6 +156,7 @@ TEST(ExposureCalibrationTest, AutoTuneExposureTest)
   EXPECT_EQ(error_code, azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::SUCCESS);
   EXPECT_GE(final_exposure, 488); // Assuming minimum exposure value
   EXPECT_LE(final_exposure, 1000000); // Assuming maximum exposure value
+  k4aFakeImage.release();
 }
 
 // Test case for k4aAutoTuneExposure with empty image
@@ -180,6 +184,7 @@ TEST(ExposureCalibrationTest, AutoTuneExposureEmptyImageTest)
   EXPECT_FALSE(result);
   EXPECT_EQ(error_code, azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::IMAGE_NOT_RECEIVED_FAILURE);
   EXPECT_EQ(final_exposure, 0); // failure, never set
+  k4aFakeImage.release();
 }
 
 // Test case for k4aAutoTuneExposure out of range (less than)
@@ -207,6 +212,7 @@ TEST(ExposureCalibrationTest, AutoTuneExposureLTTest)
   EXPECT_FALSE(result);
   EXPECT_EQ(error_code, azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::REQUESTED_CAMERA_BLUE_VALUE_OUT_OF_BOUNDS_FAILURE);
   EXPECT_EQ(final_exposure, 0); // failure, never set
+  k4aFakeImage.release();
 }
 
 // Test case for k4aAutoTuneExposure out of range (greater than)
@@ -234,6 +240,7 @@ TEST(ExposureCalibrationTest, AutoTuneExposureGTTest)
   EXPECT_FALSE(result);
   EXPECT_EQ(error_code, azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::REQUESTED_CAMERA_BLUE_VALUE_OUT_OF_BOUNDS_FAILURE);
   EXPECT_EQ(final_exposure, 0); // failure, never set
+  k4aFakeImage.release();
 }
 
 TEST(ExposureCalibrationTest, azure_kinect_ros_driver_framework)
