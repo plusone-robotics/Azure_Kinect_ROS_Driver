@@ -22,17 +22,14 @@ TEST(ExposureCalibrationTest, UpdateExposureTest)
   cvImage.image = image;
   sensor_msgs::ImagePtr msg = cvImage.toImageMsg();
 
-  // make fake req/res
-  azure_kinect_ros_driver::k4a_update_exposure::Request test_req;
-  azure_kinect_ros_driver::k4a_update_exposure::Response test_res;
-
   // make test node
   K4AExposureCalibration test_node;
 
   // test appropriate exposure value
-  test_req.new_exp = 1000;
+  test_error_code = 0;
+  test_msg = "";
 
-  bool okExp = test_node.k4aUpdateExposure(test_req.new_exp, test_res.k4aExposureServiceErrorCode, test_res.message);
+  bool okExp = test_node.k4aUpdateExposure(1000, test_error_code, test_message);
   ASSERT_TRUE(okExp);
   ASSERT_TRUE(test_res.k4aExposureServiceErrorCode == azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::SUCCESS);
   ASSERT_EQ(test_res.message, "Updated exposure");
