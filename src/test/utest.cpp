@@ -60,7 +60,7 @@ TEST(ExposureCalibrationTest, UpdateExposureInRangeTest)
 
   // Create a ROS node handle for testing class
   ros::NodeHandle test_nh;
-  K4AExposureCalibration test_node = K4AExposureCalibration(test_nh);
+  K4AExposureCalibration test_node(test_nh);
 
   // Publish fake image data
   publishk4aFakeImageData(pub_nh);
@@ -86,7 +86,7 @@ TEST(ExposureCalibrationTest, UpdateExposureOutOfRangeLTTest)
   
   // Create a ROS node handle for testing class
   ros::NodeHandle test_nh;
-  K4AExposureCalibration test_node = K4AExposureCalibration(test_nh);
+  K4AExposureCalibration test_node(test_nh);
 
   // Publish fake image data
   publishk4aFakeImageData(pub_nh);
@@ -112,7 +112,7 @@ TEST(ExposureCalibrationTest, UpdateExposureOutOfRangeGTTest)
   
     // Create a ROS node handle for testing class
   ros::NodeHandle test_nh;
-  K4AExposureCalibration test_node = K4AExposureCalibration(test_nh);
+  K4AExposureCalibration test_node(test_nh);
 
   // Publish fake image data
   publishk4aFakeImageData(pub_nh);
@@ -138,7 +138,7 @@ TEST(ExposureCalibrationTest, AutoTuneExposureTest)
   
   // Create a ROS node handle for testing class
   ros::NodeHandle test_nh;
-  K4AExposureCalibration test_node = K4AExposureCalibration(test_nh);
+  K4AExposureCalibration test_node(test_nh);
 
   // Publish fake image data
   publishk4aFakeImageData(pub_nh);
@@ -166,7 +166,7 @@ TEST(ExposureCalibrationTest, AutoTuneExposureEmptyImageTest)
   
   // Create a ROS node handle for testing class
   ros::NodeHandle test_nh;
-  K4AExposureCalibration test_node = K4AExposureCalibration(test_nh);
+  K4AExposureCalibration test_node(test_nh);
 
   // Publish fake image data
   publishk4aBadImageData(pub_nh);
@@ -193,7 +193,7 @@ TEST(ExposureCalibrationTest, AutoTuneExposureLTTest)
   
   // Create a ROS node handle for testing class
   ros::NodeHandle test_nh;
-  K4AExposureCalibration test_node = K4AExposureCalibration(test_nh);
+  K4AExposureCalibration test_node(test_nh);
 
   // Publish fake image data
   publishk4aFakeImageData(pub_nh);
@@ -220,7 +220,7 @@ TEST(ExposureCalibrationTest, AutoTuneExposureGTTest)
   
   // Create a ROS node handle for testing class
   ros::NodeHandle test_nh;
-  K4AExposureCalibration test_node = K4AExposureCalibration(test_nh);
+  K4AExposureCalibration test_node(test_nh);
 
   // Publish fake image data
   publishk4aFakeImageData(pub_nh);
