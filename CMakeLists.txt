@@ -59,7 +59,7 @@ generate_messages(
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
- INCLUDE_DIRS include
+ # INCLUDE_DIRS include
  # LIBRARIES k4a_ros_bridge k4a_exposure_calibration
   CATKIN_DEPENDS
     roscpp
@@ -89,6 +89,7 @@ add_dependencies(${PROJECT_NAME}_node ${PROJECT_NAME}_gencfg)
 add_dependencies(k4a_exposure_calibration_node ${PROJECT_NAME}_gencfg)
 target_compile_features(${PROJECT_NAME}_node PUBLIC cxx_std_11)
 target_compile_features(k4a_exposure_calibration_node PUBLIC cxx_std_11)
+
 add_library(${PROJECT_NAME}_nodelet
   src/k4a_ros_bridge_nodelet.cpp
   src/k4a_ros_device.cpp
@@ -239,11 +240,6 @@ endif()
 # Testing
 if(CATKIN_ENABLE_TESTING)
   find_package(rostest REQUIRED)
-  add_executable(k4a_exposure_calibration_node
-    src/k4a_exposure_calibration_node.cpp
-  )
-  add_dependencies(k4a_exposure_calibration_node ${PROJECT_NAME}_gencfg)
-  target_compile_features(k4a_exposure_calibration_node PUBLIC cxx_std_11)
   add_rostest_gtest(utest_node test/utest_launch.test src/test/utest.cpp)
   target_link_libraries(utest_node ${catkin_LIBRARIES})
 endif()
