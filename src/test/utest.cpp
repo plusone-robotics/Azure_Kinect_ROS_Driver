@@ -68,7 +68,7 @@ TEST(ExposureCalibrationTest, UpdateExposureInRangeTest)
   // Call the k4aUpdateExposure function with a fake exposure value
   int error_code;
   std::string res_msg;
-  bool result = k4aUpdateExposure(1000, error_code, res_msg);
+  bool result = K4AExposureCalibration::k4aUpdateExposure(1000, error_code, res_msg);
 
   // Check the result
   EXPECT_TRUE(result);
