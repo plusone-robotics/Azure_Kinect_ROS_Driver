@@ -60,7 +60,7 @@ TEST(ExposureCalibrationTest, UpdateExposureInRangeTest)
 
   // Create a ROS node handle for testing class
   ros::NodeHandle test_nh;
-  std::shared_ptr<K4AExposureCalibration> test_node(new k4a_exposure_calibration_node_test(test_nh));
+  std::shared_ptr<K4AExposureCalibration> test_node(new K4AExposureCalibration(test_nh));
 
   // Publish fake image data
   publishk4aFakeImageData(pub_nh);
@@ -87,7 +87,7 @@ TEST(ExposureCalibrationTest, UpdateExposureOutOfRangeLTTest)
   
   // Create a ROS node handle for testing class
   ros::NodeHandle test_nh;
-  std::shared_ptr<K4AExposureCalibration> test_node(new k4a_exposure_calibration_node_test(test_nh));
+  std::shared_ptr<K4AExposureCalibration> test_node(new K4AExposureCalibration(test_nh));
 
   // Publish fake image data
   publishk4aFakeImageData(pub_nh);
@@ -114,7 +114,7 @@ TEST(ExposureCalibrationTest, UpdateExposureOutOfRangeGTTest)
   
     // Create a ROS node handle for testing class
   ros::NodeHandle test_nh;
-  std::shared_ptr<K4AExposureCalibration> test_node(new k4a_exposure_calibration_node_test(test_nh));
+  std::shared_ptr<K4AExposureCalibration> test_node(new K4AExposureCalibration(test_nh));
 
   // Publish fake image data
   publishk4aFakeImageData(pub_nh);
@@ -141,7 +141,7 @@ TEST(ExposureCalibrationTest, AutoTuneExposureTest)
   
   // Create a ROS node handle for testing class
   ros::NodeHandle test_nh;
-  std::shared_ptr<K4AExposureCalibration> test_node(new k4a_exposure_calibration_node_test(test_nh));
+  std::shared_ptr<K4AExposureCalibration> test_node(new K4AExposureCalibration(test_nh));
 
   // Publish fake image data
   publishk4aFakeImageData(pub_nh);
@@ -170,7 +170,7 @@ TEST(ExposureCalibrationTest, AutoTuneExposureEmptyImageTest)
   
   // Create a ROS node handle for testing class
   ros::NodeHandle test_nh;
-  std::shared_ptr<K4AExposureCalibration> test_node(new k4a_exposure_calibration_node_test(test_nh));
+  std::shared_ptr<K4AExposureCalibration> test_node(new K4AExposureCalibration(test_nh));
 
   // Publish fake image data
   publishk4aBadImageData(pub_nh);
@@ -198,7 +198,7 @@ TEST(ExposureCalibrationTest, AutoTuneExposureLTTest)
   
   // Create a ROS node handle for testing class
   ros::NodeHandle test_nh;
-  std::shared_ptr<K4AExposureCalibration> test_node(new k4a_exposure_calibration_node_test(test_nh));
+  std::shared_ptr<K4AExposureCalibration> test_node(new K4AExposureCalibration(test_nh));
 
   // Publish fake image data
   publishk4aFakeImageData(pub_nh);
@@ -226,7 +226,7 @@ TEST(ExposureCalibrationTest, AutoTuneExposureGTTest)
   
   // Create a ROS node handle for testing class
   ros::NodeHandle test_nh;
-  std::shared_ptr<K4AExposureCalibration> test_node(new k4a_exposure_calibration_node_test(test_nh));
+  std::shared_ptr<K4AExposureCalibration> test_node(new K4AExposureCalibration(test_nh));
 
   // Publish fake image data
   publishk4aFakeImageData(pub_nh);
