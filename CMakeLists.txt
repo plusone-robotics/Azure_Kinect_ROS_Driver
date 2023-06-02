@@ -59,7 +59,7 @@ generate_messages(
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
- # INCLUDE_DIRS include
+ INCLUDE_DIRS include
  # LIBRARIES k4a_ros_bridge k4a_exposure_calibration
   CATKIN_DEPENDS
     roscpp
@@ -83,7 +83,6 @@ add_executable(${PROJECT_NAME}_node
   src/k4a_calibration_transform_data.cpp
   )
 add_executable(k4a_exposure_calibration_node
-  include/k4a_exposure_calibration_node.h
   src/k4a_exposure_calibration_node.cpp
   )
 add_dependencies(${PROJECT_NAME}_node ${PROJECT_NAME}_gencfg)
