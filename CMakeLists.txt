@@ -253,10 +253,6 @@ include_directories(
   "include"
 )
 
-add_library(testing
-  src/k4a_exposure_calibration_node.cpp
-)
-
 target_link_libraries(${PROJECT_NAME}_node
   ${K4A_LIBS}
   ${catkin_LIBRARIES}
