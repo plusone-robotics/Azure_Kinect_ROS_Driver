@@ -14,7 +14,6 @@
 
 // Project headers
 //
-#include "azure_kinect_ros_driver/k4a_exposure_calibration_node.h"
 
 PLUGINLIB_EXPORT_CLASS(Azure_Kinect_ROS_Driver::K4AROSBridgeNodelet, nodelet::Nodelet)
 
@@ -40,9 +39,6 @@ void K4AROSBridgeNodelet::onInit()
     k4a_device.reset(nullptr);
     throw nodelet::Exception("Could not start K4A_ROS_Device!");
   }
-
-  K4AExposureCalibration k4a_por_exposure_calibration(getNodeHandle());
-  ROS_INFO("Initialized K4A Exposure Calibration Node");
 
   NODELET_INFO("Cameras started");
 }
