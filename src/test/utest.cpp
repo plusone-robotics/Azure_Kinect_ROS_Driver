@@ -55,9 +55,9 @@ TEST(ExposureCalibrationTest, UpdateExposureInRangeTest)
   // Create a ROS node publisher handle
   ros::NodeHandle pub_nh;
 
-  // Create a ROS node handle for testing class
-  ros::NodeHandle test_nh;
-  K4AExposureCalibration test_node(test_nh);
+  // // Create a ROS node handle for testing class
+  // ros::NodeHandle test_nh;
+  // K4AExposureCalibration test_node(test_nh);
 
   // Publish fake image data
   publishk4aFakeImageData(pub_nh);
@@ -68,7 +68,7 @@ TEST(ExposureCalibrationTest, UpdateExposureInRangeTest)
   // Call the k4aUpdateExposure function with a fake exposure value
   int error_code;
   std::string res_msg;
-  bool result = test_node.k4aUpdateExposure(1000, error_code, res_msg);
+  bool result = k4aUpdateExposure(1000, error_code, res_msg);
 
   // Check the result
   EXPECT_TRUE(result);
