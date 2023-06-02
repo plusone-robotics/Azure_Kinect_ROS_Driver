@@ -2,13 +2,10 @@
 // Author: Shannon Stoehr
 // email:  shannon.stoehr@plusonerobotics.com
 
-#include <ros/ros.h>
+// Library headers
 #include <gtest/gtest.h>
-#include <sensor_msgs/PointCloud2.h>
-#include <sensor_msgs/Image.h>
-#include <image_transport/image_transport.h>
-#include <cv_bridge/cv_bridge.h>
-#include <opencv2/opencv.hpp>
+
+// Project headers
 #include "azure_kinect_ros_driver/k4a_exposure_calibration_node.h"
 
 // fake image
