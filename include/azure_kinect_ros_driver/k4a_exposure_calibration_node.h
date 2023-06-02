@@ -27,7 +27,6 @@ class K4AExposureCalibration
 public:
     K4AExposureCalibration(ros::NodeHandle& nh);
     ~K4AExposureCalibration();
-    void init(ros::NodeHandle& nh);
     bool k4aUpdateExposure(int req_exposure, int& error_code, std::string& res_msg);
     bool k4aAutoTuneExposure(int target_blue_value, int& final_exposure, int& error_code, std::string& res_msg);
 private:

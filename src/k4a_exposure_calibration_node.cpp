@@ -7,11 +7,6 @@
 
 K4AExposureCalibration::K4AExposureCalibration(ros::NodeHandle& nh)
 {
-  init(nh);
-}
-
-void K4AExposureCalibration::init(ros::NodeHandle& nh)
-{
   nh_ = nh;
   image_transport::ImageTransport it(nh_);
 
