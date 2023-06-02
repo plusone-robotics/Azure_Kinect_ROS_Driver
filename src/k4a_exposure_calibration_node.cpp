@@ -33,6 +33,10 @@ void K4AExposureCalibration::init(ros::NodeHandle& nh)
   ros::waitForShutdown();
 }
 
+K4AExposureCalibration::~K4AExposureCalibration()
+{
+}
+
 // call k4a_nodelet_manager/set_parameters to update exposure value
 bool K4AExposureCalibration::k4aUpdateExposure(int req_exposure, int& error_code, std::string& res_msg)
 {
