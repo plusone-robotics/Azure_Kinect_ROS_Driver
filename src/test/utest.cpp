@@ -60,7 +60,7 @@ TEST(ExposureCalibrationTest, UpdateExposureInRangeTest)
 
   // Create a ROS node handle for testing class
   ros::NodeHandle test_nh;
-  std::shared_ptr<K4AExposureCalibration> test_node(new K4AExposureCalibration(test_nh));
+  K4AExposureCalibration test_node = new K4AExposureCalibration(test_nh);
 
   // Publish fake image data
   publishk4aFakeImageData(pub_nh);
@@ -71,12 +71,11 @@ TEST(ExposureCalibrationTest, UpdateExposureInRangeTest)
   // Call the k4aUpdateExposure function with a fake exposure value
   int error_code;
   std::string res_msg;
-  bool result = test_node->k4aUpdateExposure(1000, error_code, res_msg);
+  bool result = test_node.k4aUpdateExposure(1000, error_code, res_msg);
 
   // Check the result
   EXPECT_TRUE(result);
   EXPECT_EQ(error_code, azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::SUCCESS);
-  test_node.reset();
 }
 
 // Test case for k4aUpdateExposure out of range (less than)
@@ -87,7 +86,7 @@ TEST(ExposureCalibrationTest, UpdateExposureOutOfRangeLTTest)
   
   // Create a ROS node handle for testing class
   ros::NodeHandle test_nh;
-  std::shared_ptr<K4AExposureCalibration> test_node(new K4AExposureCalibration(test_nh));
+  K4AExposureCalibration test_node = new K4AExposureCalibration(test_nh);
 
   // Publish fake image data
   publishk4aFakeImageData(pub_nh);
@@ -98,12 +97,11 @@ TEST(ExposureCalibrationTest, UpdateExposureOutOfRangeLTTest)
   // Call the k4aUpdateExposure function with a fake exposure value
   int error_code;
   std::string res_msg;
-  bool result = test_node->k4aUpdateExposure(100, error_code, res_msg);
+  bool result = test_node.k4aUpdateExposure(100, error_code, res_msg);
 
   // Check the result
   EXPECT_FALSE(result);
   EXPECT_EQ(error_code, azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::REQUESTED_CAMERA_EXPOSURE_OUT_OF_BOUNDS_FAILURE);
-  test_node.reset();
 }
 
 // Test case for k4aUpdateExposure out of range (greater than)
@@ -114,7 +112,7 @@ TEST(ExposureCalibrationTest, UpdateExposureOutOfRangeGTTest)
   
     // Create a ROS node handle for testing class
   ros::NodeHandle test_nh;
-  std::shared_ptr<K4AExposureCalibration> test_node(new K4AExposureCalibration(test_nh));
+  K4AExposureCalibration test_node = new K4AExposureCalibration(test_nh);
 
   // Publish fake image data
   publishk4aFakeImageData(pub_nh);
@@ -125,12 +123,11 @@ TEST(ExposureCalibrationTest, UpdateExposureOutOfRangeGTTest)
   // Call the k4aUpdateExposure function with a fake exposure value
   int error_code;
   std::string res_msg;
-  bool result = test_node->k4aUpdateExposure(1000005, error_code, res_msg);
+  bool result = test_node.k4aUpdateExposure(1000005, error_code, res_msg);
 
   // Check the result
   EXPECT_FALSE(result);
   EXPECT_EQ(error_code, azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::REQUESTED_CAMERA_EXPOSURE_OUT_OF_BOUNDS_FAILURE);
-  test_node.reset();
 }
 
 // Test case for k4aAutoTuneExposure
@@ -141,7 +138,7 @@ TEST(ExposureCalibrationTest, AutoTuneExposureTest)
   
   // Create a ROS node handle for testing class
   ros::NodeHandle test_nh;
-  std::shared_ptr<K4AExposureCalibration> test_node(new K4AExposureCalibration(test_nh));
+  K4AExposureCalibration test_node = new K4AExposureCalibration(test_nh);
 
   // Publish fake image data
   publishk4aFakeImageData(pub_nh);
@@ -152,14 +149,13 @@ TEST(ExposureCalibrationTest, AutoTuneExposureTest)
   // Call the k4aAutoTuneExposure function with a fake target blue value
   int final_exposure, error_code;
   std::string res_msg;
-  bool result = test_node->k4aAutoTuneExposure(150, final_exposure, error_code, res_msg);
+  bool result = test_node.k4aAutoTuneExposure(150, final_exposure, error_code, res_msg);
 
   // Check the result
   EXPECT_TRUE(result);
   EXPECT_EQ(error_code, azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::SUCCESS);
   EXPECT_GE(final_exposure, 488); // Assuming minimum exposure value
   EXPECT_LE(final_exposure, 1000000); // Assuming maximum exposure value
-  test_node.reset();
 }
 
 // Test case for k4aAutoTuneExposure with empty image
@@ -170,7 +166,7 @@ TEST(ExposureCalibrationTest, AutoTuneExposureEmptyImageTest)
   
   // Create a ROS node handle for testing class
   ros::NodeHandle test_nh;
-  std::shared_ptr<K4AExposureCalibration> test_node(new K4AExposureCalibration(test_nh));
+  K4AExposureCalibration test_node = new K4AExposureCalibration(test_nh);
 
   // Publish fake image data
   publishk4aBadImageData(pub_nh);
@@ -181,13 +177,12 @@ TEST(ExposureCalibrationTest, AutoTuneExposureEmptyImageTest)
   // Call the k4aAutoTuneExposure function with a fake target blue value
   int final_exposure, error_code;
   std::string res_msg;
-  bool result = test_node->k4aAutoTuneExposure(150, final_exposure, error_code, res_msg);
+  bool result = test_node.k4aAutoTuneExposure(150, final_exposure, error_code, res_msg);
 
   // Check the result
   EXPECT_FALSE(result);
   EXPECT_EQ(error_code, azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::IMAGE_NOT_RECEIVED_FAILURE);
   EXPECT_EQ(final_exposure, 0); // failure, never set
-  test_node.reset();
 }
 
 // Test case for k4aAutoTuneExposure out of range (less than)
@@ -198,7 +193,7 @@ TEST(ExposureCalibrationTest, AutoTuneExposureLTTest)
   
   // Create a ROS node handle for testing class
   ros::NodeHandle test_nh;
-  std::shared_ptr<K4AExposureCalibration> test_node(new K4AExposureCalibration(test_nh));
+  K4AExposureCalibration test_node = new K4AExposureCalibration(test_nh);
 
   // Publish fake image data
   publishk4aFakeImageData(pub_nh);
@@ -209,13 +204,12 @@ TEST(ExposureCalibrationTest, AutoTuneExposureLTTest)
   // Call the k4aAutoTuneExposure function with a fake target blue value
   int final_exposure, error_code;
   std::string res_msg;
-  bool result = test_node->k4aAutoTuneExposure(-1, final_exposure, error_code, res_msg);
+  bool result = test_node.k4aAutoTuneExposure(-1, final_exposure, error_code, res_msg);
 
   // Check the result
   EXPECT_FALSE(result);
   EXPECT_EQ(error_code, azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::REQUESTED_CAMERA_BLUE_VALUE_OUT_OF_BOUNDS_FAILURE);
   EXPECT_EQ(final_exposure, 0); // failure, never set
-  test_node.reset();
 }
 
 // Test case for k4aAutoTuneExposure out of range (greater than)
@@ -226,7 +220,7 @@ TEST(ExposureCalibrationTest, AutoTuneExposureGTTest)
   
   // Create a ROS node handle for testing class
   ros::NodeHandle test_nh;
-  std::shared_ptr<K4AExposureCalibration> test_node(new K4AExposureCalibration(test_nh));
+  K4AExposureCalibration test_node = new K4AExposureCalibration(test_nh);
 
   // Publish fake image data
   publishk4aFakeImageData(pub_nh);
@@ -237,13 +231,12 @@ TEST(ExposureCalibrationTest, AutoTuneExposureGTTest)
   // Call the k4aAutoTuneExposure function with a fake target blue value
   int final_exposure, error_code;
   std::string res_msg;
-  bool result = test_node->k4aAutoTuneExposure(256, final_exposure, error_code, res_msg);
+  bool result = test_node.k4aAutoTuneExposure(256, final_exposure, error_code, res_msg);
 
   // Check the result
   EXPECT_FALSE(result);
   EXPECT_EQ(error_code, azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::REQUESTED_CAMERA_BLUE_VALUE_OUT_OF_BOUNDS_FAILURE);
   EXPECT_EQ(final_exposure, 0); // failure, never set
-  test_node.reset();
 }
 
 TEST(ExposureCalibrationTest, azure_kinect_ros_driver_framework)
