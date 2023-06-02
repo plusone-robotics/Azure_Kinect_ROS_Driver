@@ -69,7 +69,6 @@ TEST(ExposureCalibrationTest, UpdateExposureInRangeTest)
   // Check the result
   EXPECT_TRUE(result);
   EXPECT_EQ(error_code, azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::SUCCESS);
-  k4aFakeImage.release();
 }
 
 // // Test case for k4aUpdateExposure out of range (less than)
