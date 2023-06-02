@@ -11,7 +11,7 @@
 TEST(ExposureCalibrationTest, UpdateExposureTest)
 {
   // appease the ros gods
-  ros::Time::init()
+  ros::Time::init();
 
   // make fake image
   cv::Mat k4aFakeImage;
