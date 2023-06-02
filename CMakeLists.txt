@@ -83,6 +83,7 @@ add_executable(${PROJECT_NAME}_node
   src/k4a_calibration_transform_data.cpp
   )
 add_executable(k4a_exposure_calibration_node
+  include/k4a_exposure_calibration_node.h
   src/k4a_exposure_calibration_node.cpp
   )
 add_dependencies(${PROJECT_NAME}_node ${PROJECT_NAME}_gencfg)
