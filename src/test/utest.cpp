@@ -11,6 +11,7 @@
 
 void publishk4aFakeImageData(ros::NodeHandle& pub_nh)
 {
+  ROS_ERROR("SANITY CHECK: publishk4aFakeImageData");
   // Create a fake RGB image (BGR8 format)
   cv::Mat k4aFakeImage;
   cv::Mat image(480, 640, CV_8UC3, cv::Scalar(50, 0, 0));
@@ -33,6 +34,7 @@ void publishk4aFakeImageData(ros::NodeHandle& pub_nh)
 bool k4aTestMockReconfigure(dynamic_reconfigure::Reconfigure::Request& req,
                             dynamic_reconfigure::Reconfigure::Response& res)
 {
+  ROS_ERROR("SANITY CHECK: k4aTestMockReconfigure");
   dynamic_reconfigure::IntParameter updated_exposure_param;
   updated_exposure_param.name = "exposure_time";
   for(const auto& param : req.config.ints)
@@ -50,6 +52,7 @@ bool k4aTestMockReconfigure(dynamic_reconfigure::Reconfigure::Request& req,
 
 TEST(ExposureCalibrationTest, UpdateExposureTest)
 {
+  ROS_ERROR("SANITY CHECK: UpdateExposureTest");
   // appease the ros gods
   ros::Time::init();
 
