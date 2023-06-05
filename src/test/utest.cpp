@@ -53,34 +53,21 @@ bool k4aTestMockReconfigure(dynamic_reconfigure::Reconfigure::Request& req,
 TEST(ExposureCalibrationTest, UpdateExposureTest)
 {
   ROS_ERROR("SANITY CHECK: UpdateExposureTest");
-  // appease the ros gods
-  // ros::Time::init();
-
-  // Create mock service/publisher
-  ros::NodeHandle mock_pub_nh;
-  ROS_ERROR("SANITY CHECK: UpdateExposureTest, mock_pub_nh created");
-
-  // Set up mock dynamic reconfigure service
-  ros::ServiceServer mock_service = mock_pub_nh.advertiseService("/k4a_nodelet_manager/set_parameters", k4aTestMockReconfigure);
-  ROS_ERROR("SANITY CHECK: UpdateExposureTest, mock_pub_nh advertising set params");
-
-  // Publish fake image data
-  //publishk4aFakeImageData(mock_pub_nh);
-
-  // make test node
-  K4AExposureCalibration test_node_normal;
+  
+  K4AExposureCalibration test_node_eqExp;
+  
   ROS_ERROR("SANITY CHECK: UpdateExposureTest, test_node created");
 
   // test appropriate exposure value 1000
   int test_k4aExposureServiceErrorCode;
   std::string test_message = "";
 
-  ROS_ERROR("SANITY CHECK: UpdateExposureTest, about to call k4aUpdateExposure");
-  bool okExp = test_node_normal.k4aUpdateExposure(1000, test_k4aExposureServiceErrorCode, test_message);
+  ROS_ERROR("SANITY CHECK: UpdateExposureTest, about to call k4aCompare");
+  bool eqExp = test_node_eqExp.k4aCompareExposure(test_k4aExposureServiceErrorCode, test_message, 1000, 1000);
   ROS_ERROR("SANITY CHECK: UpdateExposureTest, called k4aUpdateExposure");
   ASSERT_TRUE(okExp);
   ASSERT_TRUE(test_k4aExposureServiceErrorCode == azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::SUCCESS);
-  ASSERT_EQ(test_message, "Updated exposure");
+  ASSERT_EQ(test_message, "Exposure update successful");
 }
 
 TEST(ExposureCalibrationTest, azure_kinect_ros_driver_framework)

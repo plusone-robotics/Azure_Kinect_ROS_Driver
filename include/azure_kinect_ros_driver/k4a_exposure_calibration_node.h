@@ -30,6 +30,7 @@ public:
     ~K4AExposureCalibration();
     bool k4aUpdateExposure(int req_exposure, int& error_code, std::string& res_msg);
     bool k4aAutoTuneExposure(int target_blue_value, int& final_exposure, int& error_code, std::string& res_msg);
+    int k4aCompareExposure(int& error_code, std::string& res_msg, int updated_exposure, int requested_exposure);
 private:
     void p2Callback(const sensor_msgs::PointCloud2& msg);
     void rgbRawImageCallback(const sensor_msgs::ImageConstPtr& msg);

@@ -27,6 +27,26 @@ K4AExposureCalibration::~K4AExposureCalibration()
 {
 }
 
+bool K4AExposureCalibration::k4aCompareExposure(int& error_code, std::string& res_msg, int updated_exposure, int requested_exposure)
+{
+  if(updated_exposure != requested_exposure)
+  {
+    std::string error_msg = "Failed to update exposure";
+    ROS_ERROR("Failed to update exposure");
+    res_msg = error_msg;
+    error_code = azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::CAMERA_EXPOSURE_SET_FAILURE;
+    return false;
+  }
+  else
+  {
+    std::string success_msg = "Exposure update successful";
+    ROS_INFO("Updated exposure to: [%d]", updated_exposure);
+    res_msg = success_msg;
+    error_code = azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::SUCCESS;
+    return true;
+  }
+}
+
 // call k4a_nodelet_manager/set_parameters to update exposure value
 bool K4AExposureCalibration::k4aUpdateExposure(int req_exposure, int& error_code, std::string& res_msg)
 {
@@ -52,22 +72,7 @@ bool K4AExposureCalibration::k4aUpdateExposure(int req_exposure, int& error_code
       break;
     }
   }
-  if(updated_exposure != req_exposure || updated_exposure == -1)
-  {
-    std::string error_msg = "Failed to update exposure in k4aUpdateExposure";
-    ROS_ERROR("Failed to update exposure in k4aUpdateExposure");
-    res_msg = error_msg;
-    error_code = azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::CAMERA_EXPOSURE_SET_FAILURE;
-    return false;
-  }
-  else
-  {
-    std::string success_msg = "Updated exposure";
-    ROS_INFO("Updated exposure to: [%d]", updated_exposure);
-    res_msg = success_msg;
-    error_code = azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::SUCCESS;
-    return true;
-  }
+  return k4aCompareExposure(error_code, res_msg, updated_exposure, req_exposure);
 }
 
 // auto tune exposure with given target blue value
