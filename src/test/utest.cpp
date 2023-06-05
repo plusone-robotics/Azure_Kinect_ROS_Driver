@@ -50,21 +50,21 @@ bool k4aTestMockReconfigure(dynamic_reconfigure::Reconfigure::Request& req,
   return true;
 }
 
-TEST(ExposureCalibrationTest, UpdateExposureTest)
+TEST(ExposureCalibrationTest, CompareExposureTest)
 {
-  ROS_ERROR("SANITY CHECK: UpdateExposureTest");
+  ROS_ERROR("SANITY CHECK: CompareExposureTest");
   
   K4AExposureCalibration test_node_eqExp;
   
-  ROS_ERROR("SANITY CHECK: UpdateExposureTest, test_node created");
+  ROS_ERROR("SANITY CHECK: CompareExposureTest, test_node created");
 
   // test appropriate exposure value 1000
   int test_k4aExposureServiceErrorCode;
   std::string test_message = "";
 
-  ROS_ERROR("SANITY CHECK: UpdateExposureTest, about to call k4aCompare");
+  ROS_ERROR("SANITY CHECK: CompareExposureTest, about to call k4aCompare");
   bool eqExp = test_node_eqExp.k4aCompareExposure(test_k4aExposureServiceErrorCode, test_message, 1000, 1000);
-  ROS_ERROR("SANITY CHECK: UpdateExposureTest, called k4aUpdateExposure");
+  ROS_ERROR("SANITY CHECK: CompareExposureTest, called k4aCompareExposure");
   ASSERT_TRUE(okExp);
   ASSERT_TRUE(test_k4aExposureServiceErrorCode == azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::SUCCESS);
   ASSERT_EQ(test_message, "Exposure update successful");
