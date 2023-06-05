@@ -99,9 +99,9 @@ add_library(${PROJECT_NAME}_nodelet
 add_dependencies(${PROJECT_NAME}_nodelet ${PROJECT_NAME}_gencfg)
 target_compile_features(${PROJECT_NAME}_nodelet PUBLIC cxx_std_11)
 
-# add_library(por_testing
-#   src/k4a_exposure_calibration_node.cpp
-# )
+add_library(por_testing
+  src/k4a_exposure_calibration_node.cpp
+)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -245,14 +245,11 @@ endif()
 if(CATKIN_ENABLE_TESTING)
   find_package(rostest REQUIRED)
   add_rostest_gtest(utest_node test/utest_launch.test src/test/utest.cpp)
-  add_executable(k4a_exposure_calibration_node
-    src/k4a_exposure_calibration_node.cpp
-  )
   include_directories(
     ${catkin_INCLUDE_DIRS}
     "include"
   )
-  target_link_libraries(utest_node ${catkin_LIBRARIES})
+  target_link_libraries(utest_node ${catkin_LIBRARIES} por_testing)
   install(TARGETS k4a_exposure_calibration_node
     ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
     LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
