@@ -8,12 +8,9 @@
 // Project headers
 #include "azure_kinect_ros_driver/k4a_exposure_calibration_node.h"
 
-TEST(ExposureCalibrationTest, UpdateExposureTest)
+void publishk4aFakeImageData(ros::NodeHandle& pub_nh)
 {
-  // appease the ros gods
-  ros::Time::init();
-
-  // make fake image
+  // Create a fake RGB image (BGR8 format)
   cv::Mat k4aFakeImage;
   cv::Mat image(480, 640, CV_8UC3, cv::Scalar(50, 0, 0));
   k4aFakeImage = image.clone();
@@ -25,13 +22,20 @@ TEST(ExposureCalibrationTest, UpdateExposureTest)
   cvImage.image = image;
   sensor_msgs::ImagePtr msg = cvImage.toImageMsg();
 
-  // Create ROS node publisher handle
-  ros::NodeHandle pub_nh;
-  
   // Publish the fake image data
   image_transport::ImageTransport it(pub_nh);
   image_transport::Publisher pub = it.advertise("/rgb/raw/image", 1);
   pub.publish(msg);
+}
+
+TEST(ExposureCalibrationTest, UpdateExposureTest)
+{
+  // appease the ros gods
+  ros::Time::init();
+
+  // Create ROS node publisher handle
+  ros::NodeHandle pub_nh;
+  publishk4aFakeImageData(pub_nh);
 
   // make test node
   K4AExposureCalibration test_node;
