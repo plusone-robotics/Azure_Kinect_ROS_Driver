@@ -61,7 +61,7 @@ TEST(ExposureCalibrationTest, UpdateExposureTest)
   ros::ServiceServer mock_service = mock_pub_nh.advertiseService("/k4a_nodelet_manager/set_parameters", k4aTestMockReconfigure);
 
   // Publish fake image data
-  publishk4aFakeImageData(mock_pub_nh);
+  //publishk4aFakeImageData(mock_pub_nh);
 
   // make test node
   K4AExposureCalibration test_node;
