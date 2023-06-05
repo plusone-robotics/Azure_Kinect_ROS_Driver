@@ -8,7 +8,6 @@
 
 // Project headers
 #include "azure_kinect_ros_driver/k4a_exposure_calibration_node.h"
-#include "azure_kinect_ros_driver/k4a_ros_bridge_nodelet.h"
 
 void publishk4aFakeImageData(ros::NodeHandle& pub_nh)
 {
