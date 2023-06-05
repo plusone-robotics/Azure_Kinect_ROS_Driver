@@ -76,6 +76,7 @@ TEST(ExposureCalibrationTest, UpdateExposureTest)
   std::string test_message = "";
 
   ROS_ERROR("SANITY CHECK: UpdateExposureTest, about to call k4aUpdateExposure");
+  ros::spin();
   bool okExp = test_node.k4aUpdateExposure(1000, test_k4aExposureServiceErrorCode, test_message);
   ROS_ERROR("SANITY CHECK: UpdateExposureTest, called k4aUpdateExposure");
   ASSERT_TRUE(okExp);
