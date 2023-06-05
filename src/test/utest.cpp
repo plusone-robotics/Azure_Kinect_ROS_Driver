@@ -68,7 +68,8 @@ TEST(ExposureCalibrationTest, UpdateExposureTest)
   //publishk4aFakeImageData(mock_pub_nh);
 
   // make test node
-  K4AExposureCalibration test_node;
+  ros::NodeHandle test_nh;
+  K4AExposureCalibration test_node(test_nh);
   ROS_ERROR("SANITY CHECK: UpdateExposureTest, test_node created");
 
   // test appropriate exposure value 1000
