@@ -54,7 +54,7 @@ TEST(ExposureCalibrationTest, UpdateExposureTest)
 {
   ROS_ERROR("SANITY CHECK: UpdateExposureTest");
   // appease the ros gods
-  ros::Time::init();
+  // ros::Time::init();
 
   // Create mock service/publisher
   ros::NodeHandle mock_pub_nh;
