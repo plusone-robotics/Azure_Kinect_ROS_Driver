@@ -33,8 +33,8 @@
 TEST(ExposureCalibrationTest, K4ACameraCheckTest)
 {
     k4a_device_t device = nullptr;
-    ASSERT_EQ(K4A_RESULT_SUCCEEDED, k4a_device_open(K4A_DEVICE_DEFAULT, &device));
-    k4a_device_close(device);
+    ASSERT_EQ(K4A_RESULT_SUCCEEDED, k4a::k4a_device_open(K4A_DEVICE_DEFAULT, &device));
+    k4a::k4a_device_close(device);
     device = nullptr;
 }
 
