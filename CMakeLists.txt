@@ -99,7 +99,7 @@ add_library(${PROJECT_NAME}_nodelet
 add_dependencies(${PROJECT_NAME}_nodelet ${PROJECT_NAME}_gencfg)
 target_compile_features(${PROJECT_NAME}_nodelet PUBLIC cxx_std_11)
 
-add_library(testing
+add_library(por_testing
   src/k4a_exposure_calibration_node.cpp
 )
 
@@ -271,7 +271,7 @@ target_link_libraries(${PROJECT_NAME}_nodelet
   ${OpenCV_LIBS}
 )
 
-target_link_libraries(testing
+target_link_libraries(por_testing
   ${catkin_LIBRARIES}
 )
 
@@ -319,5 +319,5 @@ install(FILES
 if(CATKIN_ENABLE_TESTING)
   find_package(rostest REQUIRED)
   add_rostest_gtest(utest_node test/utest_launch.test src/test/utest.cpp)
-  target_link_libraries(utest_node ${catkin_LIBRARIES} testing)
+  target_link_libraries(utest_node ${catkin_LIBRARIES} por_testing)
 endif()
