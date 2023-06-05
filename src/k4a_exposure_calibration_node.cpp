@@ -21,11 +21,6 @@ K4AExposureCalibration::K4AExposureCalibration(ros::NodeHandle& nh)
   // advertise services
   ros::ServiceServer update_exposure_service = nh_.advertiseService("k4a_update_exposure", &K4AExposureCalibration::k4aUpdateExposureCallback, this);
   ros::ServiceServer auto_tune_exposure_service = nh_.advertiseService("k4a_auto_tune_exposure", &K4AExposureCalibration::k4aAutoTuneExposureCallback, this);
-
-  ROS_INFO("Spinning K4A Exposure Calibration Node");
-  ros::AsyncSpinner spinner(4); // Use 4 threads
-  spinner.start();
-  ros::waitForShutdown();
 }
 
 K4AExposureCalibration::~K4AExposureCalibration()
@@ -261,6 +256,11 @@ int main(int argc, char **argv)
   
   K4AExposureCalibration k4a_Exposure_Calibration(nh);
   ROS_INFO("Initialized K4A Exposure Calibration Node");
+
+  ROS_INFO("Spinning K4A Exposure Calibration Node");
+  ros::AsyncSpinner spinner(4); // Use 4 threads
+  spinner.start();
+  ros::waitForShutdown();
 
   return 0;
 }

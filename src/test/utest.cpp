@@ -68,8 +68,7 @@ TEST(ExposureCalibrationTest, UpdateExposureTest)
   //publishk4aFakeImageData(mock_pub_nh);
 
   // make test node
-  ros::NodeHandle test_nh;
-  K4AExposureCalibration test_node(test_nh);
+  K4AExposureCalibration test_node_normal;
   ROS_ERROR("SANITY CHECK: UpdateExposureTest, test_node created");
 
   // test appropriate exposure value 1000
@@ -77,8 +76,7 @@ TEST(ExposureCalibrationTest, UpdateExposureTest)
   std::string test_message = "";
 
   ROS_ERROR("SANITY CHECK: UpdateExposureTest, about to call k4aUpdateExposure");
-  ros::spin();
-  bool okExp = test_node.k4aUpdateExposure(1000, test_k4aExposureServiceErrorCode, test_message);
+  bool okExp = test_node_normal.k4aUpdateExposure(1000, test_k4aExposureServiceErrorCode, test_message);
   ROS_ERROR("SANITY CHECK: UpdateExposureTest, called k4aUpdateExposure");
   ASSERT_TRUE(okExp);
   ASSERT_TRUE(test_k4aExposureServiceErrorCode == azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::SUCCESS);
