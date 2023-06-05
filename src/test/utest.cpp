@@ -25,6 +25,11 @@ TEST(ExposureCalibrationTest, UpdateExposureTest)
   cvImage.image = image;
   sensor_msgs::ImagePtr msg = cvImage.toImageMsg();
 
+  // Publish the fake image data
+  image_transport::ImageTransport it(pub_nh);
+  image_transport::Publisher pub = it.advertise("/rgb/raw/image", 1);
+  pub.publish(msg);
+
   // make test node
   K4AExposureCalibration test_node;
 
