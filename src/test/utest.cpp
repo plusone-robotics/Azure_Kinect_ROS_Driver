@@ -25,6 +25,9 @@ TEST(ExposureCalibrationTest, UpdateExposureTest)
   cvImage.image = image;
   sensor_msgs::ImagePtr msg = cvImage.toImageMsg();
 
+  // Create ROS node publisher handle
+  ros::NodeHandle pub_nh;
+  
   // Publish the fake image data
   image_transport::ImageTransport it(pub_nh);
   image_transport::Publisher pub = it.advertise("/rgb/raw/image", 1);
