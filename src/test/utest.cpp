@@ -12,7 +12,7 @@ TEST(ExposureCalibrationTest, CameraExposureUpdateCheckTest)
 {
   ROS_ERROR("SANITY CHECK: CompareExposureTest");
   
-  K4AExposureCalibration test_node_eqExp;
+  K4AExposureCalibration test_node;
   
   ROS_ERROR("SANITY CHECK: CompareExposureTest, test_node created");
 
@@ -21,7 +21,7 @@ TEST(ExposureCalibrationTest, CameraExposureUpdateCheckTest)
 
   // test accurately changed appropriate exposure value 1000
   ROS_ERROR("SANITY CHECK: CompareExposureTest, about to call k4aCompare for okExp");
-  bool chExp = test_node_eqExp.k4aCameraExposureUpdateCheck(test_k4aExposureServiceErrorCode, test_message, 1000, 1000);
+  bool chExp = test_node.k4aCameraExposureUpdateCheck(1000, 1000, test_k4aExposureServiceErrorCode, test_message);
   ROS_ERROR("SANITY CHECK: CompareExposureTest, called k4aCompareExposure for okExp");
   ASSERT_TRUE(chExp);
   ASSERT_TRUE(test_k4aExposureServiceErrorCode == azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::SUCCESS);
@@ -29,7 +29,7 @@ TEST(ExposureCalibrationTest, CameraExposureUpdateCheckTest)
 
   // test unchanged appropriate exposure value (requested 1000, updated 15625 [default])
   ROS_ERROR("SANITY CHECK: CompareExposureTest, about to call k4aCompare for unchExp");
-  bool unchExp = test_node_eqExp.k4aCameraExposureUpdateCheck(test_k4aExposureServiceErrorCode, test_message, 15625, 1000);
+  bool unchExp = test_node.k4aCameraExposureUpdateCheck(1000, 15625, test_k4aExposureServiceErrorCode, test_message);
   ROS_ERROR("SANITY CHECK: CompareExposureTest, called k4aCompareExposure for unchExp");
   ASSERT_FALSE(unchExp);
   ASSERT_TRUE(test_k4aExposureServiceErrorCode == azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::CAMERA_EXPOSURE_SET_FAILURE);
