@@ -49,9 +49,9 @@ bool K4AExposureCalibration::k4aCameraExposureUpdateCheck(int requested_exposure
 }
 
 // check if target_blue_value has been achieved
-bool K4AExposureCalibration::k4aTargetBlueCheck(int target_blue_val, int current_avg_blue_value, int& error_code, std::string& res_msg)
+bool K4AExposureCalibration::k4aTargetBlueCheck(int target_blue_value, int current_avg_blue_value, int& error_code, std::string& res_msg)
 {
-  if(current_avg_blue_value >= target_blue_val)
+  if(current_avg_blue_value >= target_blue_value)
   {
     std::string error_msg = "Successfully calibrated exposure for target blue value";
     ROS_INFO("Successfully calibrated exposure for target blue value of [%d]", target_blue_value);
