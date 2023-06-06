@@ -244,6 +244,23 @@ endif()
 # Testing
 if(CATKIN_ENABLE_TESTING)
   find_package(rostest REQUIRED)
+  find_package(catkin REQUIRED COMPONENTS
+    roscpp
+    std_msgs
+    message_generation
+    sensor_msgs
+    image_transport
+    image_geometry
+    nodelet
+    tf2
+    tf2_ros
+    tf2_geometry_msgs
+    geometry_msgs
+    nodelet
+    cv_bridge
+    camera_info_manager
+    dynamic_reconfigure
+  )
   find_package(OpenCV REQUIRED)
   add_rostest_gtest(utest_node test/utest_launch.test src/test/utest.cpp)
   include_directories(
