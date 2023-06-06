@@ -31,6 +31,7 @@ public:
     bool k4aUpdateExposure(int req_exposure, int& error_code, std::string& res_msg);
     bool k4aAutoTuneExposure(int target_blue_value, int& final_exposure, int& error_code, std::string& res_msg);
     bool k4aCameraExposureUpdateCheck(int requested_exposure, int updated_exposure, int& error_code, std::string& res_msg);
+    bool k4aExpBoundsCheck(int requested_exposure, int& error_code, std::string& res_msg);
     bool k4aTargetBlueCheck(int target_blue_val, int current_avg_blue_value, int& error_code, std::string& res_msg);
     bool k4aBlueBoundsCheck(int target_blue_value, int& error_code, std::string& res_msg);
     bool k4aImageReceivedCheck(int& error_code, std::string& res_msg);
