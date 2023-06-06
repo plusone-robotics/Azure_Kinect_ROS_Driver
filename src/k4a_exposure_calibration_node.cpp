@@ -89,7 +89,7 @@ bool K4AExposureCalibration::k4aBlueBoundsCheck(int target_blue_value, int& erro
 {
   int min_blue = 0;
   int max_blue = 255;
-  if(requested_exposure < min_exposure || requested_exposure > max_exposure)
+  if(target_blue_value < min_blue || target_blue_value > max_blue)
   {
     std::string error_msg = "Requested target blue value out of range";
     ROS_ERROR("Requested target blue value out of range [%d] - [%d]", min_blue, max_blue);
@@ -203,7 +203,7 @@ bool K4AExposureCalibration::k4aAutoTuneExposure(int target_blue_value, int& fin
       break;
     }
   }
-  ROS_INFO("Successfully updated exposure to [%d] for target blue value of [%d]", calibrated_exposure, target_blue_value);
+  ROS_INFO("Successfully updated exposure to [%d] for target blue value of [%d]", final_exposure, target_blue_value);
   return true;
 }
 
@@ -257,7 +257,7 @@ bool K4AExposureCalibration::k4aAutoTuneExposureCallback(azure_kinect_ros_driver
   uint32_t min_blue = 0;
   uint32_t max_blue = 255;
 
-  bool blueBound = k4aBlueBoundsCheck(int target_blue_value, error_code, res_msg);
+  bool blueBound = k4aBlueBoundsCheck(target_blue_value, error_code, res_msg);
   res.k4aExposureServiceErrorCode = error_code;
   res.message = res_msg;
 
