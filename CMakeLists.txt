@@ -241,7 +241,18 @@ if(MSVC AND NOT k4abt_FOUND)
   endif()
 endif()
 
-# Testing
+# This reads the K4A_LIBS and K4A_INSTALL_REQUIRED variables and decides how to install
+# the various shared objects / DLLs
+include(Installk4a)
+##################################
+###### END AZURE KINECT SDK ######
+##################################
+
+
+##################################
+####### START POR TESTING ########
+##################################
+
 if(CATKIN_ENABLE_TESTING)
   find_package(rostest REQUIRED)
   add_rostest_gtest(utest_node test/utest_launch.test src/test/utest.cpp)
@@ -250,18 +261,10 @@ if(CATKIN_ENABLE_TESTING)
     "include"
   )
   target_link_libraries(utest_node ${catkin_LIBRARIES} por_testing)
-  # install(TARGETS k4a_exposure_calibration_node
-  #   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  #   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  #   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-  # )
 endif()
 
-# This reads the K4A_LIBS and K4A_INSTALL_REQUIRED variables and decides how to install
-# the various shared objects / DLLs
-include(Installk4a)
 ##################################
-###### END AZURE KINECT SDK ######
+###### END POR TESTING ###########
 ##################################
 
 include_directories(

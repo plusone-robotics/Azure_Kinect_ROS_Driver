@@ -33,7 +33,6 @@ bool K4AExposureCalibration::k4aCameraExposureUpdateCheck(int requested_exposure
   if(updated_exposure != requested_exposure)
   {
     std::string error_msg = "Failed to update exposure";
-    ROS_ERROR("Failed to update exposure");
     res_msg = error_msg;
     error_code = azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::CAMERA_EXPOSURE_SET_FAILURE;
     return false;
@@ -64,6 +63,32 @@ bool K4AExposureCalibration::k4aTargetBlueCheck(int target_blue_value, int curre
     // don't update anything yet, keep going in auto tune loop
     return false;
   }
+}
+
+// check if target_blue_value has been achieved
+bool K4AExposureCalibration::k4aExpBoundsCheck(int requested_exposure, int& error_code, std::string& res_msg)
+{
+  if(requested_exposure > 1000000 || requested_exposure < 488)
+  {
+    std::string error_msg = "Requested exposure out of range";
+    ROS_ERROR("Requested exposure out of range [%d] - [%d]", min_exposure, max_exposure);
+    res_msg = error_msg;
+    error_code = azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::REQUESTED_CAMERA_EXPOSURE_OUT_OF_BOUNDS_FAILURE;
+    return false;
+  }
+  else
+  {
+    // don't update anything yet, proceed with exposure update
+    return true;
+  }
+}
+
+bool K4AExposureCalibration::k4aImageReceivedCheck(int& error_code, std::string& res_msg)
+{
+  std::string error_msg = "Failed to retrieve latest image in k4aAutoTuneExposure";
+  res_msg = error_msg;
+  error_code = azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::IMAGE_NOT_RECEIVED_FAILURE;
+  return false;
 }
 
 // call k4a_nodelet_manager/set_parameters to update exposure value
@@ -114,18 +139,16 @@ bool K4AExposureCalibration::k4aAutoTuneExposure(int target_blue_value, int& fin
     if(rows <= 0 || cols <= 0)
     {
       std::string error_msg = "Failed to retrieve latest image in k4aAutoTuneExposure";
-      ROS_ERROR("Failed to retrieve latest image in k4aAutoTuneExposure");
       res_msg = error_msg;
       error_code = azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::IMAGE_NOT_RECEIVED_FAILURE;
       return false;
     }
 
-    bool autoTune = k4aUpdateExposure(exp, error_code, res_msg);
+    bool updateExposure = k4aUpdateExposure(exp, error_code, res_msg);
     
-    if(!autoTune)
+    if(!updateExposure)
     {
       // k4aUpdateExposure handles updating response
-      ROS_ERROR("Unable to update exposure in k4aAutoTuneExposure");
       return false;
     }
     
@@ -157,40 +180,34 @@ bool K4AExposureCalibration::k4aUpdateExposureCallback(azure_kinect_ros_driver::
 {
   // prepare response
   res.message = "";
-  int error_code;
 
   ROS_INFO("Received K4A exposure update request: [%d]", req.new_exp);
 
   // check exposure limits
-  uint32_t req_exposure = req.new_exp;
-  uint32_t min_exposure = 488;
-  uint32_t max_exposure = 1000000;
-
-  if(req_exposure < min_exposure || req_exposure > max_exposure)
+  bool expBoundCheck = k4aExpBoundsCheck(req.new_exp, res.k4aExposureServiceErrorCode, res.message)
+  if(expBoundCheck)
   {
-    std::string error_msg = "Requested exposure out of range";
-    ROS_ERROR("Requested exposure out of range [%d] - [%d]", min_exposure, max_exposure);
-    res.message = error_msg;
-    res.k4aExposureServiceErrorCode = azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::REQUESTED_CAMERA_EXPOSURE_OUT_OF_BOUNDS_FAILURE;
-    return true;
-  }
-  
-  bool tuningRes = k4aUpdateExposure(req.new_exp, error_code, res.message);
-  
-  ROS_INFO("Sending back response...");
+    bool tuningRes = k4aUpdateExposure(req.new_exp, res.k4aExposureServiceErrorCode, res.message);
 
-  // k4aUpdateExposure handles updating response
-  if(!tuningRes)
-  {
-    ROS_ERROR("Unable to update exposure_time, k4aUpdateExposure failed");
-    res.k4aExposureServiceErrorCode = error_code;
-    return true;
+    // k4aUpdateExposure handles updating response
+    if(!tuningRes)
+    {
+      ROS_ERROR("Unable to update exposure_time, k4aUpdateExposure failed");
+      return false;
+    }
+    else
+    {
+      ROS_INFO("Exposure updated to: [%d]", req.new_exp);
+      return true;
+    }
   }
   else
   {
-    res.k4aExposureServiceErrorCode = error_code;
-    return true;
+    ROS_ERROR("Requested exposure out of bounds");
+    return false;
   }
+  
+  
 }
 
 bool K4AExposureCalibration::k4aAutoTuneExposureCallback(azure_kinect_ros_driver::k4a_auto_tune_exposure::Request &req,
@@ -266,7 +283,7 @@ void K4AExposureCalibration::rgbRawImageCallback(const sensor_msgs::ImageConstPt
   }
   catch(cv_bridge::Exception& e)
   {
-    ROS_ERROR("cv_bridge exception: [%s]", e.what());
+    ROS_ERROR("cv_bridge exception in K4AExposureCalibration::rgbRawImageCallback: [%s]", e.what());
   }
 }
 
