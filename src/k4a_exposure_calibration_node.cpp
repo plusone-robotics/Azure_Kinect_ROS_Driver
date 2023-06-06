@@ -196,7 +196,7 @@ bool K4AExposureCalibration::k4aUpdateExposureCallback(azure_kinect_ros_driver::
 
   // check exposure limits
   int error_code;
-  bool expBoundCheck = k4aExpBoundsCheck(req.new_exp, error_code, res.message)
+  bool expBoundCheck = k4aExpBoundsCheck(req.new_exp, error_code, res.message);
   if(expBoundCheck)
   {
     bool tuningRes = k4aUpdateExposure(req.new_exp, error_code, res.message);
@@ -219,7 +219,6 @@ bool K4AExposureCalibration::k4aUpdateExposureCallback(azure_kinect_ros_driver::
     res.k4aExposureServiceErrorCode = error_code;
     return false;
   }
-  
   
 }
 
