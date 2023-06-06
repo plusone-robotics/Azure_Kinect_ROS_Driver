@@ -47,24 +47,6 @@ bool K4AExposureCalibration::k4aCameraExposureUpdateCheck(int requested_exposure
 }
 
 // check if target_blue_value has been achieved
-bool K4AExposureCalibration::k4aTargetBlueCheck(int target_blue_value, int current_avg_blue_value, int& error_code, std::string& res_msg)
-{
-  if(current_avg_blue_value >= target_blue_value)
-  {
-    std::string error_msg = "Successfully calibrated exposure for target blue value";
-    ROS_INFO("Successfully calibrated exposure for target blue value of [%d]", target_blue_value);
-    res_msg = error_msg;
-    error_code = azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::SUCCESS;
-    return true;
-  }
-  else
-  {
-    // don't update anything yet, keep going in auto tune loop
-    return false;
-  }
-}
-
-// check if target_blue_value has been achieved
 bool K4AExposureCalibration::k4aExpBoundsCheck(int requested_exposure, int& error_code, std::string& res_msg)
 {
   int min_exposure = 488;
@@ -84,23 +66,61 @@ bool K4AExposureCalibration::k4aExpBoundsCheck(int requested_exposure, int& erro
   }
 }
 
-// did the node receive an image?
-bool K4AExposureCalibration::k4aImagePopulatedCheck(int& error_code, std::string& res_msg)
+// check if target_blue_value has been achieved
+bool K4AExposureCalibration::k4aTargetBlueCheck(int target_blue_value, int current_avg_blue_value, int& error_code, std::string& res_msg)
 {
-  std::string error_msg = "Failed to retrieve latest image in k4aAutoTuneExposure";
-  res_msg = error_msg;
-  error_code = azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::IMAGE_NOT_RECEIVED_FAILURE;
-  return false;
+  if(current_avg_blue_value >= target_blue_value)
+  {
+    std::string error_msg = "Successfully calibrated exposure for target blue value";
+    ROS_INFO("Successfully calibrated exposure for target blue value of [%d]", target_blue_value);
+    res_msg = error_msg;
+    error_code = azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::SUCCESS;
+    return true;
+  }
+  else
+  {
+    // don't update anything yet, keep going in auto tune loop
+    return false;
+  }
 }
 
-// do we have the latest image?
-bool K4AExposureCalibration::k4aImageReceivedCheck(int& error_code, std::string& res_msg)
+// check if target_blue_value has been achieved
+bool K4AExposureCalibration::k4aBlueBoundsCheck(int target_blue_value, int& error_code, std::string& res_msg)
 {
-  std::string error_msg = "Failed to retrieve latest image in k4aAutoTuneExposure";
-  res_msg = error_msg;
-  error_code = azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::IMAGE_NOT_RECEIVED_FAILURE;
-  return false;
+  int min_blue = 0;
+  int max_blue = 255;
+  if(requested_exposure < min_exposure || requested_exposure > max_exposure)
+  {
+    std::string error_msg = "Requested target blue value out of range";
+    ROS_ERROR("Requested target blue value out of range [%d] - [%d]", min_blue, max_blue);
+    res_msg = error_msg;
+    error_code = azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::REQUESTED_CAMERA_BLUE_VALUE_OUT_OF_BOUNDS_FAILURE;
+    return false;
+  }
+  else
+  {
+    // don't update anything yet, proceed with exposure update
+    return true;
+  }
 }
+
+// did the node receive an image?
+// bool K4AExposureCalibration::k4aImagePopulatedCheck(int& error_code, std::string& res_msg)
+// {
+//   std::string error_msg = "Failed to retrieve latest image in k4aAutoTuneExposure";
+//   res_msg = error_msg;
+//   error_code = azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::IMAGE_NOT_RECEIVED_FAILURE;
+//   return false;
+// }
+
+// do we have the latest image?
+// bool K4AExposureCalibration::k4aImageReceivedCheck(int& error_code, std::string& res_msg)
+// {
+//   std::string error_msg = "Failed to retrieve latest image in k4aAutoTuneExposure";
+//   res_msg = error_msg;
+//   error_code = azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::IMAGE_NOT_RECEIVED_FAILURE;
+//   return false;
+// }
 
 // call k4a_nodelet_manager/set_parameters to update exposure value
 bool K4AExposureCalibration::k4aUpdateExposure(int req_exposure, int& error_code, std::string& res_msg)
@@ -183,6 +203,7 @@ bool K4AExposureCalibration::k4aAutoTuneExposure(int target_blue_value, int& fin
       break;
     }
   }
+  ROS_INFO("Successfully updated exposure to [%d] for target blue value of [%d]", calibrated_exposure, target_blue_value);
   return true;
 }
 
@@ -219,7 +240,6 @@ bool K4AExposureCalibration::k4aUpdateExposureCallback(azure_kinect_ros_driver::
     res.k4aExposureServiceErrorCode = error_code;
     return false;
   }
-  
 }
 
 bool K4AExposureCalibration::k4aAutoTuneExposureCallback(azure_kinect_ros_driver::k4a_auto_tune_exposure::Request &req,
@@ -237,35 +257,33 @@ bool K4AExposureCalibration::k4aAutoTuneExposureCallback(azure_kinect_ros_driver
   uint32_t min_blue = 0;
   uint32_t max_blue = 255;
 
-  if(req_blue < min_blue || req_blue > max_blue)
-  {
-    std::string error_msg = "Requested blue value out of range";
-    ROS_ERROR("Requested blue value out of range [%d] - [%d]", min_blue, max_blue);
-    res.message = error_msg;
-    res.k4aExposureServiceErrorCode = azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::REQUESTED_CAMERA_BLUE_VALUE_OUT_OF_BOUNDS_FAILURE;
-    return true;
-  }
-  
-  bool autoTuningRes = k4aAutoTuneExposure(req.target_blue_val, calibrated_exposure, error_code, res_msg);
-  
-  ROS_INFO("Sending back response...");
+  bool blueBound = k4aBlueBoundsCheck(int target_blue_value, error_code, res_msg);
+  res.k4aExposureServiceErrorCode = error_code;
+  res.message = res_msg;
 
-  // k4aAutoTuneExposure and k4aUpdateExposure handle updating response
-  if(!autoTuningRes)
+  if(!blueBound)
   {
-    ROS_ERROR("k4aAutoTuneExposure failed in callback");
-    res.message = res_msg;
-    res.k4aExposureServiceErrorCode = error_code;
-    return true;
+    return false;
   }
   else
   {
-    ROS_INFO("Successfully updated exposure to [%d] for target blue value of [%d]", calibrated_exposure, req.target_blue_val);
-    res.message = res_msg;
+    bool autoTuningRes = k4aAutoTuneExposure(req.target_blue_val, calibrated_exposure, error_code, res_msg);
     res.k4aExposureServiceErrorCode = error_code;
+    res.message = res_msg;
     res.calibrated_exposure = calibrated_exposure;
-    return true;
+
+    // k4aAutoTuneExposure and k4aUpdateExposure handle updating response
+    if(!autoTuningRes)
+    {
+      return false;
+    }
+    else
+    {
+      return true;
+    }
   }
+  
+  
 }
 
 void K4AExposureCalibration::p2Callback(const sensor_msgs::PointCloud2& msg)
@@ -284,7 +302,7 @@ void K4AExposureCalibration::rgbRawImageCallback(const sensor_msgs::ImageConstPt
     *latest_k4a_image_ptr = k4aCvImagePtr->image;
 
     // check if conversion worked
-    if(latest_k4a_image.empty())
+    if(k4aCvImagePtr->image.empty())
     {
       ROS_ERROR("Failed to convert k4a rgb image to OpenCV mat");
     }

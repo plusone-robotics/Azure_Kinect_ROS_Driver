@@ -33,9 +33,9 @@ public:
     bool k4aCameraExposureUpdateCheck(int requested_exposure, int updated_exposure, int& error_code, std::string& res_msg);
     bool k4aExpBoundsCheck(int requested_exposure, int& error_code, std::string& res_msg);
     bool k4aTargetBlueCheck(int target_blue_val, int current_avg_blue_value, int& error_code, std::string& res_msg);
-    bool k4aImagePopulatedCheck(int& error_code, std::string& res_msg);
     bool k4aBlueBoundsCheck(int target_blue_value, int& error_code, std::string& res_msg);
-    bool k4aImageReceivedCheck(int& error_code, std::string& res_msg);
+    // bool k4aImagePopulatedCheck(int& error_code, std::string& res_msg);
+    // bool k4aImageReceivedCheck(int& error_code, std::string& res_msg);
 private:
     void p2Callback(const sensor_msgs::PointCloud2& msg);
     void rgbRawImageCallback(const sensor_msgs::ImageConstPtr& msg);
