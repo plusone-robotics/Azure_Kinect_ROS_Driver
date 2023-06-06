@@ -110,8 +110,8 @@ TEST(ExposureCalibrationTest, TargetBlueCheckTest)
   ROS_ERROR("SANITY CHECK: TargetBlueCheckTest, about to call k4aTargetBlueCheck");
   bool chBlueNot = test_node.k4aTargetBlueCheck(100, 0, test_k4aExposureServiceErrorCode_bNot, test_message_bNot);
   ROS_ERROR("SANITY CHECK: TargetBlueCheckTest, called k4aTargetBlueCheck");
-  // nothing is assigned
-  ASSERT_TRUE(chBlueNot);
+  // nothing is assigned, nothing is updated
+  ASSERT_FALSE(chBlueNot);
   ASSERT_TRUE(test_k4aExposureServiceErrorCode_bNot == 0);
   ASSERT_EQ(test_message_bNot, "");
 }
