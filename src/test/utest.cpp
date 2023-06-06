@@ -52,35 +52,68 @@ bool k4aTestMockReconfigure(dynamic_reconfigure::Reconfigure::Request& req,
 
 TEST(ExposureCalibrationTest, CameraExposureUpdateCheckTest)
 {
-  ROS_ERROR("SANITY CHECK: CompareExposureTest");
-  
-  K4AExposureCalibration test_node_chExp;
-  
-  ROS_ERROR("SANITY CHECK: CompareExposureTest, test_node created");
+  K4AExposureCalibration test_node;
 
   int test_k4aExposureServiceErrorCode_chExp;
   std::string test_message_chExp = "";
 
   // test accurately changed appropriate exposure value 1000
-  ROS_ERROR("SANITY CHECK: CompareExposureTest, about to call k4aCompare for okExp");
-  bool chExp = test_node_chExp.k4aCameraExposureUpdateCheck(1000, 1000, test_k4aExposureServiceErrorCode_chExp, test_message_chExp);
-  ROS_ERROR("SANITY CHECK: CompareExposureTest, called k4aCompareExposure for okExp");
+  bool chExp = test_node.k4aCameraExposureUpdateCheck(1000, 1000, test_k4aExposureServiceErrorCode_chExp, test_message_chExp);
   ASSERT_TRUE(chExp);
   ASSERT_TRUE(test_k4aExposureServiceErrorCode_chExp == azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::SUCCESS);
   ASSERT_EQ(test_message_chExp, "Exposure update successful");
 
-  K4AExposureCalibration test_node_unchExp;
-
+  // test unchanged appropriate exposure value (requested 1000, updated 15625 [default])
   int test_k4aExposureServiceErrorCode_unchExp;
   std::string test_message_unchExp = "";
 
-  // test unchanged appropriate exposure value (requested 1000, updated 15625 [default])
-  ROS_ERROR("SANITY CHECK: CompareExposureTest, about to call k4aCompare for unchExp");
-  bool unchExp = test_node_unchExp.k4aCameraExposureUpdateCheck(1000, 15625, test_k4aExposureServiceErrorCode_unchExp, test_message_unchExp);
-  ROS_ERROR("SANITY CHECK: CompareExposureTest, called k4aCompareExposure for unchExp");
+  bool unchExp = test_node.k4aCameraExposureUpdateCheck(1000, 15625, test_k4aExposureServiceErrorCode_unchExp, test_message_unchExp);
   ASSERT_FALSE(unchExp);
   ASSERT_TRUE(test_k4aExposureServiceErrorCode_unchExp == azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::CAMERA_EXPOSURE_SET_FAILURE);
   ASSERT_EQ(test_message_unchExp, "Failed to update exposure");
+}
+
+TEST(ExposureCalibrationTest, TargetBlueCheckTest)
+{
+  ROS_ERROR("SANITY CHECK: TargetBlueCheckTest");
+  
+  K4AExposureCalibration test_node;
+  
+  ROS_ERROR("SANITY CHECK: TargetBlueCheckTest, test_node created");
+
+  int test_k4aExposureServiceErrorCode_bMet;
+  std::string test_message_bMet = "";
+
+  // test blue target met
+  ROS_ERROR("SANITY CHECK: TargetBlueCheckTest, about to call k4aTargetBlueCheck");
+  bool chBlueMet = test_node.k4aTargetBlueCheck(100, 100, test_k4aExposureServiceErrorCode_bMet, test_message_bMet);
+  ROS_ERROR("SANITY CHECK: TargetBlueCheckTest, called k4aTargetBlueCheck");
+  ASSERT_TRUE(chBlueMet);
+  ASSERT_TRUE(test_k4aExposureServiceErrorCode_bMet == azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::SUCCESS);
+  ASSERT_EQ(test_message_bMet, "Successfully calibrated exposure for target blue value");
+
+  // test blue target exceeded
+  int test_k4aExposureServiceErrorCode_bExc;
+  std::string test_message_bExc = "";
+
+  ROS_ERROR("SANITY CHECK: TargetBlueCheckTest, about to call k4aTargetBlueCheck");
+  bool chBlueExc = test_node.k4aTargetBlueCheck(100, 200, test_k4aExposureServiceErrorCode_bExc, test_message_bExc);
+  ROS_ERROR("SANITY CHECK: TargetBlueCheckTest, called k4aTargetBlueCheck");
+  ASSERT_TRUE(chBlueExc);
+  ASSERT_TRUE(test_k4aExposureServiceErrorCode_bExc == azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::SUCCESS);
+  ASSERT_EQ(test_message_bExc, "Successfully calibrated exposure for target blue value");
+
+ // test blue target not met
+  int test_k4aExposureServiceErrorCode_bNot;
+  std::string test_message_bNot = "";
+
+  ROS_ERROR("SANITY CHECK: TargetBlueCheckTest, about to call k4aTargetBlueCheck");
+  bool chBlueNot = test_node.k4aTargetBlueCheck(100, 0, test_k4aExposureServiceErrorCode_bNot, test_message_bNot);
+  ROS_ERROR("SANITY CHECK: TargetBlueCheckTest, called k4aTargetBlueCheck");
+  // nothing is assigned
+  ASSERT_TRUE(chBlueNot);
+  ASSERT_TRUE(test_k4aExposureServiceErrorCode_bNot == 0);
+  ASSERT_EQ(test_message_bNot, "");
 }
 
 int main(int argc, char **argv)
