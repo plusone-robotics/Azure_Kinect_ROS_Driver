@@ -48,22 +48,22 @@ bool K4AExposureCalibration::k4aCameraExposureUpdateCheck(int requested_exposure
   }
 }
 
-// check if target_blue_value has been achieved
-bool K4AExposureCalibration::k4aTargetBlueCheck(int target_blue_value, int current_avg_blue_value, int& error_code, std::string& res_msg)
-{
-  if(current_avg_blue_value >= target_blue_value)
-  {
-    std::string error_msg = "Successfully calibrated exposure for target blue value";
-    ROS_INFO("Successfully calibrated exposure for target blue value of [%d]", target_blue_value);
-    res_msg = error_msg;
-    error_code = azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::SUCCESS;
-    return true;
-  }
-  else
-  {
-    return false;
-  }
-}
+// // check if target_blue_value has been achieved
+// bool K4AExposureCalibration::k4aTargetBlueCheck(int target_blue_value, int current_avg_blue_value, int& error_code, std::string& res_msg)
+// {
+//   if(current_avg_blue_value >= target_blue_value)
+//   {
+//     std::string error_msg = "Successfully calibrated exposure for target blue value";
+//     ROS_INFO("Successfully calibrated exposure for target blue value of [%d]", target_blue_value);
+//     res_msg = error_msg;
+//     error_code = azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::SUCCESS;
+//     return true;
+//   }
+//   else
+//   {
+//     return false;
+//   }
+// }
 
 // call k4a_nodelet_manager/set_parameters to update exposure value
 bool K4AExposureCalibration::k4aUpdateExposure(int req_exposure, int& error_code, std::string& res_msg)
@@ -141,9 +141,12 @@ bool K4AExposureCalibration::k4aAutoTuneExposure(int target_blue_value, int& fin
     // calculate average blue value
     int current_avg_blue_value = total_blue / pixel_count;
     // did we achieve appropriate blue at this exposure?
-    bool targetBlueCheck = k4aTargetBlueCheck(target_blue_value, current_avg_blue_value, error_code, res_msg);
-    if(targetBlueCheck)
+    if(current_avg_blue_value >= target_blue_value)
     {
+      std::string error_msg = "Successfully calibrated exposure for target blue value";
+      ROS_INFO("Successfully calibrated exposure for target blue value of [%d]", target_blue_value);
+      res_msg = error_msg;
+      error_code = azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::SUCCESS;
       final_exposure = exp;
       break;
     }
