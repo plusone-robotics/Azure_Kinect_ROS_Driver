@@ -252,12 +252,7 @@ bool K4AExposureCalibration::k4aAutoTuneExposureCallback(azure_kinect_ros_driver
 
   ROS_INFO("Received K4A exposure auto tuning request for blue value: [%d]", req.target_blue_val);
 
-  // check blue value limits
-  uint32_t req_blue = req.target_blue_val;
-  uint32_t min_blue = 0;
-  uint32_t max_blue = 255;
-
-  bool blueBound = k4aBlueBoundsCheck(target_blue_value, error_code, res_msg);
+  bool blueBound = k4aBlueBoundsCheck(req.target_blue_val, error_code, res_msg);
   res.k4aExposureServiceErrorCode = error_code;
   res.message = res_msg;
 
