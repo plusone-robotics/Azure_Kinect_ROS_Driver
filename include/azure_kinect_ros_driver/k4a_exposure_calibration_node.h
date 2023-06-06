@@ -33,6 +33,7 @@ public:
     bool k4aCameraExposureUpdateCheck(int requested_exposure, int updated_exposure, int& error_code, std::string& res_msg);
     bool k4aExpBoundsCheck(int requested_exposure, int& error_code, std::string& res_msg);
     bool k4aTargetBlueCheck(int target_blue_val, int current_avg_blue_value, int& error_code, std::string& res_msg);
+    bool k4aImagePopulatedCheck(int& error_code, std::string& res_msg);
     bool k4aBlueBoundsCheck(int target_blue_value, int& error_code, std::string& res_msg);
     bool k4aImageReceivedCheck(int& error_code, std::string& res_msg);
 private:
@@ -45,10 +46,10 @@ private:
 
     // allocate memory space to store latest image
     cv::Mat latest_k4a_image;
-    cv::Mat* const latest_k4a_image_ptr;
+    cv::Mat* const latest_k4a_image_ptr = &latest_k4a_image;
     ros::Time latest_k4a_timestamp;
-    ros::Time* const latest_k4a_timestamp_ptr;
-    cv_bridge::CvImageConstPtr const k4aCvImagePtr;
+    ros::Time* const latest_k4a_timestamp_ptr = &latest_k4a_timestamp;
+    cv_bridge::CvImageConstPtr k4aCvImagePtr;
     std::mutex latest_k4a_image_mutex;
     azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode k4a_error_code;
 
