@@ -250,11 +250,11 @@ if(CATKIN_ENABLE_TESTING)
     "include"
   )
   target_link_libraries(utest_node ${catkin_LIBRARIES} por_testing)
-  install(TARGETS k4a_exposure_calibration_node
-    ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-    LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-    RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-  )
+  # install(TARGETS k4a_exposure_calibration_node
+  #   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  #   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  #   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+  # )
 endif()
 
 # This reads the K4A_LIBS and K4A_INSTALL_REQUIRED variables and decides how to install
