@@ -154,7 +154,7 @@ TEST(ExposureCalibrationTest, BlueBoundsCheckTest)
   bool outLowBlue = test_node.k4aBlueBoundsCheck(-1, test_k4aExposureServiceErrorCode_outLowBlue, test_message_outLowBlue);
   ASSERT_FALSE(outLowBlue);
   ASSERT_TRUE(test_k4aExposureServiceErrorCode_outLowBlue == azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::REQUESTED_CAMERA_BLUE_VALUE_OUT_OF_BOUNDS_FAILURE);
-  ASSERT_EQ(test_message_outLowBlue, "Requested exposure out of range");
+  ASSERT_EQ(test_message_outLowBlue, "Requested target blue value out of range");
 
   // test out of bounds blue value 260
   int test_k4aExposureServiceErrorCode_outHighBlue;
@@ -163,7 +163,7 @@ TEST(ExposureCalibrationTest, BlueBoundsCheckTest)
   bool outHighBlue = test_node.k4aBlueBoundsCheck(260, test_k4aExposureServiceErrorCode_outHighBlue, test_message_outHighBlue);
   ASSERT_FALSE(outHighBlue);
   ASSERT_TRUE(test_k4aExposureServiceErrorCode_outHighBlue == azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::REQUESTED_CAMERA_BLUE_VALUE_OUT_OF_BOUNDS_FAILURE);
-  ASSERT_EQ(test_message_outHighBlue, "Requested exposure out of range");
+  ASSERT_EQ(test_message_outHighBlue, "Requested target blue value out of range");
 }
 
 // TEST(ExposureCalibrationTest, ImageReceivedCheckTest)
