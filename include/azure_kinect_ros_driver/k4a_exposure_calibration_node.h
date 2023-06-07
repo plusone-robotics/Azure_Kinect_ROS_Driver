@@ -27,8 +27,8 @@ class K4AExposureCalibration
 {
 public:
     /** @brief default constructor and destructor*/
-    K4AExposureCalibration::K4AExposureCalibration();
-    K4AExposureCalibration::~K4AExposureCalibration();
+    K4AExposureCalibration();
+    ~K4AExposureCalibration();
 
     /**
      * @brief initializes calibrator with a provided node handle
@@ -148,7 +148,7 @@ private:
     azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode k4a_error_code; /** @brief error codes*/
 
     // config file info
-    // TODO: PULL THESE VALUES FROM CONFIG FILE
+    // TODO: PULL THESE VALUES FROM CONFIG FILE "azure_kinect_ros_driver/AzureKinectParamsConfig.h"
     const int MIN_EXPOSURE = 488;
     const int MAX_EXPOSURE = 1000000;
     const int DEFAULT_EXPOSURE = 15625;
