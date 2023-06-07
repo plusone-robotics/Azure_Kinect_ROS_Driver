@@ -5,6 +5,10 @@
 // Associated headers
 #include "azure_kinect_ros_driver/k4a_exposure_calibration_node.h"
 
+K4AExposureCalibration::K4AExposureCalibration()
+{
+}
+
 K4AExposureCalibration::K4AExposureCalibration(ros::NodeHandle& nh)
 {
   nh_ = nh;
@@ -14,6 +18,10 @@ K4AExposureCalibration::K4AExposureCalibration(ros::NodeHandle& nh)
 
   update_exposure_service = nh_.advertiseService("k4a_update_exposure", &K4AExposureCalibration::k4aUpdateExposureCallback, this);
   auto_tune_exposure_service = nh_.advertiseService("k4a_auto_tune_exposure", &K4AExposureCalibration::k4aAutoTuneExposureCallback, this);
+}
+
+K4AExposureCalibration::~K4AExposureCalibration()
+{
 }
 
 bool K4AExposureCalibration::k4aCameraExposureUpdateCheck(int requested_exposure, int updated_exposure, int& error_code, std::string& res_msg)
