@@ -2,8 +2,7 @@
 // Author: Shannon Stoehr
 // email:  shannon.stoehr@plusonerobotics.com
 
-#ifndef K4A_EXPOSURE_CALIBRATION_NODE_H
-#define K4A_EXPOSURE_CALIBRATION_NODE_H
+#pragma once
 
 // Library headers
 #include <ros/ros.h>
@@ -57,5 +56,3 @@ private:
     bool k4aAutoTuneExposureCallback(azure_kinect_ros_driver::k4a_auto_tune_exposure::Request &req,
                                      azure_kinect_ros_driver::k4a_auto_tune_exposure::Response &res);
 };
-
-#endif // K4A_EXPOSURE_CALIBRATION_NODE_H
