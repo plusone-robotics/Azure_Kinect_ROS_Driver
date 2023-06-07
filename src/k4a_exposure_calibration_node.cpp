@@ -170,7 +170,7 @@ bool K4AExposureCalibration::k4aAutoTuneExposure(int target_blue_value, int& fin
   for(int exp=488; exp<1000000; exp+=500)
   {
     // check if color channels is empty
-    bool channelsPop = k4aImagePopulatedCheck(*latest_k4a_image, error_code, res_msg);
+    bool channelsPop = k4aImagePopulatedCheck(*latest_k4a_image_ptr, error_code, res_msg);
     if(!channelsPop)
     {
       return false;
