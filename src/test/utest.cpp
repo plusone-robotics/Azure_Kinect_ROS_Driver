@@ -166,36 +166,6 @@ TEST(ExposureCalibrationTest, BlueBoundsCheckTest)
   ASSERT_EQ(test_message_outHighBlue, "Requested target blue value out of range");
 }
 
-// TEST(ExposureCalibrationTest, ImageReceivedCheckTest)
-// {
-//   K4AExposureCalibration test_node;
-  
-//   // image receivec
-//   int test_k4aExposureServiceErrorCode_rec;
-//   std::string test_message_rec = "";
-//   bool chRec = test_node.k4aImageReceivedCheck(test_k4aExposureServiceErrorCode_rec, test_k4aExposureServiceErrorCode_rec);
-//   ASSERT_TRUE(chRec);
-//   ASSERT_TRUE(test_k4aExposureServiceErrorCode_rec == azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::SUCCESS);
-//   ASSERT_EQ(test_message_rec, "Successfully calibrated exposure for target blue value");
-
-//   // test blue target exceeded
-//   int test_k4aExposureServiceErrorCode_bExc;
-//   std::string test_message_bExc = "";
-//   bool chBlueExc = test_node.k4aTargetBlueCheck(100, 200, test_k4aExposureServiceErrorCode_bExc, test_message_bExc);
-//   ASSERT_TRUE(chBlueExc);
-//   ASSERT_TRUE(test_k4aExposureServiceErrorCode_bExc == azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::SUCCESS);
-//   ASSERT_EQ(test_message_bExc, "Successfully calibrated exposure for target blue value");
-
-//  // test blue target not met
-//   int test_k4aExposureServiceErrorCode_bNot;
-//   std::string test_message_bNot = "";
-//   bool chBlueNot = test_node.k4aTargetBlueCheck(100, 0, test_k4aExposureServiceErrorCode_bNot, test_message_bNot);
-//   // nothing is assigned, nothing is updated
-//   ASSERT_FALSE(chBlueNot);
-//   ASSERT_TRUE(test_k4aExposureServiceErrorCode_bNot == 0);
-//   ASSERT_EQ(test_message_bNot, "");
-// }
-
 int main(int argc, char **argv)
 {
   testing::InitGoogleTest(&argc, argv);
