@@ -6,7 +6,6 @@
 
 // Library headers
 #include <ros/ros.h>
-#include <sensor_msgs/PointCloud2.h>
 #include <sensor_msgs/Image.h>
 #include <image_transport/image_transport.h>
 #include <cv_bridge/cv_bridge.h>
@@ -33,7 +32,7 @@ public:
 
     /**
      * @brief initializes calibrator with a provided node handle
-     * @details Subscribes the node to /points2 and /rgb/raw/image.
+     * @details Subscribes the node to /rgb/raw/image.
      *          Advertises the k4a_update_exposure service and the k4a_auto_tune_exposure service.
      * @param[in] nh ROS node handle
      */
