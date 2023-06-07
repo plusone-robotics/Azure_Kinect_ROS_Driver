@@ -104,14 +104,24 @@ bool K4AExposureCalibration::k4aBlueBoundsCheck(int target_blue_value, int& erro
   }
 }
 
-// // did the node receive an image at all?
-// bool K4AExposureCalibration::k4aImagePopulatedCheck(int& error_code, std::string& res_msg)
-// {
-//   std::string error_msg = "Failed to retrieve latest image in k4aAutoTuneExposure";
-//   res_msg = error_msg;
-//   error_code = azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::IMAGE_NOT_RECEIVED_FAILURE;
-//   return false;
-// }
+// did the node receive an image at all?
+bool K4AExposureCalibration::k4aImagePopulatedCheck(cv::Mat& mat, int& error_code, std::string& res_msg)
+{
+  if(mat.empty())
+  {
+    std::string error_msg = "OpenCV mat is empty";
+    res_msg = error_msg;
+    error_code = azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::IMAGE_NOT_RECEIVED_FAILURE;
+    return false;
+  }
+  else
+  {
+    std::string error_msg = "OpenCV mat is populated";
+    res_msg = error_msg;
+    error_code = azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::SUCCESS;
+    return true;
+  }
+}
 
 // // do we have the latest image?
 // bool K4AExposureCalibration::k4aLatestImageReceivedCheck(int& error_code, std::string& res_msg)
@@ -164,45 +174,47 @@ bool K4AExposureCalibration::k4aAutoTuneExposure(int target_blue_value, int& fin
     std::lock_guard<std::mutex> lock(latest_k4a_image_mutex);
     cv::split(*latest_k4a_image_ptr, color_channels);
 
-    int rows = latest_k4a_image.rows;
-    int cols = latest_k4a_image.cols;
-    int pixel_count = rows * cols;
-    if(rows <= 0 || cols <= 0)
+    // check if color channels is empty
+    bool channelsPop = k4aImagePopulatedCheck(color_channels, error_code, res_msg);
+    if(!channelsPop)
     {
-      std::string error_msg = "Failed to retrieve latest image in k4aAutoTuneExposure";
-      res_msg = error_msg;
-      error_code = azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::IMAGE_NOT_RECEIVED_FAILURE;
       return false;
     }
+    else
+    {
+      int rows = latest_k4a_image.rows;
+      int cols = latest_k4a_image.cols;
+      int pixel_count = rows * cols;
 
-    bool updateExposure = k4aUpdateExposure(exp, error_code, res_msg);
-    
-    if(!updateExposure)
-    {
-      // k4aUpdateExposure handles updating response
-      return false;
-    }
-    
-    // calculate average blue value
-    else{
-      for(int i=0; i<rows; i++)
+      bool updateExposure = k4aUpdateExposure(exp, error_code, res_msg);
+      
+      // check if exposure updated correctly
+      if(!updateExposure)
       {
-        for(int j=0; j<cols; j++)
+        // k4aUpdateExposure handles updating response
+        return false;
+      }
+      // calculate average blue value
+      else{
+        for(int i=0; i<rows; i++)
         {
-          total_blue += color_channels[0].at<uchar>(i,j);
+          for(int j=0; j<cols; j++)
+          {
+            total_blue += color_channels[0].at<uchar>(i,j);
+          }
         }
       }
+      // calculate average blue value
+      int current_avg_blue_value = total_blue / pixel_count;
+      // did we achieve appropriate blue at this exposure?
+      bool targetBlueCheck = k4aTargetBlueCheck(target_blue_value, current_avg_blue_value, error_code, res_msg);
+      if(targetBlueCheck)
+      {
+        final_exposure = exp;
+        break;
+      }
     }
-    // calculate average blue value
-    int current_avg_blue_value = total_blue / pixel_count;
-    // did we achieve appropriate blue at this exposure?
-    bool targetBlueCheck = k4aTargetBlueCheck(target_blue_value, current_avg_blue_value, error_code, res_msg);
-    if(targetBlueCheck)
-    {
-      final_exposure = exp;
-      break;
-    }
-  }
+  } 
   ROS_INFO("Successfully updated exposure to [%d] for target blue value of [%d]", final_exposure, target_blue_value);
   return true;
 }
