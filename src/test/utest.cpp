@@ -184,7 +184,7 @@ TEST(ExposureCalibrationTest, ImagePopulatedCheckTest)
   bool imageEmpty = test_node.k4aImagePopulatedCheck(emptyImage, test_k4aExposureServiceErrorCode_imageEmpty, test_message_imageEmpty);
   ASSERT_FALSE(imageEmpty);
   ASSERT_TRUE(test_k4aExposureServiceErrorCode_imageEmpty == azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::IMAGE_NOT_RECEIVED_FAILURE);
-  ASSERT_EQ(test_message_imagePop, "OpenCV mat is empty");
+  ASSERT_EQ(test_message_imageEmpty, "OpenCV mat is empty");
 }
 
 int main(int argc, char **argv)
