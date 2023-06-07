@@ -134,7 +134,7 @@ TEST(ExposureCalibrationTest, ImagePopulatedCheckTest)
   cv::Mat popImage(480, 640, CV_8UC3, cv::Scalar(50, 0, 0));
   bool imagePop = test_node.k4aImagePopulatedCheck(popImage, test_k4aExposureServiceErrorCode_imagePop, test_message_imagePop);
   ASSERT_TRUE(imagePop);
-  ASSERT_TRUE(test_k4aExposureServiceErrorCode_imagePop == azure_kinect_ros_driver::k4aExposureServiceErrorCode::SUCCESS);
+  ASSERT_TRUE(test_k4aExposureServiceErrorCode_imagePop == azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::SUCCESS);
   ASSERT_EQ(test_message_imagePop, "OpenCV mat is populated");
 
   // test empty cv::Mat
@@ -143,7 +143,7 @@ TEST(ExposureCalibrationTest, ImagePopulatedCheckTest)
   cv::Mat emptyImage;
   bool imageEmpty = test_node.k4aImagePopulatedCheck(emptyImage, test_k4aExposureServiceErrorCode_imageEmpty, test_message_imageEmpty);
   ASSERT_FALSE(imageEmpty);
-  ASSERT_TRUE(test_k4aExposureServiceErrorCode_imageEmpty == azure_kinect_ros_driver::k4aExposureServiceErrorCode::IMAGE_NOT_RECEIVED_FAILURE);
+  ASSERT_TRUE(test_k4aExposureServiceErrorCode_imageEmpty == azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::IMAGE_NOT_RECEIVED_FAILURE);
   ASSERT_EQ(test_message_imagePop, "OpenCV mat is empty");
 }
 
