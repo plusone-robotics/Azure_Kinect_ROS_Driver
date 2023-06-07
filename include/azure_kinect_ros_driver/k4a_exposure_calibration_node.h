@@ -35,7 +35,6 @@ public:
     bool k4aTargetBlueCheck(int target_blue_val, int current_avg_blue_value, int& error_code, std::string& res_msg);
     bool k4aBlueBoundsCheck(int target_blue_value, int& error_code, std::string& res_msg);
     bool k4aImagePopulatedCheck(cv::Mat& color_channels, int& error_code, std::string& res_msg);
-    // bool k4aLatestImageReceivedCheck(int& error_code, std::string& res_msg);
 private:
     void p2Callback(const sensor_msgs::PointCloud2& msg);
     void rgbRawImageCallback(const sensor_msgs::ImageConstPtr& msg);
@@ -49,8 +48,6 @@ private:
     // allocate memory space to store latest image
     cv::Mat latest_k4a_image;
     cv::Mat* const latest_k4a_image_ptr = &latest_k4a_image;
-    ros::Time latest_k4a_timestamp;
-    ros::Time* const latest_k4a_timestamp_ptr = &latest_k4a_timestamp;
     cv_bridge::CvImageConstPtr k4aCvImagePtr;
     std::mutex latest_k4a_image_mutex;
     azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode k4a_error_code;

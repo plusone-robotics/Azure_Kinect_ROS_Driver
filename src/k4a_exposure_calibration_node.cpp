@@ -46,7 +46,7 @@ bool K4AExposureCalibration::k4aCameraExposureUpdateCheck(int requested_exposure
   }
 }
 
-// check if target_blue_value has been achieved
+// check if requested_exposure is in appropriate bounds
 bool K4AExposureCalibration::k4aCameraExposureBoundsCheck(int requested_exposure, int& error_code, std::string& res_msg)
 {
   int min_exposure = 488;
@@ -84,7 +84,7 @@ bool K4AExposureCalibration::k4aTargetBlueCheck(int target_blue_value, int curre
   }
 }
 
-// check if target_blue_value has been achieved
+// check if target_blue_value is in appropriate range
 bool K4AExposureCalibration::k4aBlueBoundsCheck(int target_blue_value, int& error_code, std::string& res_msg)
 {
   int min_blue = 0;
@@ -122,15 +122,6 @@ bool K4AExposureCalibration::k4aImagePopulatedCheck(cv::Mat& mat, int& error_cod
     return true;
   }
 }
-
-// // do we have the latest image?
-// bool K4AExposureCalibration::k4aLatestImageReceivedCheck(int& error_code, std::string& res_msg)
-// {
-//   std::string error_msg = "Failed to retrieve latest image in k4aAutoTuneExposure";
-//   res_msg = error_msg;
-//   error_code = azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::IMAGE_NOT_RECEIVED_FAILURE;
-//   return false;
-// }
 
 // call k4a_nodelet_manager/set_parameters to update exposure value
 bool K4AExposureCalibration::k4aUpdateExposure(int req_exposure, int& error_code, std::string& res_msg)
