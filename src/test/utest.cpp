@@ -73,6 +73,39 @@ TEST(ExposureCalibrationTest, CameraExposureUpdateCheckTest)
   ASSERT_EQ(test_message_unchExp, "Failed to update exposure");
 }
 
+TEST(ExposureCalibrationTest, CameraExposureBoundsCheckTest)
+{
+  K4AExposureCalibration test_node;
+
+  int test_k4aExposureServiceErrorCode_inExp;
+  std::string test_message_inExp = "";
+
+  // test in bounds exposure value 1000
+  bool inExp = test_node.k4aCameraExposureBoundsCheck(1000, test_k4aExposureServiceErrorCode_inExp, test_message_inExp);
+  // nothing assigned, nothing is updated
+  ASSERT_TRUE(inExp);
+  ASSERT_TRUE(test_k4aExposureServiceErrorCode_inExp == 0);
+  ASSERT_EQ(test_message_inExp, "");
+
+  // test out of bounds exposure value 450
+  int test_k4aExposureServiceErrorCode_outLowExp;
+  std::string test_message_outLowExp = "";
+
+  bool outLowExp = test_node.k4aCameraExposureBoundsCheck(450, test_k4aExposureServiceErrorCode_outLowExp, test_message_outLowExp);
+  ASSERT_FALSE(outLowExp);
+  ASSERT_TRUE(test_k4aExposureServiceErrorCode_outLowExp == azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::REQUESTED_CAMERA_EXPOSURE_OUT_OF_BOUNDS_FAILURE);
+  ASSERT_EQ(test_message_unchExp, "Requested exposure out of range");
+
+    // test out of bounds exposure value 1000005
+  int test_k4aExposureServiceErrorCode_outHighExp;
+  std::string test_message_outHighExp = "";
+
+  bool outHighExp = test_node.k4aCameraExposureBoundsCheck(1000005, test_k4aExposureServiceErrorCode_outHighExp, test_message_outHighExp);
+  ASSERT_FALSE(outHighExp);
+  ASSERT_TRUE(test_k4aExposureServiceErrorCode_outHighExp == azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::REQUESTED_CAMERA_EXPOSURE_OUT_OF_BOUNDS_FAILURE);
+  ASSERT_EQ(test_message_unchExp, "Requested exposure out of range");
+}
+
 TEST(ExposureCalibrationTest, TargetBlueCheckTest)
 {
   K4AExposureCalibration test_node;

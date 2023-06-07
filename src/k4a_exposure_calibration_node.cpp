@@ -47,7 +47,7 @@ bool K4AExposureCalibration::k4aCameraExposureUpdateCheck(int requested_exposure
 }
 
 // check if target_blue_value has been achieved
-bool K4AExposureCalibration::k4aExpBoundsCheck(int requested_exposure, int& error_code, std::string& res_msg)
+bool K4AExposureCalibration::k4aCameraExposureBoundsCheck(int requested_exposure, int& error_code, std::string& res_msg)
 {
   int min_exposure = 488;
   int max_exposure = 1000000;
@@ -217,7 +217,7 @@ bool K4AExposureCalibration::k4aUpdateExposureCallback(azure_kinect_ros_driver::
 
   // check exposure limits
   int error_code;
-  bool expBoundCheck = k4aExpBoundsCheck(req.new_exp, error_code, res.message);
+  bool expBoundCheck = k4aCameraExposureBoundsCheck(req.new_exp, error_code, res.message);
   if(expBoundCheck)
   {
     bool tuningRes = k4aUpdateExposure(req.new_exp, error_code, res.message);
