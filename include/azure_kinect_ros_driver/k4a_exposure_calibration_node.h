@@ -58,7 +58,7 @@ public:
     bool k4aAutoTuneExposure(int target_blue_value, int& final_exposure, int& error_code, std::string& res_msg);
     
     /**
-     * @brief check if dynamic_reconfigure response has correct updated exposure
+     * @brief check if dynamic_reconfigure response has correctly updated exposure
      * @param[in] requested_exposure exposure originally requested in k4aUpdateExposure
      * @param[out] updated_exposure exposure that was returned by the dynamic_reconfigure call
      * @param[out] error_code error code included in response
