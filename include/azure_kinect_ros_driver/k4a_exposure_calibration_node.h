@@ -43,6 +43,8 @@ private:
     ros::NodeHandle nh_;
     ros::Subscriber subPC;
     image_transport::Subscriber subRGBRaw;
+    ros::ServiceServer update_exposure_service;
+    ros::ServiceServer auto_tune_exposure_service;
 
     // allocate memory space to store latest image
     cv::Mat latest_k4a_image;

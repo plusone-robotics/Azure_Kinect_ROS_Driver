@@ -144,7 +144,7 @@ TEST(ExposureCalibrationTest, BlueBoundsCheckTest)
   // test in bounds blue value 100
   bool inBlue = test_node.k4aBlueBoundsCheck(100, test_k4aExposureServiceErrorCode_inBlue, test_message_inBlue);
   ASSERT_TRUE(inBlue);
-  ASSERT_TRUE(test_k4aExposureServiceErrorCode_inBlue == azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::SUCCESS;);
+  ASSERT_TRUE(test_k4aExposureServiceErrorCode_inBlue == azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::SUCCESS);
   ASSERT_EQ(test_message_inBlue, "");
 
   // test out of bounds blue value -1

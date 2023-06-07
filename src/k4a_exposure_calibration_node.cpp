@@ -18,8 +18,8 @@ K4AExposureCalibration::K4AExposureCalibration(ros::NodeHandle& nh)
   subRGBRaw = it.subscribe("/rgb/raw/image", 1, &K4AExposureCalibration::rgbRawImageCallback, this);
 
   // advertise services
-  ros::ServiceServer update_exposure_service = nh_.advertiseService("k4a_update_exposure", &K4AExposureCalibration::k4aUpdateExposureCallback, this);
-  ros::ServiceServer auto_tune_exposure_service = nh_.advertiseService("k4a_auto_tune_exposure", &K4AExposureCalibration::k4aAutoTuneExposureCallback, this);
+  update_exposure_service = nh_.advertiseService("k4a_update_exposure", &K4AExposureCalibration::k4aUpdateExposureCallback, this);
+  auto_tune_exposure_service = nh_.advertiseService("k4a_auto_tune_exposure", &K4AExposureCalibration::k4aAutoTuneExposureCallback, this);
 }
 
 K4AExposureCalibration::~K4AExposureCalibration()
