@@ -169,19 +169,18 @@ bool K4AExposureCalibration::k4aAutoTuneExposure(int target_blue_value, int& fin
   int total_blue = 0;
   for(int exp=488; exp<1000000; exp+=500)
   {
-    // split OpenCV mat into three color channels
-    cv::Mat color_channels[3];
-    std::lock_guard<std::mutex> lock(latest_k4a_image_mutex);
-    cv::split(*latest_k4a_image_ptr, color_channels);
-
     // check if color channels is empty
-    bool channelsPop = k4aImagePopulatedCheck(color_channels, error_code, res_msg);
+    bool channelsPop = k4aImagePopulatedCheck(*latest_k4a_image, error_code, res_msg);
     if(!channelsPop)
     {
       return false;
     }
     else
     {
+      // split OpenCV mat into three color channels
+      cv::Mat color_channels[3];
+      std::lock_guard<std::mutex> lock(latest_k4a_image_mutex);
+      cv::split(*latest_k4a_image_ptr, color_channels);
       int rows = latest_k4a_image.rows;
       int cols = latest_k4a_image.cols;
       int pixel_count = rows * cols;
