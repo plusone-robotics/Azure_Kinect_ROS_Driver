@@ -12,3 +12,6 @@ int8 REQUESTED_CAMERA_EXPOSURE_OUT_OF_BOUNDS_FAILURE = -3
 
 # Requested camera blue value is out of bounds Failure
 int8 REQUESTED_CAMERA_BLUE_VALUE_OUT_OF_BOUNDS_FAILURE = -4
+
+# Requested camera blue value hasn't been achieved yet
+int8 REQUESTED_CAMERA_BLUE_VALUE_NOT_MET = -5

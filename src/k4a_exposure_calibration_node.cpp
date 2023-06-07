@@ -61,7 +61,7 @@ bool K4AExposureCalibration::k4aCameraExposureBoundsCheck(int requested_exposure
   }
   else
   {
-    // don't update anything yet, proceed with exposure update
+    error_code = azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::SUCCESS;
     return true;
   }
 }
@@ -79,7 +79,7 @@ bool K4AExposureCalibration::k4aTargetBlueCheck(int target_blue_value, int curre
   }
   else
   {
-    // don't update anything yet, keep going in auto tune loop
+    error_code = azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::REQUESTED_CAMERA_BLUE_VALUE_NOT_MET;
     return false;
   }
 }
@@ -99,7 +99,7 @@ bool K4AExposureCalibration::k4aBlueBoundsCheck(int target_blue_value, int& erro
   }
   else
   {
-    // don't update anything yet, proceed with exposure update
+    error_code = azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::SUCCESS;
     return true;
   }
 }
