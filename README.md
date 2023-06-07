@@ -25,6 +25,10 @@ However, this node does ***not*** expose all the sensor data from the Azure Kine
 
 For more information about how to use the node, please see the [usage guide](docs/usage.md).
 
+## PlusOne Robotics Features
+
+The k4a_exposure_calibration node allows users to both update the Azure Kinect camera's exposure and to auto tune the exposure for a provided average blue value from the command line.
+
 ## Status
 
 This code is provided as a starting point for using the Azure Kinect Developer Kit with ROS. Community developed features are welcome.
