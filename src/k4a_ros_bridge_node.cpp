@@ -36,9 +36,9 @@ int main(int argc, char** argv)
   {
     // Set up POR node
     ros::NodeHandle nh;
-    K4AExposureCalibration por_calibrator(new K4AExposureCalibration(nh));
+    K4AExposureCalibration por_calibrator(nh);
     ROS_INFO("Initialized K4A Exposure Calibration Node");
-    
+
     ros::AsyncSpinner spinner(4); // Use 4 threads
     spinner.start();
 
