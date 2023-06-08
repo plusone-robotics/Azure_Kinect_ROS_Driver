@@ -149,7 +149,8 @@ TEST(ExposureCalibrationTest, ImagePopulatedCheckTest)
 
 int main(int argc, char **argv)
 {
-  ::testing::InitGoogleTest(&argc, argv);
+  testing::InitGoogleTest(&argc, argv);
+  ros::init(argc, argv, "k4a_exposure_calibration_tests");
   
   return RUN_ALL_TESTS();
 }
