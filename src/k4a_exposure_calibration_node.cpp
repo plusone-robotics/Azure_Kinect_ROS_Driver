@@ -2,6 +2,10 @@
 // Author: Shannon Stoehr
 // email:  shannon.stoehr@plusonerobotics.com
 
+// Library headers
+#include <opencv2/opencv.hpp>
+#include <cv_bridge/cv_bridge.h>
+
 // Associated headers
 #include "azure_kinect_ros_driver/k4a_exposure_calibration_node.h"
 

@@ -8,10 +8,8 @@
 #include <ros/ros.h>
 #include <sensor_msgs/Image.h>
 #include <image_transport/image_transport.h>
-#include <cv_bridge/cv_bridge.h>
 #include <dynamic_reconfigure/client.h>
 #include <k4a/k4a.h>
-#include <opencv2/opencv.hpp>
 #include <mutex>
 
 // Project headers

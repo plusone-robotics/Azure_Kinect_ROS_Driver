@@ -101,7 +101,6 @@ target_compile_features(${PROJECT_NAME}_nodelet PUBLIC cxx_std_11)
 
 add_library(por_testing
   src/k4a_exposure_calibration_node.cpp
-  k4a_exposure_calibration_node.h
 )
 
 ## Rename C++ executable without prefix
