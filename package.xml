@@ -35,6 +35,10 @@
   <exec_depend>rgbd_launch</exec_depend>
   <exec_depend>message_runtime</exec_depend>
 
+  <test_depend>gtest</test_depend>
+  <test_depend>image_transport</test_depend>
+  <test_depend>cv_bridge</test_depend>
+
   <export>
     <nodelet plugin="${prefix}/nodelet_plugins.xml" />
   </export>

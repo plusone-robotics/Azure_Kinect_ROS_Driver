@@ -59,18 +59,48 @@ generate_messages(
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
- # INCLUDE_DIRS include
- # LIBRARIES k4a_ros_bridge k4a_exposure_calibration
+ INCLUDE_DIRS include
+ LIBRARIES k4a_exposure_calibration_lib
   CATKIN_DEPENDS
     roscpp
     std_msgs
     message_runtime
+    image_transport
+    cv_bridge
  # DEPENDS system_lib
 )
 
 ###########
 ## Build ##
 ###########
+
+##################################
+####### START POR BUILD ##########
+##################################
+
+include_directories(
+  ${catkin_INCLUDE_DIRS}
+  include
+)
+add_library(k4a_exposure_calibration_lib
+  src/k4a_exposure_calibration.cpp)
+target_link_libraries(k4a_exposure_calibration_lib ${catkin_LIBRARIES})
+add_dependencies(k4a_exposure_calibration_lib ${catkin_EXPORTED_TARGETS})
+
+add_executable(k4a_exposure_calibration_node
+  src/k4a_exposure_calibration_node.cpp
+)
+target_link_libraries(k4a_exposure_calibration_node
+  ${catkin_LIBRARIES}
+  ${OpenCV_LIBS}
+  k4a_exposure_calibration_lib
+)
+add_dependencies(k4a_exposure_calibration_node ${PROJECT_NAME}_gencfg ${catkin_EXPORTED_TARGETS})
+target_compile_features(k4a_exposure_calibration_node PUBLIC cxx_std_11)
+
+##################################
+####### END POR BUILD ############
+##################################
 
 
 ## Declare a C++ executable
@@ -82,14 +112,8 @@ add_executable(${PROJECT_NAME}_node
   src/k4a_ros_device_params.cpp
   src/k4a_calibration_transform_data.cpp
   )
-add_executable(k4a_exposure_calibration_node
-  src/k4a_exposure_calibration_node.cpp
-  )
 add_dependencies(${PROJECT_NAME}_node ${PROJECT_NAME}_gencfg)
-add_dependencies(k4a_exposure_calibration_node ${PROJECT_NAME}_gencfg)
 target_compile_features(${PROJECT_NAME}_node PUBLIC cxx_std_11)
-target_compile_features(k4a_exposure_calibration_node PUBLIC cxx_std_11)
-
 add_library(${PROJECT_NAME}_nodelet
   src/k4a_ros_bridge_nodelet.cpp
   src/k4a_ros_device.cpp
@@ -99,9 +123,6 @@ add_library(${PROJECT_NAME}_nodelet
 add_dependencies(${PROJECT_NAME}_nodelet ${PROJECT_NAME}_gencfg)
 target_compile_features(${PROJECT_NAME}_nodelet PUBLIC cxx_std_11)
 
-add_library(por_testing
-  src/k4a_exposure_calibration_node.cpp
-)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -254,13 +275,21 @@ include(Installk4a)
 ##################################
 
 if(CATKIN_ENABLE_TESTING)
-  find_package(rostest REQUIRED)
-  add_rostest_gtest(utest_node test/utest_launch.test src/test/utest.cpp)
+  find_package(rostest REQUIRED
+    cv_bridge
+    image_transport)
   include_directories(
     ${catkin_INCLUDE_DIRS}
     "include"
+    k4a_exposure_calibration_node.h
   )
-  target_link_libraries(utest_node ${catkin_LIBRARIES} por_testing)
+  add_rostest_gtest(utest_node test/utest_launch.test src/test/utest.cpp)
+  target_link_libraries(utest_node
+    ${K4A_LIBS}
+    ${catkin_LIBRARIES}
+    ${OpenCV_LIBS}
+    k4a_exposure_calibration_lib
+    )
 endif()
 
 ##################################
@@ -273,12 +302,6 @@ include_directories(
 )
 
 target_link_libraries(${PROJECT_NAME}_node
-  ${K4A_LIBS}
-  ${catkin_LIBRARIES}
-  ${OpenCV_LIBS}
-)
-
-target_link_libraries(k4a_exposure_calibration_node
   ${K4A_LIBS}
   ${catkin_LIBRARIES}
   ${OpenCV_LIBS}
@@ -304,11 +327,25 @@ install(TARGETS ${PROJECT_NAME}_node
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
+install(TARGETS k4a_exposure_calibration_lib
+  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+
+##################################
+###### START POR INSTALL #########
+##################################
+
 install(TARGETS k4a_exposure_calibration_node
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
+
+##################################
+###### END POR INSTALL ###########
+##################################
 
 install(TARGETS ${PROJECT_NAME}_nodelet
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
