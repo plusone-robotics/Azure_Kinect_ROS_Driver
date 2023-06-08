@@ -2,16 +2,6 @@
 // Author: Shannon Stoehr
 // email:  shannon.stoehr@plusonerobotics.com
 
-// Library headers
-#include <ros/ros.h>
-#include <sensor_msgs/Image.h>
-#include <image_transport/image_transport.h>
-#include <cv_bridge/cv_bridge.h>
-#include <opencv2/opencv.hpp>
-#include <dynamic_reconfigure/client.h>
-#include <k4a/k4a.h>
-#include <mutex>
-
 // Associated headers
 #include "azure_kinect_ros_driver/k4a_exposure_calibration.h"
 
