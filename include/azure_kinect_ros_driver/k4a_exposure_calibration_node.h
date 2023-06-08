@@ -7,9 +7,6 @@
 // Library headers
 #include <ros/ros.h>
 #include <sensor_msgs/Image.h>
-#include <image_transport/image_transport.h>
-#include <cv_bridge/cv_bridge.h>
-#include <opencv2/opencv.hpp>
 #include <dynamic_reconfigure/client.h>
 #include <k4a/k4a.h>
 #include <mutex>
@@ -136,14 +133,12 @@ private:
 
     // private members
     ros::NodeHandle nh_;
-    image_transport::Subscriber subRGBRaw;
     ros::ServiceServer update_exposure_service;
     ros::ServiceServer auto_tune_exposure_service;
 
     // allocate memory space to store latest image
     cv::Mat latest_k4a_image; /** @brief latest image*/
     cv::Mat* const latest_k4a_image_ptr = &latest_k4a_image; /** @brief pointer to latest image*/
-    cv_bridge::CvImageConstPtr k4aCvImagePtr; /** @brief pointer to convert ROS image to OpenCV mat*/
     std::mutex latest_k4a_image_mutex; /** @brief mutex to protect latest image*/
     azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode k4a_error_code; /** @brief error codes*/
 
