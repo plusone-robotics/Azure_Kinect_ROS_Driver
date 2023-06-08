@@ -8,6 +8,7 @@
 #include <ros/ros.h>
 #include <sensor_msgs/Image.h>
 #include <dynamic_reconfigure/client.h>
+#include <opencv2/opencv.hpp>
 #include <k4a/k4a.h>
 #include <mutex>
 
