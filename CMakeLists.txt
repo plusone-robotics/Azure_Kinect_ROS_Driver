@@ -72,6 +72,24 @@ catkin_package(
 ## Build ##
 ###########
 
+include_directories(
+  ${catkin_INCLUDE_DIRS}
+  include
+)
+add_library(k4a_exposure_calibration_lib
+  src/k4a_exposure_calibration.cpp)
+add_executable(k4a_exposure_calibration_node
+  src/k4a_exposure_calibration_node.cpp
+)
+target_link_libraries(k4a_exposure_calibration_node
+  ${K4A_LIBS}
+  ${catkin_LIBRARIES}
+  ${OpenCV_LIBS}
+  k4a_exposure_calibration_lib
+)
+add_dependencies(k4a_exposure_calibration_node ${PROJECT_NAME}_gencfg)
+
+
 
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
@@ -82,13 +100,7 @@ add_executable(${PROJECT_NAME}_node
   src/k4a_ros_device_params.cpp
   src/k4a_calibration_transform_data.cpp
   )
-add_library(k4a_exposure_calibration_lib
-  src/k4a_exposure_calibration.cpp)
-add_executable(k4a_exposure_calibration_node
-  src/k4a_exposure_calibration_node.cpp
-)
 add_dependencies(${PROJECT_NAME}_node ${PROJECT_NAME}_gencfg)
-add_dependencies(k4a_exposure_calibration_node ${PROJECT_NAME}_gencfg)
 target_compile_features(${PROJECT_NAME}_node PUBLIC cxx_std_11)
 target_compile_features(k4a_exposure_calibration_node PUBLIC cxx_std_11)
 
@@ -283,13 +295,6 @@ target_link_libraries(${PROJECT_NAME}_node
   ${K4A_LIBS}
   ${catkin_LIBRARIES}
   ${OpenCV_LIBS}
-)
-
-target_link_libraries(k4a_exposure_calibration_node
-  ${K4A_LIBS}
-  ${catkin_LIBRARIES}
-  ${OpenCV_LIBS}
-  k4a_exposure_calibration_lib
 )
 
 target_link_libraries(${PROJECT_NAME}_nodelet
