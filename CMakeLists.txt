@@ -254,7 +254,8 @@ include(Installk4a)
 ##################################
 
 if(CATKIN_ENABLE_TESTING)
-  find_package(rostest REQUIRED
+  find_package(rostest REQUIRED)
+  find_package(catkin REQUIRED
     cv_bridge
     image_transport)
   include_directories(
