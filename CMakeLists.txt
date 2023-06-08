@@ -255,6 +255,10 @@ include(Installk4a)
 
 if(CATKIN_ENABLE_TESTING)
   find_package(rostest REQUIRED)
+  find_package(
+    cv_bridge
+    image_transport
+  )
   add_rostest_gtest(utest_node test/utest_launch.test src/test/utest.cpp)
   include_directories(
     ${catkin_INCLUDE_DIRS}

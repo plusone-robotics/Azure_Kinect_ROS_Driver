@@ -10,8 +10,7 @@
 
 TEST(ExposureCalibrationTest, CameraExposureUpdateCheckTest)
 {
-  ros::NodeHandle nh;
-  K4AExposureCalibration test_node(nh);
+  K4AExposureCalibration test_node;
 
   int test_k4aExposureServiceErrorCode_chExp;
   std::string test_message_chExp = "";
@@ -34,8 +33,7 @@ TEST(ExposureCalibrationTest, CameraExposureUpdateCheckTest)
 
 TEST(ExposureCalibrationTest, CameraExposureBoundsCheckTest)
 {
-  ros::NodeHandle nh;
-  K4AExposureCalibration test_node(nh);
+  K4AExposureCalibration test_node;
 
   int test_k4aExposureServiceErrorCode_inExp;
   std::string test_message_inExp = "";
@@ -67,8 +65,7 @@ TEST(ExposureCalibrationTest, CameraExposureBoundsCheckTest)
 
 TEST(ExposureCalibrationTest, TargetBlueCheckTest)
 {
-  ros::NodeHandle nh;
-  K4AExposureCalibration test_node(nh);
+  K4AExposureCalibration test_node;
   
   // test blue target met
   int test_k4aExposureServiceErrorCode_bMet;
@@ -97,8 +94,7 @@ TEST(ExposureCalibrationTest, TargetBlueCheckTest)
 
 TEST(ExposureCalibrationTest, BlueBoundsCheckTest)
 {
-  ros::NodeHandle nh;
-  K4AExposureCalibration test_node(nh);
+  K4AExposureCalibration test_node;
 
   int test_k4aExposureServiceErrorCode_inBlue;
   std::string test_message_inBlue = "";
@@ -130,8 +126,7 @@ TEST(ExposureCalibrationTest, BlueBoundsCheckTest)
 
 TEST(ExposureCalibrationTest, ImagePopulatedCheckTest)
 {
-  ros::NodeHandle nh;
-  K4AExposureCalibration test_node(nh);
+  K4AExposureCalibration test_node;
 
   // test populated cv::Mat
   int test_k4aExposureServiceErrorCode_imagePop;
