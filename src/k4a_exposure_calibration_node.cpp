@@ -2,10 +2,6 @@
 // Author: Shannon Stoehr
 // email:  shannon.stoehr@plusonerobotics.com
 
-// Library headers
-#include <opencv2/opencv.hpp>
-#include <cv_bridge/cv_bridge.h>
-
 // Associated headers
 #include "azure_kinect_ros_driver/k4a_exposure_calibration_node.h"
 
@@ -16,6 +12,7 @@ K4AExposureCalibration::K4AExposureCalibration()
 K4AExposureCalibration::K4AExposureCalibration(ros::NodeHandle& nh)
 {
   nh_ = nh;
+  image_transport::ImageTransport it(nh_);
 
   subRGBRaw = it.subscribe("/rgb/raw/image", 1, &K4AExposureCalibration::rgbRawImageCallback, this);
 
