@@ -4,7 +4,6 @@
 
 // Library headers
 #include <gtest/gtest.h>
-#include <opencv2/core/mat.hpp>
 
 // Project headers
 #include "azure_kinect_ros_driver/k4a_exposure_calibration_node.h"
