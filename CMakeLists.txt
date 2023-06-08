@@ -259,7 +259,7 @@ if(CATKIN_ENABLE_TESTING)
     k4a_exposure_calibration_node.h
   )
   add_rostest_gtest(utest_node test/utest_launch.test src/test/utest.cpp)
-  target_link_libraries(utest_node k4a_exposure_calibration_node
+  target_link_libraries(utest_node
     ${K4A_LIBS}
     ${catkin_LIBRARIES}
     ${OpenCV_LIBS}
