@@ -100,6 +100,7 @@ add_dependencies(${PROJECT_NAME}_nodelet ${PROJECT_NAME}_gencfg)
 target_compile_features(${PROJECT_NAME}_nodelet PUBLIC cxx_std_11)
 
 add_library(por_testing
+  include/k4a_exposure_calibration_node.h
   src/k4a_exposure_calibration_node.cpp
 )
 
@@ -255,10 +256,6 @@ include(Installk4a)
 
 if(CATKIN_ENABLE_TESTING)
   find_package(rostest REQUIRED)
-  find_package(
-    cv_bridge
-    image_transport
-  )
   add_rostest_gtest(utest_node test/utest_launch.test src/test/utest.cpp)
   include_directories(
     ${catkin_INCLUDE_DIRS}
