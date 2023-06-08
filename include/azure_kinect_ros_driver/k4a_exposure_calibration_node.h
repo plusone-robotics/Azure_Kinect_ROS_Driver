@@ -7,7 +7,7 @@
 // Library headers
 #include <ros/ros.h>
 #include <sensor_msgs/Image.h>
-#include <image_transport/image_transport.hpp>
+#include <image_common/image_transport/image_transport.hpp>
 #include <cv_bridge/cv_bridge.h>
 #include <opencv2/opencv.hpp>
 #include <dynamic_reconfigure/client.h>
