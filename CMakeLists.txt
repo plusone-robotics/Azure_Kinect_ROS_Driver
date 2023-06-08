@@ -74,6 +74,10 @@ catkin_package(
 ## Build ##
 ###########
 
+##################################
+####### START POR BUILD ##########
+##################################
+
 include_directories(
   ${catkin_INCLUDE_DIRS}
   include
@@ -92,7 +96,11 @@ target_link_libraries(k4a_exposure_calibration_node
   k4a_exposure_calibration_lib
 )
 add_dependencies(k4a_exposure_calibration_node ${PROJECT_NAME}_gencfg ${catkin_EXPORTED_TARGETS})
+target_compile_features(k4a_exposure_calibration_node PUBLIC cxx_std_11)
 
+##################################
+####### END POR BUILD ############
+##################################
 
 
 ## Declare a C++ executable
@@ -106,8 +114,6 @@ add_executable(${PROJECT_NAME}_node
   )
 add_dependencies(${PROJECT_NAME}_node ${PROJECT_NAME}_gencfg)
 target_compile_features(${PROJECT_NAME}_node PUBLIC cxx_std_11)
-target_compile_features(k4a_exposure_calibration_node PUBLIC cxx_std_11)
-
 add_library(${PROJECT_NAME}_nodelet
   src/k4a_ros_bridge_nodelet.cpp
   src/k4a_ros_device.cpp
@@ -327,11 +333,19 @@ install(TARGETS k4a_exposure_calibration_lib
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
+##################################
+###### START POR INSTALL #########
+##################################
+
 install(TARGETS k4a_exposure_calibration_node
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
+
+##################################
+###### END POR INSTALL ###########
+##################################
 
 install(TARGETS ${PROJECT_NAME}_nodelet
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
