@@ -262,7 +262,11 @@ if(CATKIN_ENABLE_TESTING)
     ${catkin_INCLUDE_DIRS}
     "include"
   )
-  target_link_libraries(utest_node ${catkin_LIBRARIES} por_testing)
+  target_link_libraries(utest_node
+    ${K4A_LIBS}
+    ${catkin_LIBRARIES}
+    ${OpenCV_LIBS}
+    por_testing)
 endif()
 
 ##################################
