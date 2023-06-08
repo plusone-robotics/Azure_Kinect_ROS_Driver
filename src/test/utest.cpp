@@ -6,7 +6,7 @@
 #include <gtest/gtest.h>
 
 // Project headers
-#include "azure_kinect_ros_driver/k4a_exposure_calibration_node.h"
+#include "azure_kinect_ros_driver/k4a_exposure_calibration.h"
 
 TEST(ExposureCalibrationTest, CameraExposureUpdateCheckTest)
 {

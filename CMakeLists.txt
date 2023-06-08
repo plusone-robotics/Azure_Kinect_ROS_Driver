@@ -82,9 +82,11 @@ add_executable(${PROJECT_NAME}_node
   src/k4a_ros_device_params.cpp
   src/k4a_calibration_transform_data.cpp
   )
+add_library(k4a_exposure_calibration_lib
+  src/k4a_exposure_calibration.cpp)
 add_executable(k4a_exposure_calibration_node
   src/k4a_exposure_calibration_node.cpp
-  )
+)
 add_dependencies(${PROJECT_NAME}_node ${PROJECT_NAME}_gencfg)
 add_dependencies(k4a_exposure_calibration_node ${PROJECT_NAME}_gencfg)
 target_compile_features(${PROJECT_NAME}_node PUBLIC cxx_std_11)
@@ -98,6 +100,7 @@ add_library(${PROJECT_NAME}_nodelet
   )
 add_dependencies(${PROJECT_NAME}_nodelet ${PROJECT_NAME}_gencfg)
 target_compile_features(${PROJECT_NAME}_nodelet PUBLIC cxx_std_11)
+
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -263,7 +266,8 @@ if(CATKIN_ENABLE_TESTING)
     ${K4A_LIBS}
     ${catkin_LIBRARIES}
     ${OpenCV_LIBS}
-  )
+    k4a_exposure_calibration_lib
+    )
 endif()
 
 ##################################
@@ -285,6 +289,7 @@ target_link_libraries(k4a_exposure_calibration_node
   ${K4A_LIBS}
   ${catkin_LIBRARIES}
   ${OpenCV_LIBS}
+  k4a_exposure_calibration_lib
 )
 
 target_link_libraries(${PROJECT_NAME}_nodelet
