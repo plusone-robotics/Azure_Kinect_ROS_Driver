@@ -8,7 +8,6 @@
 #include <ros/ros.h>
 #include <sensor_msgs/Image.h>
 #include <image_transport/image_transport.h>
-#include <cv_bridge/cv_bridge.h>
 #include <dynamic_reconfigure/client.h>
 #include <k4a/k4a.h>
 #include <mutex>
@@ -135,6 +134,7 @@ private:
 
     // private members
     ros::NodeHandle nh_;
+    image_transport::ImageTransport it(nh_);
     image_transport::Subscriber subRGBRaw;
     ros::ServiceServer update_exposure_service;
     ros::ServiceServer auto_tune_exposure_service;
