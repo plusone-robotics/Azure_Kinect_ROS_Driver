@@ -13,6 +13,7 @@
 // Project headers
 //
 #include "azure_kinect_ros_driver/k4a_ros_device.h"
+#include "azure_kinect_ros_driver/k4a_exposure_calibration_node.h"
 
 int main(int argc, char** argv)
 {
@@ -33,7 +34,13 @@ int main(int argc, char** argv)
 
   if (result == K4A_RESULT_SUCCEEDED)
   {
-    ros::spin();
+    // Set up POR node
+    ros::NodeHandle nh;
+    K4AExposureCalibration por_calibrator(new K4AExposureCalibration(nh));
+    ROS_INFO("Initialized K4A Exposure Calibration Node");
+    
+    ros::AsyncSpinner spinner(4); // Use 4 threads
+    spinner.start();
 
     ROS_INFO("ROS Exit Started");
   }
