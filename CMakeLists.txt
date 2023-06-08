@@ -253,6 +253,11 @@ if(CATKIN_ENABLE_TESTING)
   find_package(rostest REQUIRED
     cv_bridge
     image_transport)
+  include_directories(
+    ${catkin_INCLUDE_DIRS}
+    "include"
+    k4a_exposure_calibration_node.h
+  )
   add_rostest_gtest(utest_node test/utest_launch.test src/test/utest.cpp)
   target_link_libraries(utest_node
     ${K4A_LIBS}

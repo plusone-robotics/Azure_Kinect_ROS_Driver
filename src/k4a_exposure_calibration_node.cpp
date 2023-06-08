@@ -2,9 +2,6 @@
 // Author: Shannon Stoehr
 // email:  shannon.stoehr@plusonerobotics.com
 
-// Library headers
-
-
 // Associated headers
 #include "azure_kinect_ros_driver/k4a_exposure_calibration_node.h"
 
@@ -279,4 +276,20 @@ void K4AExposureCalibration::rgbRawImageCallback(const sensor_msgs::ImageConstPt
   {
     ROS_ERROR("cv_bridge exception in K4AExposureCalibration::rgbRawImageCallback: [%s]", e.what());
   }
+}
+
+int main(int argc, char **argv)
+{
+  ros::init(argc, argv, "k4a_exposure_calibration");
+  ros::NodeHandle nh;
+  
+  K4AExposureCalibration k4a_Exposure_Calibration(nh);
+  ROS_INFO("Initialized K4A Exposure Calibration Node");
+
+  ROS_INFO("Spinning K4A Exposure Calibration Node");
+  ros::AsyncSpinner spinner(4); // Use 4 threads
+  spinner.start();
+  ros::waitForShutdown();
+
+  return 0;
 }
