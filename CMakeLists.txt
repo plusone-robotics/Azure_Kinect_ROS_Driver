@@ -39,14 +39,15 @@ add_message_files(
   FILES
     k4aCameraExposureServiceErrorCode.msg
 )
-generate_messages(
-  DEPENDENCIES
-    std_msgs
-)
 add_service_files(
   FILES
     k4a_auto_tune_exposure.srv
     k4a_update_exposure.srv
+)
+generate_messages(
+  DEPENDENCIES
+    std_msgs
+    sensor_msgs
 )
 
 ###################################
