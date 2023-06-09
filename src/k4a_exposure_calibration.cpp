@@ -5,6 +5,14 @@
 // Associated headers
 #include "azure_kinect_ros_driver/k4a_exposure_calibration.h"
 
+K4AExposureCalibration::K4AExposureCalibration()
+{
+}
+
+K4AExposureCalibration::~K4AExposureCalibration()
+{
+}
+
 K4AExposureCalibration::K4AExposureCalibration(ros::NodeHandle& nh)
 {
   nh_ = nh;
