@@ -56,7 +56,7 @@ public:
     /**
      * @brief check if dynamic_reconfigure response has correctly updated exposure
      * @param[in] requested_exposure exposure originally requested in k4aUpdateExposure
-     * @param[out] updated_exposure exposure that was returned by the dynamic_reconfigure call
+     * @param[in] updated_exposure exposure that was returned by the dynamic_reconfigure call
      * @param[out] error_code error code included in response
      * @param[out] res_msg human-readable error message included in response
      * @return true if requested_exposure == updated_exposure
@@ -106,7 +106,7 @@ private:
      * @brief callback for /rgb/raw/image subscription
      * @details This callback handles updating the current image for the node.
      *          It converts the ROS image message to an OpenCV mat for auto tuning calculations.
-     * @param[out] msg message received from image transport subscriber subscribed to /rgb/raw/image
+     * @param[in] msg message received from image transport subscriber subscribed to /rgb/raw/image
      */
     void rgbRawImageCallback(const sensor_msgs::ImageConstPtr& msg);
 
@@ -132,23 +132,23 @@ private:
 
     // private members
     ros::NodeHandle nh_;
-    image_transport::Subscriber subRGBRaw;
-    ros::ServiceServer update_exposure_service;
-    ros::ServiceServer auto_tune_exposure_service;
+    image_transport::Subscriber subRGBRaw_;
+    ros::ServiceServer update_exposure_service_;
+    ros::ServiceServer auto_tune_exposure_service_;
 
     // allocate memory space to store latest image
-    cv::Mat latest_k4a_image; /** @brief latest image*/
-    cv::Mat* const latest_k4a_image_ptr = &latest_k4a_image; /** @brief pointer to latest image*/
-    cv_bridge::CvImageConstPtr k4aCvImagePtr; /** @brief pointer to convert ROS image to OpenCV mat*/
-    std::mutex latest_k4a_image_mutex; /** @brief mutex to protect latest image*/
-    azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode k4a_error_code; /** @brief error codes*/
+    cv::Mat latest_k4a_image_; /** @brief latest image*/
+    cv::Mat* const latest_k4a_image_ptr_ = &latest_k4a_image_; /** @brief pointer to latest image*/
+    cv_bridge::CvImageConstPtr k4aCvImagePtr_; /** @brief pointer to convert ROS image to OpenCV mat*/
+    std::mutex latest_k4a_image_mutex_; /** @brief mutex to protect latest image*/
+    azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode k4a_error_code_; /** @brief error codes*/
 
     // config file info
     // TODO: PULL THESE VALUES FROM CONFIG FILE "azure_kinect_ros_driver/AzureKinectParamsConfig.h"
-    const uint32_t MIN_EXPOSURE = 488;
-    const uint32_t MAX_EXPOSURE = 1000000;
-    const uint32_t DEFAULT_EXPOSURE = 15625;
-    const uint32_t EXPOSURE_INC = 250;
-    const uint8_t MIN_BLUE = 0;
-    const uint8_t MAX_BLUE = 255;
+    const uint32_t MIN_EXPOSURE_ = 488;
+    const uint32_t MAX_EXPOSURE_ = 1000000;
+    const uint32_t DEFAULT_EXPOSURE_ = 15625;
+    const uint32_t EXPOSURE_INC_ = 250;
+    const uint8_t MIN_BLUE_ = 0;
+    const uint8_t MAX_BLUE_ = 255;
 };
