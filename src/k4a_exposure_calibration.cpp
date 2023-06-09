@@ -5,10 +5,6 @@
 // Associated headers
 #include "azure_kinect_ros_driver/k4a_exposure_calibration.h"
 
-K4AExposureCalibration::K4AExposureCalibration()
-{
-}
-
 K4AExposureCalibration::K4AExposureCalibration(ros::NodeHandle& nh)
 {
   nh_ = nh;
@@ -20,11 +16,7 @@ K4AExposureCalibration::K4AExposureCalibration(ros::NodeHandle& nh)
   auto_tune_exposure_service = nh_.advertiseService("k4a_auto_tune_exposure", &K4AExposureCalibration::k4aAutoTuneExposureCallback, this);
 }
 
-K4AExposureCalibration::~K4AExposureCalibration()
-{
-}
-
-bool K4AExposureCalibration::k4aCameraExposureUpdateCheck(uint32_t requested_exposure, uint32_t updated_exposure, int8_t& error_code, std::string& res_msg)
+bool K4AExposureCalibration::k4aCameraExposureUpdateCheck(const uint32_t requested_exposure, uint32_t updated_exposure, int8_t& error_code, std::string& res_msg)
 {
   if(updated_exposure != requested_exposure)
   {
@@ -43,7 +35,7 @@ bool K4AExposureCalibration::k4aCameraExposureUpdateCheck(uint32_t requested_exp
   }
 }
 
-bool K4AExposureCalibration::k4aCameraExposureBoundsCheck(uint32_t requested_exposure, int8_t& error_code, std::string& res_msg)
+bool K4AExposureCalibration::k4aCameraExposureBoundsCheck(const uint32_t requested_exposure, int8_t& error_code, std::string& res_msg)
 {
   if(requested_exposure < MIN_EXPOSURE || requested_exposure > MAX_EXPOSURE)
   {
@@ -60,7 +52,7 @@ bool K4AExposureCalibration::k4aCameraExposureBoundsCheck(uint32_t requested_exp
   }
 }
 
-bool K4AExposureCalibration::k4aTargetBlueCheck(uint8_t target_blue_value, uint8_t current_avg_blue_value, int8_t& error_code, std::string& res_msg)
+bool K4AExposureCalibration::k4aTargetBlueCheck(const uint8_t target_blue_value, uint8_t current_avg_blue_value, int8_t& error_code, std::string& res_msg)
 {
   if(current_avg_blue_value >= target_blue_value)
   {
@@ -77,7 +69,7 @@ bool K4AExposureCalibration::k4aTargetBlueCheck(uint8_t target_blue_value, uint8
   }
 }
 
-bool K4AExposureCalibration::k4aBlueBoundsCheck(uint8_t target_blue_value, int8_t& error_code, std::string& res_msg)
+bool K4AExposureCalibration::k4aBlueBoundsCheck(const uint8_t target_blue_value, int8_t& error_code, std::string& res_msg)
 {
   if(target_blue_value < MIN_BLUE || target_blue_value > MAX_BLUE)
   {
@@ -112,7 +104,7 @@ bool K4AExposureCalibration::k4aImagePopulatedCheck(cv::Mat& mat, int8_t& error_
   }
 }
 
-bool K4AExposureCalibration::k4aUpdateExposure(uint32_t req_exposure, int8_t& error_code, std::string& res_msg)
+bool K4AExposureCalibration::k4aUpdateExposure(const uint32_t req_exposure, int8_t& error_code, std::string& res_msg)
 {
   ROS_INFO("Updating exposure_time to: [%d]", req_exposure);
 
@@ -138,7 +130,7 @@ bool K4AExposureCalibration::k4aUpdateExposure(uint32_t req_exposure, int8_t& er
   return k4aCameraExposureUpdateCheck(req_exposure, updated_exposure, error_code, res_msg);
 }
 
-bool K4AExposureCalibration::k4aAutoTuneExposure(uint8_t target_blue_value, uint32_t& final_exposure, int8_t& error_code, std::string& res_msg)
+bool K4AExposureCalibration::k4aAutoTuneExposure(const uint8_t target_blue_value, uint32_t& final_exposure, int8_t& error_code, std::string& res_msg)
 {
   ROS_INFO("Starting K4A auto exposure tuning...");
 
