@@ -104,7 +104,7 @@ bool K4AExposureCalibration::k4aImagePopulatedCheck(cv::Mat& mat, int8_t& error_
   }
 }
 
-bool K4AExposureCalibration::k4aUpdateExposure(const uint32_t req_exposure, int8_t& error_code, std::string& res_msg)
+bool K4AExposureCalibration::k4aUpdateExposure(uint32_t req_exposure, int8_t& error_code, std::string& res_msg)
 {
   ROS_INFO("Updating exposure_time to: [%d]", req_exposure);
 
@@ -130,7 +130,7 @@ bool K4AExposureCalibration::k4aUpdateExposure(const uint32_t req_exposure, int8
   return k4aCameraExposureUpdateCheck(req_exposure, updated_exposure, error_code, res_msg);
 }
 
-bool K4AExposureCalibration::k4aAutoTuneExposure(const uint8_t target_blue_value, uint32_t& final_exposure, int8_t& error_code, std::string& res_msg)
+bool K4AExposureCalibration::k4aAutoTuneExposure(uint8_t target_blue_value, uint32_t& final_exposure, int8_t& error_code, std::string& res_msg)
 {
   ROS_INFO("Starting K4A auto exposure tuning...");
 

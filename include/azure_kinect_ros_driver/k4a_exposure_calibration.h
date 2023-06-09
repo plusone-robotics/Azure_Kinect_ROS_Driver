@@ -41,7 +41,7 @@ public:
      * @param[out] res_msg human-readable error message included in response
      * @return true if exposure is successfully updated
      */
-    bool k4aUpdateExposure(const uint32_t req_exposure, int8_t& error_code, std::string& res_msg);
+    bool k4aUpdateExposure(uint32_t req_exposure, int8_t& error_code, std::string& res_msg);
     
     /**
      * @brief auto tune exposure with given target blue value
@@ -51,7 +51,7 @@ public:
      * @param[out] res_msg human-readable error message included in response
      * @return true if auto tuning exposure is successfully completed
      */
-    bool k4aAutoTuneExposure(const uint8_t target_blue_value, uint32_t& final_exposure, int8_t& error_code, std::string& res_msg);
+    bool k4aAutoTuneExposure(uint8_t target_blue_value, uint32_t& final_exposure, int8_t& error_code, std::string& res_msg);
     
     /**
      * @brief check if dynamic_reconfigure response has correctly updated exposure
