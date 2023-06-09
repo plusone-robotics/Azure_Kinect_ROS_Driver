@@ -1,4 +1,4 @@
-uint32_t new_exp
+uint32 new_exp
 ---
 string message
 int8 k4aExposureServiceErrorCode
