@@ -45,7 +45,7 @@ public:
      * @param[out] res_msg human-readable error message included in response
      * @return true if exposure is successfully updated
      */
-    bool k4aUpdateExposure(uint32_t req_exposure, int& error_code, std::string& res_msg);
+    bool k4aUpdateExposure(uint32_t req_exposure, int8_t& error_code, std::string& res_msg);
     
     /**
      * @brief auto tune exposure with given target blue value
@@ -55,7 +55,7 @@ public:
      * @param[out] res_msg human-readable error message included in response
      * @return true if auto tuning exposure is successfully completed
      */
-    bool k4aAutoTuneExposure(int target_blue_value, uint32_t& final_exposure, int& error_code, std::string& res_msg);
+    bool k4aAutoTuneExposure(uint8_t target_blue_value, uint32_t& final_exposure, int8_t& error_code, std::string& res_msg);
     
     /**
      * @brief check if dynamic_reconfigure response has correctly updated exposure
@@ -65,7 +65,7 @@ public:
      * @param[out] res_msg human-readable error message included in response
      * @return true if requested_exposure == updated_exposure
      */
-    bool k4aCameraExposureUpdateCheck(uint32_t requested_exposure, uint32_t updated_exposure, int& error_code, std::string& res_msg);
+    bool k4aCameraExposureUpdateCheck(uint32_t requested_exposure, uint32_t updated_exposure, int8_t& error_code, std::string& res_msg);
     
     /**
      * @brief check if requested_exposure is in appropriate bounds
@@ -75,7 +75,7 @@ public:
      * @param[out] res_msg human-readable error message included in response
      * @return true if requested_exposure == updated_exposure
      */
-    bool k4aCameraExposureBoundsCheck(uint32_t requested_exposure, int& error_code, std::string& res_msg);
+    bool k4aCameraExposureBoundsCheck(uint32_t requested_exposure, int8_t& error_code, std::string& res_msg);
     
     /**
      * @brief check if target_blue_value has been achieved
@@ -87,7 +87,7 @@ public:
      * @param[out] error_code error code included in response
      * @param[out] res_msg human-readable error message included in response
      */
-    bool k4aTargetBlueCheck(int target_blue_val, int current_avg_blue_value, int& error_code, std::string& res_msg);
+    bool k4aTargetBlueCheck(uint8_t target_blue_val, uint8_t current_avg_blue_value, int8_t& error_code, std::string& res_msg);
     
     /**
      * @brief check if target_blue_value is in appropriate range
@@ -95,7 +95,7 @@ public:
      * @param[out] error_code error code included in response
      * @param[out] res_msg human-readable error message included in response
      */
-    bool k4aBlueBoundsCheck(int target_blue_value, int& error_code, std::string& res_msg);
+    bool k4aBlueBoundsCheck(uint8_t target_blue_value, int8_t& error_code, std::string& res_msg);
     
     /**
      * @brief did the node receive an image at all?
@@ -103,7 +103,7 @@ public:
      * @param[out] error_code error code included in response
      * @param[out] res_msg human-readable error message included in response
      */
-    bool k4aImagePopulatedCheck(cv::Mat& mat, int& error_code, std::string& res_msg);
+    bool k4aImagePopulatedCheck(cv::Mat& mat, int8_t& error_code, std::string& res_msg);
 
 private:
     /**

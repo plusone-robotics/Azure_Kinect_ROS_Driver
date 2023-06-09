@@ -24,7 +24,7 @@ K4AExposureCalibration::~K4AExposureCalibration()
 {
 }
 
-bool K4AExposureCalibration::k4aCameraExposureUpdateCheck(uint32_t requested_exposure, uint32_t updated_exposure, uint8_t& error_code, std::string& res_msg)
+bool K4AExposureCalibration::k4aCameraExposureUpdateCheck(uint32_t requested_exposure, uint32_t updated_exposure, int8_t& error_code, std::string& res_msg)
 {
   if(updated_exposure != requested_exposure)
   {
@@ -43,7 +43,7 @@ bool K4AExposureCalibration::k4aCameraExposureUpdateCheck(uint32_t requested_exp
   }
 }
 
-bool K4AExposureCalibration::k4aCameraExposureBoundsCheck(uint32_t requested_exposure, uint8_t& error_code, std::string& res_msg)
+bool K4AExposureCalibration::k4aCameraExposureBoundsCheck(uint32_t requested_exposure, int8_t& error_code, std::string& res_msg)
 {
   if(requested_exposure < MIN_EXPOSURE || requested_exposure > MAX_EXPOSURE)
   {
@@ -60,7 +60,7 @@ bool K4AExposureCalibration::k4aCameraExposureBoundsCheck(uint32_t requested_exp
   }
 }
 
-bool K4AExposureCalibration::k4aTargetBlueCheck(uint8_t target_blue_value, uint8_t current_avg_blue_value, uint8_t& error_code, std::string& res_msg)
+bool K4AExposureCalibration::k4aTargetBlueCheck(uint8_t target_blue_value, uint8_t current_avg_blue_value, int8_t& error_code, std::string& res_msg)
 {
   if(current_avg_blue_value >= target_blue_value)
   {
@@ -77,7 +77,7 @@ bool K4AExposureCalibration::k4aTargetBlueCheck(uint8_t target_blue_value, uint8
   }
 }
 
-bool K4AExposureCalibration::k4aBlueBoundsCheck(uint8_t target_blue_value, uint8_t& error_code, std::string& res_msg)
+bool K4AExposureCalibration::k4aBlueBoundsCheck(uint8_t target_blue_value, int8_t& error_code, std::string& res_msg)
 {
   if(target_blue_value < MIN_BLUE || target_blue_value > MAX_BLUE)
   {
@@ -94,7 +94,7 @@ bool K4AExposureCalibration::k4aBlueBoundsCheck(uint8_t target_blue_value, uint8
   }
 }
 
-bool K4AExposureCalibration::k4aImagePopulatedCheck(cv::Mat& mat, uint8_t& error_code, std::string& res_msg)
+bool K4AExposureCalibration::k4aImagePopulatedCheck(cv::Mat& mat, int8_t& error_code, std::string& res_msg)
 {
   if(mat.empty())
   {
@@ -112,7 +112,7 @@ bool K4AExposureCalibration::k4aImagePopulatedCheck(cv::Mat& mat, uint8_t& error
   }
 }
 
-bool K4AExposureCalibration::k4aUpdateExposure(uint32_t req_exposure, uint8_t& error_code, std::string& res_msg)
+bool K4AExposureCalibration::k4aUpdateExposure(uint32_t req_exposure, int8_t& error_code, std::string& res_msg)
 {
   ROS_INFO("Updating exposure_time to: [%d]", req_exposure);
 
@@ -126,7 +126,7 @@ bool K4AExposureCalibration::k4aUpdateExposure(uint32_t req_exposure, uint8_t& e
   req_conf.ints.push_back(int_param);
   srv_req.config = req_conf;
   ros::service::call("/k4a_nodelet_manager/set_parameters", srv_req, srv_resp);
-  int updated_exposure = -1;
+  uint32_t updated_exposure = 0;
   for(const auto& param : srv_resp.config.ints)
   {
     if(param.name == "exposure_time")
@@ -138,7 +138,7 @@ bool K4AExposureCalibration::k4aUpdateExposure(uint32_t req_exposure, uint8_t& e
   return k4aCameraExposureUpdateCheck(req_exposure, updated_exposure, error_code, res_msg);
 }
 
-bool K4AExposureCalibration::k4aAutoTuneExposure(uint8_t target_blue_value, uint32_t& final_exposure, uint8_t& error_code, std::string& res_msg)
+bool K4AExposureCalibration::k4aAutoTuneExposure(uint8_t target_blue_value, uint32_t& final_exposure, int8_t& error_code, std::string& res_msg)
 {
   ROS_INFO("Starting K4A auto exposure tuning...");
 
@@ -194,7 +194,7 @@ bool K4AExposureCalibration::k4aUpdateExposureCallback(azure_kinect_ros_driver::
 
   ROS_INFO("Received K4A exposure update request: [%d]", req.new_exp);
 
-  uint8_t error_code;
+  int8_t error_code;
   bool expBoundCheck = k4aCameraExposureBoundsCheck(req.new_exp, error_code, res.message);
   if(expBoundCheck)
   {
@@ -223,7 +223,7 @@ bool K4AExposureCalibration::k4aAutoTuneExposureCallback(azure_kinect_ros_driver
                                                          azure_kinect_ros_driver::k4a_auto_tune_exposure::Response &res)
 {
   res.message = "";
-  uint8_t error_code;
+  int8_t error_code;
   uint32_t calibrated_exposure;
   std::string res_msg;
 
