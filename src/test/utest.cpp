@@ -12,7 +12,7 @@ TEST(ExposureCalibrationTest, CameraExposureUpdateCheckTest)
 {
   K4AExposureCalibration test_node;
 
-  int test_k4aExposureServiceErrorCode_chExp;
+  int8_t test_k4aExposureServiceErrorCode_chExp;
   std::string test_message_chExp = "";
 
   // test accurately changed appropriate exposure value 1000
@@ -23,7 +23,7 @@ TEST(ExposureCalibrationTest, CameraExposureUpdateCheckTest)
   ASSERT_EQ(test_message_chExp, "Exposure update successful");
 
   // test unchanged appropriate exposure value (requested 1000, updated 15625 [default])
-  int test_k4aExposureServiceErrorCode_unchExp;
+  int8_t test_k4aExposureServiceErrorCode_unchExp;
   std::string test_message_unchExp = "";
 
   bool unchExp = test_node.k4aCameraExposureUpdateCheck(req_1000, 15625, test_k4aExposureServiceErrorCode_unchExp, test_message_unchExp);
@@ -36,7 +36,7 @@ TEST(ExposureCalibrationTest, CameraExposureBoundsCheckTest)
 {
   K4AExposureCalibration test_node;
 
-  int test_k4aExposureServiceErrorCode_inExp;
+  int8_t test_k4aExposureServiceErrorCode_inExp;
   std::string test_message_inExp = "";
 
   // test in bounds exposure value 1000
@@ -48,7 +48,7 @@ TEST(ExposureCalibrationTest, CameraExposureBoundsCheckTest)
 
   // test out of bounds exposure value 450
   const uint32_t req_450 = 450;
-  int test_k4aExposureServiceErrorCode_outLowExp;
+  int8_t test_k4aExposureServiceErrorCode_outLowExp;
   std::string test_message_outLowExp = "";
 
   bool outLowExp = test_node.k4aCameraExposureBoundsCheck(req_450, test_k4aExposureServiceErrorCode_outLowExp, test_message_outLowExp);
@@ -58,7 +58,7 @@ TEST(ExposureCalibrationTest, CameraExposureBoundsCheckTest)
 
   // test out of bounds exposure value 1000005
   const uint32_t req_1000005 = 1000005;
-  int test_k4aExposureServiceErrorCode_outHighExp;
+  int8_t test_k4aExposureServiceErrorCode_outHighExp;
   std::string test_message_outHighExp = "";
 
   bool outHighExp = test_node.k4aCameraExposureBoundsCheck(req_1000005, test_k4aExposureServiceErrorCode_outHighExp, test_message_outHighExp);
@@ -73,7 +73,7 @@ TEST(ExposureCalibrationTest, TargetBlueCheckTest)
   
   // test blue target met
   const uint8_t req_target_blue = 100;
-  int test_k4aExposureServiceErrorCode_bMet;
+  int8_t test_k4aExposureServiceErrorCode_bMet;
   std::string test_message_bMet = "";
   bool chBlueMet = test_node.k4aTargetBlueCheck(req_target_blue, 100, test_k4aExposureServiceErrorCode_bMet, test_message_bMet);
   ASSERT_TRUE(chBlueMet);
@@ -89,7 +89,7 @@ TEST(ExposureCalibrationTest, TargetBlueCheckTest)
   ASSERT_EQ(test_message_bExc, "Successfully calibrated exposure for target blue value");
 
   // test blue target not met
-  int test_k4aExposureServiceErrorCode_bNot;
+  int8_t test_k4aExposureServiceErrorCode_bNot;
   std::string test_message_bNot = "";
   bool chBlueNot = test_node.k4aTargetBlueCheck(req_target_blue, 0, test_k4aExposureServiceErrorCode_bNot, test_message_bNot);
   ASSERT_FALSE(chBlueNot);
@@ -101,7 +101,7 @@ TEST(ExposureCalibrationTest, BlueBoundsCheckTest)
 {
   K4AExposureCalibration test_node;
 
-  int test_k4aExposureServiceErrorCode_inBlue;
+  int8_t test_k4aExposureServiceErrorCode_inBlue;
   std::string test_message_inBlue = "";
 
   // test in bounds blue value 100
@@ -113,7 +113,7 @@ TEST(ExposureCalibrationTest, BlueBoundsCheckTest)
 
   // test out of bounds blue value 260
   const uint8_t req_target_blue_260 = 260;
-  int test_k4aExposureServiceErrorCode_outHighBlue;
+  int8_t test_k4aExposureServiceErrorCode_outHighBlue;
   std::string test_message_outHighBlue = "";
 
   bool outHighBlue = test_node.k4aBlueBoundsCheck(req_target_blue_260, test_k4aExposureServiceErrorCode_outHighBlue, test_message_outHighBlue);
@@ -127,7 +127,7 @@ TEST(ExposureCalibrationTest, ImagePopulatedCheckTest)
   K4AExposureCalibration test_node;
 
   // test populated cv::Mat
-  int test_k4aExposureServiceErrorCode_imagePop;
+  int8_t test_k4aExposureServiceErrorCode_imagePop;
   std::string test_message_imagePop = "";
   cv::Mat popImage(480, 640, CV_8UC3, cv::Scalar(50, 0, 0));
   bool imagePop = test_node.k4aImagePopulatedCheck(popImage, test_k4aExposureServiceErrorCode_imagePop, test_message_imagePop);
@@ -136,7 +136,7 @@ TEST(ExposureCalibrationTest, ImagePopulatedCheckTest)
   ASSERT_EQ(test_message_imagePop, "OpenCV mat is populated");
 
   // test empty cv::Mat
-  int test_k4aExposureServiceErrorCode_imageEmpty;
+  int8_t test_k4aExposureServiceErrorCode_imageEmpty;
   std::string test_message_imageEmpty = "";
   cv::Mat emptyImage;
   bool imageEmpty = test_node.k4aImagePopulatedCheck(emptyImage, test_k4aExposureServiceErrorCode_imageEmpty, test_message_imageEmpty);
