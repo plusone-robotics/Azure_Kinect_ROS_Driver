@@ -2,4 +2,4 @@ uint8_t target_blue_val
 ---
 uint32_t calibrated_exposure
 string message
-int8 k4aCameraExposureServiceErrorCode
+int8 k4aExposureServiceErrorCode
