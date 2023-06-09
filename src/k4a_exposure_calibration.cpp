@@ -5,6 +5,14 @@
 // Associated headers
 #include "azure_kinect_ros_driver/k4a_exposure_calibration.h"
 
+K4AExposureCalibration::K4AExposureCalibration()
+{
+}
+
+K4AExposureCalibration::~K4AExposureCalibration()
+{
+}
+
 K4AExposureCalibration::K4AExposureCalibration(ros::NodeHandle& nh)
 {
   nh_ = nh;
@@ -66,23 +74,6 @@ bool K4AExposureCalibration::k4aTargetBlueCheck(const uint8_t target_blue_value,
   {
     error_code = azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::REQUESTED_CAMERA_BLUE_VALUE_NOT_MET;
     return false;
-  }
-}
-
-bool K4AExposureCalibration::k4aBlueBoundsCheck(const uint8_t target_blue_value, int8_t& error_code, std::string& res_msg)
-{
-  if(target_blue_value < MIN_BLUE_ || target_blue_value > MAX_BLUE_)
-  {
-    std::string error_msg = "Requested target blue value out of range";
-    ROS_ERROR("Requested target blue value out of range [%d] - [%d]", MIN_BLUE_, MAX_BLUE_);
-    res_msg = error_msg;
-    error_code = azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::REQUESTED_CAMERA_BLUE_VALUE_OUT_OF_BOUNDS_FAILURE;
-    return false;
-  }
-  else
-  {
-    error_code = azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::SUCCESS;
-    return true;
   }
 }
 
@@ -221,29 +212,18 @@ bool K4AExposureCalibration::k4aAutoTuneExposureCallback(azure_kinect_ros_driver
 
   ROS_INFO("Received K4A exposure auto tuning request for blue value: [%d]", req.target_blue_val);
 
-  bool blueBound = k4aBlueBoundsCheck(req.target_blue_val, error_code, res_msg);
+  bool autoTuningRes = k4aAutoTuneExposure(req.target_blue_val, calibrated_exposure, error_code, res_msg);
   res.k4aExposureServiceErrorCode = error_code;
   res.message = res_msg;
+  res.calibrated_exposure = calibrated_exposure;
 
-  if(!blueBound)
+  if(!autoTuningRes)
   {
     return false;
   }
   else
   {
-    bool autoTuningRes = k4aAutoTuneExposure(req.target_blue_val, calibrated_exposure, error_code, res_msg);
-    res.k4aExposureServiceErrorCode = error_code;
-    res.message = res_msg;
-    res.calibrated_exposure = calibrated_exposure;
-
-    if(!autoTuningRes)
-    {
-      return false;
-    }
-    else
-    {
-      return true;
-    }
+    return true;
   }
 }
 

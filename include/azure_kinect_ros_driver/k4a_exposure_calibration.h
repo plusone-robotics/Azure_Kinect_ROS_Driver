@@ -27,6 +27,13 @@ class K4AExposureCalibration
 {
 public:
     /**
+     * @brief default constructor and destructor
+     * @details These are required in order for catkin testing to work properly.
+     */
+    K4AExposureCalibration();
+    ~K4AExposureCalibration();
+
+    /**
      * @brief initializes calibrator with a provided node handle
      * @details Subscribes the node to /rgb/raw/image.
      *          Advertises the k4a_update_exposure service and the k4a_auto_tune_exposure service.
@@ -84,14 +91,6 @@ public:
      * @param[out] res_msg human-readable error message included in response
      */
     bool k4aTargetBlueCheck(const uint8_t target_blue_val, uint8_t current_avg_blue_value, int8_t& error_code, std::string& res_msg);
-    
-    /**
-     * @brief check if target_blue_value is in appropriate range
-     * @param[in] target_blue_value target blue value originally requested in k4aAutoTuneExposure
-     * @param[out] error_code error code included in response
-     * @param[out] res_msg human-readable error message included in response
-     */
-    bool k4aBlueBoundsCheck(const uint8_t target_blue_value, int8_t& error_code, std::string& res_msg);
     
     /**
      * @brief did the node receive an image at all?

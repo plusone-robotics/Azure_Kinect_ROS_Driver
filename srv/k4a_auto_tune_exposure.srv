@@ -1,5 +1,6 @@
-uint8_t target_blue_val
+# uint8 bounds 0-255, target blue can only be 0-255 as well
+uint8 target_blue_val
 ---
-uint32_t calibrated_exposure
+uint32 calibrated_exposure
 string message
-int8_t k4aExposureServiceErrorCode
+int8 k4aExposureServiceErrorCode
