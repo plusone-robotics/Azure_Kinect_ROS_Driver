@@ -10,8 +10,5 @@ int8 IMAGE_NOT_RECEIVED_FAILURE = -2
 # Requested camera exposure is out of bounds failure
 int8 REQUESTED_CAMERA_EXPOSURE_OUT_OF_BOUNDS_FAILURE = -3
 
-# Requested camera blue value is out of bounds failure
-int8 REQUESTED_CAMERA_BLUE_VALUE_OUT_OF_BOUNDS_FAILURE = -4
-
 # Requested camera blue value hasn't been achieved yet
-int8 REQUESTED_CAMERA_BLUE_VALUE_NOT_MET = -5
+int8 REQUESTED_CAMERA_BLUE_VALUE_NOT_MET = -4

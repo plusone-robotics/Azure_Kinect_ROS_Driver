@@ -97,21 +97,6 @@ TEST(ExposureCalibrationTest, TargetBlueCheckTest)
   ASSERT_EQ(test_message_bNot, "");
 }
 
-TEST(ExposureCalibrationTest, BlueBoundsCheckTest)
-{
-  K4AExposureCalibration test_node;
-
-  int8_t test_k4aExposureServiceErrorCode_inBlue;
-  std::string test_message_inBlue = "";
-
-  // test in bounds blue value 100
-  const uint8_t req_target_blue_100 = 100;
-  bool inBlue = test_node.k4aBlueBoundsCheck(req_target_blue_100, test_k4aExposureServiceErrorCode_inBlue, test_message_inBlue);
-  ASSERT_TRUE(inBlue);
-  ASSERT_TRUE(test_k4aExposureServiceErrorCode_inBlue == azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::SUCCESS);
-  ASSERT_EQ(test_message_inBlue, "");
-}
-
 TEST(ExposureCalibrationTest, ImagePopulatedCheckTest)
 {
   K4AExposureCalibration test_node;

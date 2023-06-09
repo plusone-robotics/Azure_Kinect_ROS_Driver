@@ -1,3 +1,4 @@
+# uint8 bounds 0-255, target blue can only be 0-255 as well
 uint8 target_blue_val
 ---
 uint32 calibrated_exposure

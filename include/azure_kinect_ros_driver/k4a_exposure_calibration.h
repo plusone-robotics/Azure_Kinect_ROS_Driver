@@ -93,14 +93,6 @@ public:
     bool k4aTargetBlueCheck(const uint8_t target_blue_val, uint8_t current_avg_blue_value, int8_t& error_code, std::string& res_msg);
     
     /**
-     * @brief check if target_blue_value is in appropriate range
-     * @param[in] target_blue_value target blue value originally requested in k4aAutoTuneExposure
-     * @param[out] error_code error code included in response
-     * @param[out] res_msg human-readable error message included in response
-     */
-    bool k4aBlueBoundsCheck(const uint8_t target_blue_value, int8_t& error_code, std::string& res_msg);
-    
-    /**
      * @brief did the node receive an image at all?
      * @param[in] mat current OpenCV mat stored in latest_k4a_image for k4aAutoTuneExposure loop
      * @param[out] error_code error code included in response
