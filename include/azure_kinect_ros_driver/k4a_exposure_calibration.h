@@ -27,6 +27,13 @@ class K4AExposureCalibration
 {
 public:
     /**
+     * @brief default constructor and destructor
+     * @details These are required in order for catkin testing to work properly.
+     */
+    K4AExposureCalibration();
+    ~K4AExposureCalibration();
+
+    /**
      * @brief initializes calibrator with a provided node handle
      * @details Subscribes the node to /rgb/raw/image.
      *          Advertises the k4a_update_exposure service and the k4a_auto_tune_exposure service.
