@@ -1,4 +1,4 @@
-uint8_t target_blue_val
+uint8 target_blue_val
 ---
 uint32_t calibrated_exposure
 string message
