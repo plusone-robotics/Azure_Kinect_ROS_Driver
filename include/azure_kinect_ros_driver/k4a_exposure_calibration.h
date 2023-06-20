@@ -148,6 +148,12 @@ private:
     const uint32_t MAX_EXPOSURE_ = 1000000;
     const uint32_t DEFAULT_EXPOSURE_ = 15625;
     const uint32_t EXPOSURE_INC_ = 250;
+
+    const uint16_t MIN_WHITE_BALANCE_ = 2500;
+    const uint16_t MAX_WHITE_BALANCE_ = 12500;
+    const uint16_t DEFAULT_WHITE_BALANCE_ = 4500;
+    const uint16_t EXPOSURE_INC_ = 10;
+    
     const uint8_t MIN_BLUE_ = 0;
     const uint8_t MAX_BLUE_ = 255;
 };

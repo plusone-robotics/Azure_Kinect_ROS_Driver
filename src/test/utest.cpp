@@ -28,7 +28,7 @@ TEST(ExposureCalibrationTest, CameraExposureUpdateCheckTest)
 
   bool unchExp = test_node.k4aCameraExposureUpdateCheck(req_1000, 15625, test_k4aExposureServiceErrorCode_unchExp, test_message_unchExp);
   ASSERT_FALSE(unchExp);
-  ASSERT_TRUE(test_k4aExposureServiceErrorCode_unchExp == azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::CAMERA_EXPOSURE_SET_FAILURE);
+  ASSERT_TRUE(test_k4aExposureServiceErrorCode_unchExp == azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::CAMERA_PARAM_SET_FAILURE);
   ASSERT_EQ(test_message_unchExp, "Failed to update exposure");
 }
 
@@ -53,7 +53,7 @@ TEST(ExposureCalibrationTest, CameraExposureBoundsCheckTest)
 
   bool outLowExp = test_node.k4aCameraExposureBoundsCheck(req_450, test_k4aExposureServiceErrorCode_outLowExp, test_message_outLowExp);
   ASSERT_FALSE(outLowExp);
-  ASSERT_TRUE(test_k4aExposureServiceErrorCode_outLowExp == azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::REQUESTED_CAMERA_EXPOSURE_OUT_OF_BOUNDS_FAILURE);
+  ASSERT_TRUE(test_k4aExposureServiceErrorCode_outLowExp == azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::REQUESTED_PARAM_OUT_OF_BOUNDS_FAILURE);
   ASSERT_EQ(test_message_outLowExp, "Requested exposure out of range");
 
   // test out of bounds exposure value 1000005
@@ -63,8 +63,67 @@ TEST(ExposureCalibrationTest, CameraExposureBoundsCheckTest)
 
   bool outHighExp = test_node.k4aCameraExposureBoundsCheck(req_1000005, test_k4aExposureServiceErrorCode_outHighExp, test_message_outHighExp);
   ASSERT_FALSE(outHighExp);
-  ASSERT_TRUE(test_k4aExposureServiceErrorCode_outHighExp == azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::REQUESTED_CAMERA_EXPOSURE_OUT_OF_BOUNDS_FAILURE);
+  ASSERT_TRUE(test_k4aExposureServiceErrorCode_outHighExp == azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::REQUESTED_PARAM_OUT_OF_BOUNDS_FAILURE);
   ASSERT_EQ(test_message_outHighExp, "Requested exposure out of range");
+}
+
+TEST(ExposureCalibrationTest, CameraWhiteBalanceUpdateCheckTest)
+{
+  K4AExposureCalibration test_node;
+
+  int8_t test_k4aExposureServiceErrorCode_chWB;
+  std::string test_message_chWB = "";
+
+  // test accurately changed appropriate white balance value 3000
+  const uint16_t req_3000 = 3000;
+  bool chWB = test_node.k4aCameraWhiteBalanceUpdateCheck(req_3000, 3000, test_k4aExposureServiceErrorCode_chWB, test_message_chWB);
+  ASSERT_TRUE(chWB);
+  ASSERT_TRUE(test_k4aExposureServiceErrorCode_chWB == azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::SUCCESS);
+  ASSERT_EQ(test_message_chExp, "White balance update successful");
+
+  // test unchanged appropriate white balance value (requested 3000, updated 4500 [default])
+  int8_t test_k4aExposureServiceErrorCode_unchWB;
+  std::string test_message_unchWB = "";
+
+  bool unchWB = test_node.k4aCameraWhiteBalanceUpdateCheck(req_3000, 4500, test_k4aExposureServiceErrorCode_unchWB, test_message_unchWB);
+  ASSERT_FALSE(unchWB);
+  ASSERT_TRUE(test_k4aExposureServiceErrorCode_unchWB == azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::CAMERA_PARAM_SET_FAILURE);
+  ASSERT_EQ(test_message_unchExp, "Failed to update white balance");
+}
+
+TEST(ExposureCalibrationTest, CameraWhiteBalanceBoundsCheckTest)
+{
+  K4AExposureCalibration test_node;
+
+  int8_t test_k4aExposureServiceErrorCode_inWB;
+  std::string test_message_inWB = "";
+
+  // test in bounds white balance value 3000
+  const uint16_t req_3000 = 3000;
+  bool inWB = test_node.k4aCameraExposureBoundsCheck(req_3000, test_k4aExposureServiceErrorCode_inWB, test_message_inWB);
+  ASSERT_TRUE(inWB);
+  ASSERT_TRUE(test_k4aExposureServiceErrorCode_inWB == azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::SUCCESS);
+  ASSERT_EQ(test_message_inWB, "");
+
+  // test out of bounds white balance value 2000
+  const uint16_t req_2000 = 2000;
+  int8_t test_k4aExposureServiceErrorCode_outLowWB;
+  std::string test_message_outLowWB = "";
+
+  bool outLowWB = test_node.k4aCameraExposureBoundsCheck(req_2000, test_k4aExposureServiceErrorCode_outLowWB, test_message_outLowWB);
+  ASSERT_FALSE(outLowWB);
+  ASSERT_TRUE(test_k4aExposureServiceErrorCode_outLowWB == azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::REQUESTED_PARAM_OUT_OF_BOUNDS_FAILURE);
+  ASSERT_EQ(test_message_outLowWB, "Requested white balance out of range");
+
+  // test out of bounds exposure value 13000
+  const uint16_t req_13000 = 13000;
+  int8_t test_k4aExposureServiceErrorCode_outHighWB;
+  std::string test_message_outHighWB = "";
+
+  bool outHighWB = test_node.k4aCameraExposureBoundsCheck(req_13000, test_k4aExposureServiceErrorCode_outHighWB, test_message_outHighWB);
+  ASSERT_FALSE(outHighWB);
+  ASSERT_TRUE(test_k4aExposureServiceErrorCode_outHighWB == azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::REQUESTED_PARAM_OUT_OF_BOUNDS_FAILURE);
+  ASSERT_EQ(test_message_outHighWB, "Requested white balance out of range");
 }
 
 TEST(ExposureCalibrationTest, TargetBlueCheckTest)
