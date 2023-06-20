@@ -30,7 +30,7 @@ bool K4AExposureCalibration::k4aCameraExposureUpdateCheck(const uint32_t request
   {
     std::string error_msg = "Failed to update exposure";
     res_msg = error_msg;
-    error_code = azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::CAMERA_EXPOSURE_SET_FAILURE;
+    error_code = azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::CAMERA_PARAM_SET_FAILURE;
     return false;
   }
   else
@@ -50,7 +50,43 @@ bool K4AExposureCalibration::k4aCameraExposureBoundsCheck(const uint32_t request
     std::string error_msg = "Requested exposure out of range";
     ROS_ERROR("Requested exposure out of range [%d] - [%d]", MIN_EXPOSURE_, MAX_EXPOSURE_);
     res_msg = error_msg;
-    error_code = azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::REQUESTED_CAMERA_EXPOSURE_OUT_OF_BOUNDS_FAILURE;
+    error_code = azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::REQUESTED_PARAM_OUT_OF_BOUNDS_FAILURE;
+    return false;
+  }
+  else
+  {
+    error_code = azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::SUCCESS;
+    return true;
+  }
+}
+
+bool K4AExposureCalibration::k4aCameraWhiteBalanceUpdateCheck(const uint16_t requested_white_balance, uint16_t updated_white_balance, int8_t& error_code, std::string& res_msg)
+{
+  if(updated_white_balance != requested_white_balance)
+  {
+    std::string error_msg = "Failed to update white balance";
+    res_msg = error_msg;
+    error_code = azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::CAMERA_PARAM_SET_FAILURE;
+    return false;
+  }
+  else
+  {
+    std::string success_msg = "White balance update successful";
+    ROS_INFO("Updated white balance to: [%d]", updated_white_balance);
+    res_msg = success_msg;
+    error_code = azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::SUCCESS;
+    return true;
+  }
+}
+
+bool K4AExposureCalibration::k4aCameraWhiteBalanceBoundsCheck(const uint16_t requested_white_balance, int8_t& error_code, std::string& res_msg)
+{
+  if(requested_white_balance < MIN_WHITE_BALANCE_ || requested_white_balance > MAX_WHITE_BALANCE_)
+  {
+    std::string error_msg = "Requested white balance out of range";
+    ROS_ERROR("Requested white balance out of range [%d] - [%d]", MIN_WHITE_BALANCE_, MAX_WHITE_BALANCE_);
+    res_msg = error_msg;
+    error_code = azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::REQUESTED_PARAM_OUT_OF_BOUNDS_FAILURE;
     return false;
   }
   else
@@ -119,6 +155,32 @@ bool K4AExposureCalibration::k4aUpdateExposure(const uint32_t req_exposure, int8
     }
   }
   return k4aCameraExposureUpdateCheck(req_exposure, updated_exposure, error_code, res_msg);
+}
+
+bool K4AExposureCalibration::k4aUpdateWhiteBalance(const uint16_t req_white_balance, int8_t& error_code, std::string& res_msg)
+{
+  ROS_INFO("Updating white_balance to: [%d]", req_white_balance);
+
+  dynamic_reconfigure::ReconfigureRequest srv_req;
+  dynamic_reconfigure::ReconfigureResponse srv_resp;
+  dynamic_reconfigure::IntParameter int_param;
+  dynamic_reconfigure::Config req_conf;
+
+  int_param.name = "white_balance";
+  int_param.value = req_white_balance;
+  req_conf.ints.push_back(int_param);
+  srv_req.config = req_conf;
+  ros::service::call("/k4a_nodelet_manager/set_parameters", srv_req, srv_resp);
+  uint32_t updated_white_balance = 0;
+  for(const auto& param : srv_resp.config.ints)
+  {
+    if(param.name == "white_balance")
+    {
+      updated_white_balance = param.value;
+      break;
+    }
+  }
+  return k4aCameraWhiteBalanceUpdateCheck(req_white_balance, updated_white_balance, error_code, res_msg);
 }
 
 bool K4AExposureCalibration::k4aAutoTuneExposure(const uint8_t target_blue_value, uint32_t& final_exposure, int8_t& error_code, std::string& res_msg)
