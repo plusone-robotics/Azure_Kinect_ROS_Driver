@@ -100,7 +100,7 @@ TEST(ExposureCalibrationTest, CameraWhiteBalanceBoundsCheckTest)
 
   // test in bounds white balance value 3000
   const uint16_t req_3000 = 3000;
-  bool inWB = test_node.k4aCameraExposureBoundsCheck(req_3000, test_k4aExposureServiceErrorCode_inWB, test_message_inWB);
+  bool inWB = test_node.k4aCameraWhiteBalanceBoundsCheck(req_3000, test_k4aExposureServiceErrorCode_inWB, test_message_inWB);
   ASSERT_TRUE(inWB);
   ASSERT_TRUE(test_k4aExposureServiceErrorCode_inWB == azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::SUCCESS);
   ASSERT_EQ(test_message_inWB, "");
@@ -110,7 +110,7 @@ TEST(ExposureCalibrationTest, CameraWhiteBalanceBoundsCheckTest)
   int8_t test_k4aExposureServiceErrorCode_outLowWB;
   std::string test_message_outLowWB = "";
 
-  bool outLowWB = test_node.k4aCameraExposureBoundsCheck(req_2000, test_k4aExposureServiceErrorCode_outLowWB, test_message_outLowWB);
+  bool outLowWB = test_node.k4aCameraWhiteBalanceBoundsCheck(req_2000, test_k4aExposureServiceErrorCode_outLowWB, test_message_outLowWB);
   ASSERT_FALSE(outLowWB);
   ASSERT_TRUE(test_k4aExposureServiceErrorCode_outLowWB == azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::REQUESTED_PARAM_OUT_OF_BOUNDS_FAILURE);
   ASSERT_EQ(test_message_outLowWB, "Requested white balance out of range");
@@ -120,7 +120,7 @@ TEST(ExposureCalibrationTest, CameraWhiteBalanceBoundsCheckTest)
   int8_t test_k4aExposureServiceErrorCode_outHighWB;
   std::string test_message_outHighWB = "";
 
-  bool outHighWB = test_node.k4aCameraExposureBoundsCheck(req_13000, test_k4aExposureServiceErrorCode_outHighWB, test_message_outHighWB);
+  bool outHighWB = test_node.k4aCameraWhiteBalanceBoundsCheck(req_13000, test_k4aExposureServiceErrorCode_outHighWB, test_message_outHighWB);
   ASSERT_FALSE(outHighWB);
   ASSERT_TRUE(test_k4aExposureServiceErrorCode_outHighWB == azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::REQUESTED_PARAM_OUT_OF_BOUNDS_FAILURE);
   ASSERT_EQ(test_message_outHighWB, "Requested white balance out of range");
