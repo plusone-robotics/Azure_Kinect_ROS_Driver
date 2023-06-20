@@ -49,6 +49,15 @@ public:
      * @return true if exposure is successfully updated
      */
     bool k4aUpdateExposure(const uint32_t req_exposure, int8_t& error_code, std::string& res_msg);
+
+    /**
+     * @brief call k4a_nodelet_manager/set_parameters to update white balance value
+     * @param[in] req_white_balance new white balance
+     * @param[out] error_code error code included in response
+     * @param[out] res_msg human-readable error message included in response
+     * @return true if white balance is successfully updated
+     */
+    bool k4aUpdateWhiteBalance(const uint16_t req_white_balance, int8_t& error_code, std::string& res_msg);
     
     /**
      * @brief auto tune exposure with given target blue value
@@ -73,13 +82,31 @@ public:
     /**
      * @brief check if requested_exposure is in appropriate bounds
      * @param[in] requested_exposure exposure originally requested in k4aUpdateExposure
-     * @param[out] updated_exposure exposure that was returned by the dynamic_reconfigure call
      * @param[out] error_code error code included in response
      * @param[out] res_msg human-readable error message included in response
-     * @return true if requested_exposure == updated_exposure
+     * @return true if requested_exposure is within appropriate exposure bounds
      */
     bool k4aCameraExposureBoundsCheck(const uint32_t requested_exposure, int8_t& error_code, std::string& res_msg);
+
+    /**
+     * @brief check if dynamic_reconfigure response has correctly updated white balance
+     * @param[in] requested_white_balance white balance originally requested in k4aUpdateWhiteBalance
+     * @param[in] updated_white_balance white balance that was returned by the dynamic_reconfigure call
+     * @param[out] error_code error code included in response
+     * @param[out] res_msg human-readable error message included in response
+     * @return true if requested_white_balance == updated_white_balance
+     */
+    bool k4aCameraWhiteBalanceUpdateCheck(const uint16_t requested_white_balance, uint16_t updated_white_balance, int8_t& error_code, std::string& res_msg);
     
+    /**
+     * @brief check if requested_white_balance is in appropriate bounds
+     * @param[in] requested_white_balance white balance originally requested in k4aUpdateWhiteBalance
+     * @param[out] error_code error code included in response
+     * @param[out] res_msg human-readable error message included in response
+     * @return true if requested_white_balance is within appropriate white balance bounds
+     */
+    bool k4aCameraWhiteBalanceBoundsCheck(const uint16_t requested_white_balance, int8_t& error_code, std::string& res_msg);
+
     /**
      * @brief check if target_blue_value has been achieved
      * @details When conducting the auto tune loop, this method compares the average blue
@@ -152,7 +179,7 @@ private:
     const uint16_t MIN_WHITE_BALANCE_ = 2500;
     const uint16_t MAX_WHITE_BALANCE_ = 12500;
     const uint16_t DEFAULT_WHITE_BALANCE_ = 4500;
-    const uint16_t EXPOSURE_INC_ = 10;
+    const uint16_t WHITE_BALANCE_INC_ = 10;
     
     const uint8_t MIN_BLUE_ = 0;
     const uint8_t MAX_BLUE_ = 255;
