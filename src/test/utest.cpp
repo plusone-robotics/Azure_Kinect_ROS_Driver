@@ -79,7 +79,7 @@ TEST(ExposureCalibrationTest, CameraWhiteBalanceUpdateCheckTest)
   bool chWB = test_node.k4aCameraWhiteBalanceUpdateCheck(req_3000, 3000, test_k4aExposureServiceErrorCode_chWB, test_message_chWB);
   ASSERT_TRUE(chWB);
   ASSERT_TRUE(test_k4aExposureServiceErrorCode_chWB == azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::SUCCESS);
-  ASSERT_EQ(test_message_chExp, "White balance update successful");
+  ASSERT_EQ(test_message_chWB, "White balance update successful");
 
   // test unchanged appropriate white balance value (requested 3000, updated 4500 [default])
   int8_t test_k4aExposureServiceErrorCode_unchWB;
@@ -88,7 +88,7 @@ TEST(ExposureCalibrationTest, CameraWhiteBalanceUpdateCheckTest)
   bool unchWB = test_node.k4aCameraWhiteBalanceUpdateCheck(req_3000, 4500, test_k4aExposureServiceErrorCode_unchWB, test_message_unchWB);
   ASSERT_FALSE(unchWB);
   ASSERT_TRUE(test_k4aExposureServiceErrorCode_unchWB == azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode::CAMERA_PARAM_SET_FAILURE);
-  ASSERT_EQ(test_message_unchExp, "Failed to update white balance");
+  ASSERT_EQ(test_message_unchWB, "Failed to update white balance");
 }
 
 TEST(ExposureCalibrationTest, CameraWhiteBalanceBoundsCheckTest)
