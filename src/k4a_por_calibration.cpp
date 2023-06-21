@@ -249,8 +249,8 @@ bool K4APORCalibration::k4aSGDTune(const float target_blue_value,
   ROS_INFO("Starting K4A SGD tuning...");
 
   // camera params to be modified
-  double exposure_time_double = (double)DEFAULT_EXPOSURE_;
-  double white_balance_double = (double)DEFAULT_WHITE_BALANCE_;
+  double exposure_time_double = (double)MIN_EXPOSURE_;
+  double white_balance_double = (double)MIN_WHITE_BALANCE_;
   uint32_t exposure_time_uint;
   uint16_t white_balance_uint;
 
