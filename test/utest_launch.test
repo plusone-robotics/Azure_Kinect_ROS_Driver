@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
 <launch>
-    <node pkg="azure_kinect_ros_driver" type="k4a_exposure_calibration_node" name="k4a_exposure_calibration_test"/>
+    <node pkg="azure_kinect_ros_driver" type="k4a_por_calibration_node" name="k4a_por_calibration_test"/>
     <test test-name="unit_test_node" pkg="azure_kinect_ros_driver" type="utest_node" time-limit="30.0"/>
 </launch>

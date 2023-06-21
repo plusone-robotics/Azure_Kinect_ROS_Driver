@@ -6,11 +6,11 @@
 #include <gtest/gtest.h>
 
 // Project headers
-#include "azure_kinect_ros_driver/k4a_exposure_calibration.h"
+#include "azure_kinect_ros_driver/k4a_por_calibration.h"
 
-TEST(ExposureCalibrationTest, CameraExposureUpdateCheckTest)
+TEST(PORCalibrationTest, CameraExposureUpdateCheckTest)
 {
-  K4AExposureCalibration test_node;
+  K4APORCalibration test_node;
 
   int8_t test_k4aExposureServiceErrorCode_chExp;
   std::string test_message_chExp = "";
@@ -32,9 +32,9 @@ TEST(ExposureCalibrationTest, CameraExposureUpdateCheckTest)
   ASSERT_EQ(test_message_unchExp, "Failed to update exposure");
 }
 
-TEST(ExposureCalibrationTest, CameraExposureBoundsCheckTest)
+TEST(PORCalibrationTest, CameraExposureBoundsCheckTest)
 {
-  K4AExposureCalibration test_node;
+  K4APORCalibration test_node;
 
   int8_t test_k4aExposureServiceErrorCode_inExp;
   std::string test_message_inExp = "";
@@ -67,9 +67,9 @@ TEST(ExposureCalibrationTest, CameraExposureBoundsCheckTest)
   ASSERT_EQ(test_message_outHighExp, "Requested exposure out of range");
 }
 
-TEST(ExposureCalibrationTest, CameraWhiteBalanceUpdateCheckTest)
+TEST(PORCalibrationTest, CameraWhiteBalanceUpdateCheckTest)
 {
-  K4AExposureCalibration test_node;
+  K4APORCalibration test_node;
 
   int8_t test_k4aExposureServiceErrorCode_chWB;
   std::string test_message_chWB = "";
@@ -91,9 +91,9 @@ TEST(ExposureCalibrationTest, CameraWhiteBalanceUpdateCheckTest)
   ASSERT_EQ(test_message_unchWB, "Failed to update white balance");
 }
 
-TEST(ExposureCalibrationTest, CameraWhiteBalanceBoundsCheckTest)
+TEST(PORCalibrationTest, CameraWhiteBalanceBoundsCheckTest)
 {
-  K4AExposureCalibration test_node;
+  K4APORCalibration test_node;
 
   int8_t test_k4aExposureServiceErrorCode_inWB;
   std::string test_message_inWB = "";
@@ -126,9 +126,9 @@ TEST(ExposureCalibrationTest, CameraWhiteBalanceBoundsCheckTest)
   ASSERT_EQ(test_message_outHighWB, "Requested white balance out of range");
 }
 
-TEST(ExposureCalibrationTest, TargetBlueCheckTest)
+TEST(PORCalibrationTest, TargetBlueCheckTest)
 {
-  K4AExposureCalibration test_node;
+  K4APORCalibration test_node;
   
   // test blue target met
   const uint8_t req_target_blue = 100;
@@ -156,9 +156,9 @@ TEST(ExposureCalibrationTest, TargetBlueCheckTest)
   ASSERT_EQ(test_message_bNot, "");
 }
 
-TEST(ExposureCalibrationTest, ImagePopulatedCheckTest)
+TEST(PORCalibrationTest, ImagePopulatedCheckTest)
 {
-  K4AExposureCalibration test_node;
+  K4APORCalibration test_node;
 
   // test populated cv::Mat
   int8_t test_k4aExposureServiceErrorCode_imagePop;
@@ -182,7 +182,7 @@ TEST(ExposureCalibrationTest, ImagePopulatedCheckTest)
 int main(int argc, char **argv)
 {
   testing::InitGoogleTest(&argc, argv);
-  ros::init(argc, argv, "k4a_exposure_calibration_tests");
+  ros::init(argc, argv, "k4a_por_calibration_tests");
   
   return RUN_ALL_TESTS();
 }
