@@ -319,7 +319,7 @@ bool K4APORCalibration::k4aSGDTune(const float target_blue_value,
       ROS_INFO("Current white error: [%f]", error_white);
 
       // update camera params
-      exposure_time_double += LEARNING_RATE_* (error_blue + error_green + error_red + error_white) * dis(gen);
+      exposure_time_double += LEARNING_RATE_* (error_blue + error_green + error_red) * dis(gen);
       if(exposure_time_double < MIN_EXPOSURE_)
       {
         exposure_time_uint = MIN_EXPOSURE_;
@@ -333,7 +333,7 @@ bool K4APORCalibration::k4aSGDTune(const float target_blue_value,
         exposure_time_uint = (uint32_t)exposure_time_double;
       }
 
-      white_balance_double += LEARNING_RATE_* (error_blue + error_green + error_red + error_white) * dis(gen);
+      white_balance_double += LEARNING_RATE_* error_white * dis(gen);
       if(white_balance_double < MIN_WHITE_BALANCE_)
       {
         white_balance_uint = MIN_WHITE_BALANCE_;
