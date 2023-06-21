@@ -1,0 +1,10 @@
+# uint8 bounds 0-255, target colors can only be 0-255 as well
+uint8 target_blue_val
+uint8 target_green_val
+uint8 target_red_val
+uint8 target_white_val
+---
+uint32 calibrated_exposure
+uint16 calibrated_white_balance
+string message
+int8 k4aExposureServiceErrorCode
