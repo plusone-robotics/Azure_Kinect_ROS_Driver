@@ -309,9 +309,32 @@ bool K4APORCalibration::k4aSGDTune(const float target_blue_value,
 
       // update camera params
       exposure_time_double += LEARNING_RATE_* (error_blue + error_green + error_red + error_white) * dis(gen);
-      exposure_time_uint = (uint32_t)exposure_time_double;
+      if(exposure_time_double < MIN_EXPOSURE_)
+      {
+        exposure_time_uint = MIN_EXPOSURE_;
+      }
+      else if(exposure_time_double > MAX_EXPOSURE_)
+      {
+        exposure_time_uint = MAX_EXPOSURE_;
+      }
+      else
+      {
+        exposure_time_uint = (uint32_t)exposure_time_double;
+      }
+
       white_balance_double += LEARNING_RATE_* (error_blue + error_green + error_red + error_white) * dis(gen);
-      white_balance_uint = (uint16_t)white_balance_double;
+      if(white_balance_double < MIN_WHITE_BALANCE_)
+      {
+        white_balance_uint = MIN_WHITE_BALANCE_;
+      }
+      else if(white_balance_double > MAX_WHITE_BALANCE_)
+      {
+        white_balance_uint = MAX_WHITE_BALANCE_;
+      }
+      else
+      {
+        white_balance_uint = (uint16_t)white_balance_double;
+      }
       bool update_exp = k4aUpdateExposure(exposure_time_uint, error_code, res_msg);
       bool update_wb = k4aUpdateWhiteBalance(white_balance_uint, error_code, res_msg);
       if(!update_exp || !update_wb)
