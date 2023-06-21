@@ -323,9 +323,10 @@ bool K4APORCalibration::k4aSGDTune(const float target_blue_value,
         final_exposure = exposure_time_uint;
         final_white_balance = white_balance_uint;
       }
+    }
+    ROS_INFO("Successfully updated exposure to [%d] and white balance to [%d]", final_exposure, final_white_balance);
+    return true;
   }
-  ROS_INFO("Successfully updated exposure to [%d] and white balance to [%d]", final_exposure, final_white_balance);
-  return true;
 }
 
 bool K4APORCalibration::k4aUpdateExposureCallback(azure_kinect_ros_driver::k4a_update_exposure::Request &req,
