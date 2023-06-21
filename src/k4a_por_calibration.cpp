@@ -301,11 +301,21 @@ bool K4APORCalibration::k4aSGDTune(const float target_blue_value,
       float red_avg = total_red / pixel_count;
       float white_avg = total_white / pixel_count;
 
+      ROS_INFO("Current blue_avg: [%f]", blue_avg);
+      ROS_INFO("Current green_avg: [%f]", green_avg);
+      ROS_INFO("Current red_avg: [%f]", red_avg);
+      ROS_INFO("Current white_avg: [%f]", white_avg);
+
       // compute errors
       float error_blue = blue_avg - target_blue_value;
       float error_green = green_avg - target_green_value;
       float error_red = red_avg - target_red_value;
       float error_white = white_avg - target_white_value;
+
+      ROS_INFO("Current blue error: [%f]", error_blue);
+      ROS_INFO("Current green error: [%f]", error_green);
+      ROS_INFO("Current red error: [%f]", error_red);
+      ROS_INFO("Current white error: [%f]", error_white);
 
       // update camera params
       exposure_time_double += LEARNING_RATE_* (error_blue + error_green + error_red + error_white) * dis(gen);
