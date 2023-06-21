@@ -278,7 +278,8 @@ bool K4APORCalibration::k4aSGDTune(const float target_blue_value,
       cv::Mat hls_channels[3];
       std::lock_guard<std::mutex> lock(latest_k4a_image_mutex_);
       cv::split(*latest_k4a_image_ptr_, color_channels);
-      cv::Mat hls_image = cv::cvtColor(*latest_k4a_image_ptr_, cv::COLOR_BGR2HLS);
+      cv::Mat hls_image;
+      cv::cvtColor(*latest_k4a_image_ptr_, hls_image, cv::COLOR_BGR2HLS);
       cv::split(hls_image, hls_channels);
       uint32_t rows = latest_k4a_image_.rows;
       uint32_t cols = latest_k4a_image_.cols;
