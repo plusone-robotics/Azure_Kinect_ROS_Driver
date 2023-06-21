@@ -17,6 +17,7 @@
 // Project headers
 #include "azure_kinect_ros_driver/AzureKinectParamsConfig.h"
 #include "azure_kinect_ros_driver/k4a_update_exposure.h"
+#include "azure_kinect_ros_driver/k4a_update_white_balance.h"
 #include "azure_kinect_ros_driver/k4a_auto_tune_exposure.h"
 #include "azure_kinect_ros_driver/k4aCameraExposureServiceErrorCode.h"
 
