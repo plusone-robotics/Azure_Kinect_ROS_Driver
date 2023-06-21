@@ -2,6 +2,9 @@
 // Author: Shannon Stoehr
 // email:  shannon.stoehr@plusonerobotics.com
 
+// Library headers
+#include <random>
+
 // Associated headers
 #include "azure_kinect_ros_driver/k4a_por_calibration.h"
 
@@ -23,6 +26,7 @@ K4APORCalibration::K4APORCalibration(ros::NodeHandle& nh)
   update_exposure_service_ = nh_.advertiseService("k4a_update_exposure", &K4APORCalibration::k4aUpdateExposureCallback, this);
   update_white_balance_service_ = nh_.advertiseService("k4a_update_white_balance", &K4APORCalibration::k4aUpdateWhiteBalanceCallback, this);
   auto_tune_exposure_service_ = nh_.advertiseService("k4a_auto_tune_exposure", &K4APORCalibration::k4aAutoTuneExposureCallback, this);
+  sgd_tune_service_ = nh_.advertiseService("k4a_sgd_tune", &K4APORCalibration::k4aSGDTuneCallback, this);
 }
 
 bool K4APORCalibration::k4aCameraExposureUpdateCheck(const uint32_t requested_exposure, uint32_t updated_exposure, int8_t& error_code, std::string& res_msg)
@@ -232,9 +236,100 @@ bool K4APORCalibration::k4aAutoTuneExposure(const uint8_t target_blue_value, uin
   ROS_INFO("Successfully updated exposure to [%d] for target blue value of [%d]", final_exposure, target_blue_value);
   return true;
 }
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+bool K4APORCalibration::k4aSGDTune(const float target_blue_value,
+                                   const float target_green_value,
+                                   const float target_red_value,
+                                   const float target_white_value,
+                                   uint32_t& final_exposure,
+                                   uint16_t& final_white_balance,
+                                   int8_t& error_code,
+                                   std::string& res_msg)
+{
+  ROS_INFO("Starting K4A SGD tuning...");
+
+  // camera params to be modified
+  double exposure_time_double = (double)DEFAULT_EXPOSURE_;
+  double white_balance_double = (double)DEFAULT_WHITE_BALANCE_;
+  uint32_t exposure_time_uint;
+  uint16_t white_balance_uint;
+
+  // rng
+  std::random_device rd;
+  std::mt19937 gen(rd());
+  std::uniform_real_distribution<double> dis(-1.0, 1.0);
+
+  // adjust camera params using SGD
+  for(int i = 0; i < MAX_ITERATIONS_; i++)
+  {
+    float total_blue = 0;
+    float total_green = 0;
+    float total_red = 0;
+    float total_white = 0;
+    
+    bool channelsPop = k4aImagePopulatedCheck(*latest_k4a_image_ptr_, error_code, res_msg);
+    if(!channelsPop)
+    {
+      return false;
+    }
+    else
+    {
+      cv::Mat color_channels[3];
+      cv::Mat hls_channels[3];
+      std::lock_guard<std::mutex> lock(latest_k4a_image_mutex_);
+      cv::split(*latest_k4a_image_ptr_, color_channels);
+      cv::Mat hls_image;
+      cv::COLOR_BGR2HLS(*latest_k4a_image_ptr_, hls_image);
+      cv::split(hls_image, hls_channels);
+      uint32_t rows = latest_k4a_image_.rows;
+      uint32_t cols = latest_k4a_image_.cols;
+      uint32_t pixel_count = rows * cols;
+
+      // calculate mean values
+      for(uint32_t r=0; r<rows; r++)
+      {
+        for(uint32_t c=0; j<cols; c++)
+        {
+          total_blue += color_channels[0].at<uchar>(r,c);
+          total_green += color_channels[1].at<uchar>(r,c);
+          total_red += color_channels[2].at<uchar>(r,c);
+          total_white += hls_channels[1].at<uchar>(r,c);
+        }
+      }
+      float blue_avg = total_blue / pixel_count;
+      float green_avg = total_green / pixel_count;
+      float red_avg = total_red / pixel_count;
+      float white_avg = total_white / pixel_count;
+
+      // compute errors
+      float error_blue = blue_avg - target_blue_value;
+      float error_green = green_avg - target_green_value;
+      float error_red = red_avg - target_red_value;
+      float error_white = white_avg - target_white_value;
+
+      // update camera params
+      exposure_time_double += LEARNING_RATE_* (error_blue + error_green + error_red + error_white) * dis(gen);
+      exposure_time_uint = (uint32_t)exposure_time_double;
+      white_balance += LEARNING_RATE_* (error_blue + error_green + error_red + error_white) * dis(gen);
+      white_balance_uint = (uint16_t)white_balance_double;
+      bool update_exp = k4aUpdateExposure(exposure_time_uint, error_code, res_msg);
+      bool update_wb = k4aUpdateWhiteBalance(white_balance_uint, error_code, res_msg);
+      if(!update_exp || !update_wb)
+      {
+        return false;
+      }
+      else
+      {
+        final_exposure = exposure_time_uint;
+        final_white_balance = white_balance_uint;
+      }
+  }
+  ROS_INFO("Successfully updated exposure to [%d] and white balance to [%d]", final_exposure, final_white_balance);
+  return true;
+}
 
 bool K4APORCalibration::k4aUpdateExposureCallback(azure_kinect_ros_driver::k4a_update_exposure::Request &req,
-                                                       azure_kinect_ros_driver::k4a_update_exposure::Response &res)
+                                                  azure_kinect_ros_driver::k4a_update_exposure::Response &res)
 {
   res.message = "";
 
@@ -266,7 +361,7 @@ bool K4APORCalibration::k4aUpdateExposureCallback(azure_kinect_ros_driver::k4a_u
 }
 
 bool K4APORCalibration::k4aUpdateWhiteBalanceCallback(azure_kinect_ros_driver::k4a_update_white_balance::Request &req,
-                                                           azure_kinect_ros_driver::k4a_update_white_balance::Response &res)
+                                                      azure_kinect_ros_driver::k4a_update_white_balance::Response &res)
 {
   res.message = "";
 
@@ -298,7 +393,7 @@ bool K4APORCalibration::k4aUpdateWhiteBalanceCallback(azure_kinect_ros_driver::k
 }
 
 bool K4APORCalibration::k4aAutoTuneExposureCallback(azure_kinect_ros_driver::k4a_auto_tune_exposure::Request &req,
-                                                         azure_kinect_ros_driver::k4a_auto_tune_exposure::Response &res)
+                                                    azure_kinect_ros_driver::k4a_auto_tune_exposure::Response &res)
 {
   res.message = "";
   int8_t error_code;
@@ -313,6 +408,44 @@ bool K4APORCalibration::k4aAutoTuneExposureCallback(azure_kinect_ros_driver::k4a
   res.calibrated_exposure = calibrated_exposure;
 
   if(!autoTuningRes)
+  {
+    return false;
+  }
+  else
+  {
+    return true;
+  }
+}
+
+bool K4APORCalibration::k4aSGDTuneCallback(azure_kinect_ros_driver::k4a_sgd_tune::Request &req,
+                                           azure_kinect_ros_driver::k4a_sgd_tune::Response &res)
+{
+  res.message = "";
+  int8_t error_code;
+  uint32_t calibrated_exposure;
+  uint16_t calibrated_white_balance;
+  std::string res_msg;
+
+  ROS_INFO("Received K4A sgd auto tuning request for:");
+  ROS_INFO("blue value: [%d]", req.target_blue_val);
+  ROS_INFO("green value: [%d]", req.target_green_val);
+  ROS_INFO("red value: [%d]", req.target_red_val);
+  ROS_INFO("white value: [%d]", req.target_white_val);
+
+  bool sgdTuningRes = k4aSGDTune(req.target_blue_val,
+                                 req.target_green_val,
+                                 req.target_red_val,
+                                 req.target_white_val,
+                                 calibrated_exposure,
+                                 calibrated_white_balance,
+                                 error_code,
+                                 res_msg);
+  res.k4aExposureServiceErrorCode = error_code;
+  res.message = res_msg;
+  res.calibrated_exposure = calibrated_exposure;
+  res.calibrated_white_balance = calibrated_white_balance;
+
+  if(!sgdTuningRes)
   {
     return false;
   }

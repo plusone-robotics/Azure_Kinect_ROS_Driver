@@ -19,10 +19,11 @@
 #include "azure_kinect_ros_driver/k4a_update_exposure.h"
 #include "azure_kinect_ros_driver/k4a_update_white_balance.h"
 #include "azure_kinect_ros_driver/k4a_auto_tune_exposure.h"
+#include "azure_kinect_ros_driver/k4a_sgd_tune.h"
 #include "azure_kinect_ros_driver/k4aCameraExposureServiceErrorCode.h"
 
 /**
- * @brief Class that allows the user to tune exposure in real time from the command line
+ * @brief Class that allows the user to tune camera params in real time from the command line
  */
 class K4APORCalibration
 {
@@ -37,7 +38,11 @@ public:
     /**
      * @brief initializes calibrator with a provided node handle
      * @details Subscribes the node to /rgb/raw/image.
-     *          Advertises the k4a_update_exposure service and the k4a_auto_tune_exposure service.
+     *          Advertises:
+                    k4a_update_exposure service
+                    k4a_update_white_balance service
+                    k4a_auto_tune_exposure service
+                    k4a_sgd_tune service
      * @param[in] nh ROS node handle
      */
     K4APORCalibration(ros::NodeHandle& nh);
@@ -69,7 +74,28 @@ public:
      * @return true if auto tuning exposure is successfully completed
      */
     bool k4aAutoTuneExposure(const uint8_t target_blue_value, uint32_t& final_exposure, int8_t& error_code, std::string& res_msg);
-    
+
+    /**
+     * @brief auto tune exposure and white balance with given target bgr and white values
+     * @param[in] target_blue_value requested blue value to tune exposure to
+     * @param[in] target_green_value requested green value to tune exposure to
+     * @param[in] target_red_value requested red value to tune exposure to
+     * @param[in] target_white_value requested white value to tune exposure to
+     * @param[out] final_exposure exposure camera is set to after call
+     * @param[out] final_white_balance white balance camera is set to after call
+     * @param[out] error_code error code included in response
+     * @param[out] res_msg human-readable error message included in response
+     * @return true if auto tuning is successfully completed
+     */
+    bool k4aSGDTune(const uint8_t target_blue_value,
+                    const uint8_t target_green_value,
+                    const uint8_t target_red_value,
+                    const uint8_t target_white_value,
+                    uint32_t& final_exposure,
+                    uint16_t& final_white_balance,
+                    int8_t& error_code,
+                    std::string& res_msg);
+
     /**
      * @brief check if dynamic_reconfigure response has correctly updated exposure
      * @param[in] requested_exposure exposure originally requested in k4aUpdateExposure
@@ -167,12 +193,24 @@ private:
     bool k4aAutoTuneExposureCallback(azure_kinect_ros_driver::k4a_auto_tune_exposure::Request &req,
                                      azure_kinect_ros_driver::k4a_auto_tune_exposure::Response &res);
 
+    /**
+     * @brief callback for k4aSGDTune
+     * @details This callback handles requests to update the camera settings from the
+     *          k4a_sgd_tune service. Currently supports updating exposure_time and
+                white_balance.
+     * @param[in] req request received from calling k4a_sgd_tune
+     * @param[out] res response sent from k4a_sgd_tune
+     */
+    bool k4aSGDTuneCallback(azure_kinect_ros_driver::k4a_sgd_tune::Request &req,
+                            azure_kinect_ros_driver::k4a_sgd_tune::Response &res);
+
     // private members
     ros::NodeHandle nh_;
     image_transport::Subscriber subRGBRaw_;
     ros::ServiceServer update_exposure_service_;
     ros::ServiceServer update_white_balance_service_;
     ros::ServiceServer auto_tune_exposure_service_;
+    ros::ServiceServer sgd_tune_service_;
 
     // allocate memory space to store latest image
     cv::Mat latest_k4a_image_; /** @brief latest image*/
@@ -192,7 +230,7 @@ private:
     const uint16_t MAX_WHITE_BALANCE_ = 12500;
     const uint16_t DEFAULT_WHITE_BALANCE_ = 4500;
     const uint16_t WHITE_BALANCE_INC_ = 10;
-    
-    const uint8_t MIN_BLUE_ = 0;
-    const uint8_t MAX_BLUE_ = 255;
+
+    const double LEARNING_RATE_ = 0.001; // learning rate for SGD
+    const uint16_t MAX_ITERATIONS_ = 10000; // max iterations for SGD
 };

@@ -1,8 +1,7 @@
-# uint8 bounds 0-255, target colors can only be 0-255 as well
-uint8 target_blue_val
-uint8 target_green_val
-uint8 target_red_val
-uint8 target_white_val
+float target_blue_val
+float target_green_val
+float target_red_val
+float target_white_val
 ---
 uint32 calibrated_exposure
 uint16 calibrated_white_balance
