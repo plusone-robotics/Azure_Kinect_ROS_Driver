@@ -262,6 +262,7 @@ bool K4APORCalibration::k4aSGDTune(const float target_blue_value,
   // adjust camera params using SGD
   for(int i = 0; i < MAX_ITERATIONS_; i++)
   {
+    ROS_INFO("Current iteration: [%d]", i);
     float total_blue = 0;
     float total_green = 0;
     float total_red = 0;
