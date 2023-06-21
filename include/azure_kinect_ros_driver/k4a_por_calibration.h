@@ -77,20 +77,20 @@ public:
 
     /**
      * @brief auto tune exposure and white balance with given target bgr and white values
-     * @param[in] target_blue_value requested blue value to tune exposure to
-     * @param[in] target_green_value requested green value to tune exposure to
-     * @param[in] target_red_value requested red value to tune exposure to
-     * @param[in] target_white_value requested white value to tune exposure to
+     * @param[in] target_blue_value requested blue value to tune params to
+     * @param[in] target_green_value requested green value to tune params to
+     * @param[in] target_red_value requested red value to tune params to
+     * @param[in] target_white_value requested white value to tune params to
      * @param[out] final_exposure exposure camera is set to after call
      * @param[out] final_white_balance white balance camera is set to after call
      * @param[out] error_code error code included in response
      * @param[out] res_msg human-readable error message included in response
      * @return true if auto tuning is successfully completed
      */
-    bool k4aSGDTune(const uint8_t target_blue_value,
-                    const uint8_t target_green_value,
-                    const uint8_t target_red_value,
-                    const uint8_t target_white_value,
+    bool k4aSGDTune(const float target_blue_value,
+                    const float target_green_value,
+                    const float target_red_value,
+                    const float target_white_value,
                     uint32_t& final_exposure,
                     uint16_t& final_white_balance,
                     int8_t& error_code,
