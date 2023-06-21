@@ -21,6 +21,7 @@ K4AExposureCalibration::K4AExposureCalibration(ros::NodeHandle& nh)
   subRGBRaw_ = it_.subscribe("/rgb/raw/image", 1, &K4AExposureCalibration::rgbRawImageCallback, this);
 
   update_exposure_service_ = nh_.advertiseService("k4a_update_exposure", &K4AExposureCalibration::k4aUpdateExposureCallback, this);
+  update_white_balance_service_ = nh_.advertiseService("k4a_update_white_balance", &K4AExposureCalibration::k4aUpdateWhiteBalanceCallback, this);
   auto_tune_exposure_service_ = nh_.advertiseService("k4a_auto_tune_exposure", &K4AExposureCalibration::k4aAutoTuneExposureCallback, this);
 }
 
@@ -259,6 +260,38 @@ bool K4AExposureCalibration::k4aUpdateExposureCallback(azure_kinect_ros_driver::
   else
   {
     ROS_ERROR("Requested exposure out of bounds");
+    res.k4aExposureServiceErrorCode = error_code;
+    return false;
+  }
+}
+
+bool K4AExposureCalibration::k4aUpdateWhiteBalanceCallback(azure_kinect_ros_driver::k4a_update_white_balance::Request &req,
+                                                           azure_kinect_ros_driver::k4a_update_white_balance::Response &res)
+{
+  res.message = "";
+
+  ROS_INFO("Received K4A white balance update request: [%d]", req.new_wb);
+
+  int8_t error_code;
+  bool wbBoundCheck = k4aCameraWhiteBalanceBoundsCheck(req.new_wb, error_code, res.message);
+  if(wbBoundCheck)
+  {
+    bool upWBRes = k4aUpdateWhiteBalance(req.new_wb, error_code, res.message);
+    res.k4aExposureServiceErrorCode = error_code;
+    if(!upWBRes)
+    {
+      ROS_ERROR("Unable to update white_balance, k4aUpdateWhiteBalance failed");
+      return false;
+    }
+    else
+    {
+      ROS_INFO("White balance updated to: [%d]", req.new_wb);
+      return true;
+    }
+  }
+  else
+  {
+    ROS_ERROR("Requested white balance out of bounds");
     res.k4aExposureServiceErrorCode = error_code;
     return false;
   }

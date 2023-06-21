@@ -145,7 +145,17 @@ private:
      */
     bool k4aUpdateExposureCallback(azure_kinect_ros_driver::k4a_update_exposure::Request &req,
                                    azure_kinect_ros_driver::k4a_update_exposure::Response &res);
-    
+
+    /**
+     * @brief callback for k4aUpdateWhiteBalance
+     * @details This callback handles requests to update the camera white balance from the
+     *          k4a_update_white_balance service.
+     * @param[in] req request received from calling k4a_update_white_balance
+     * @param[out] res response sent from k4a_update_white_balance
+     */
+    bool k4aUpdateWhiteBalanceCallback(azure_kinect_ros_driver::k4a_update_white_balance::Request &req,
+                                       azure_kinect_ros_driver::k4a_update_white_balance::Response &res);
+
     /**
      * @brief callback for k4aAutoTuneExposure
      * @details This callback handles requests to update the camera exposure from the
@@ -160,6 +170,7 @@ private:
     ros::NodeHandle nh_;
     image_transport::Subscriber subRGBRaw_;
     ros::ServiceServer update_exposure_service_;
+    ros::ServiceServer update_white_balance_service_;
     ros::ServiceServer auto_tune_exposure_service_;
 
     // allocate memory space to store latest image

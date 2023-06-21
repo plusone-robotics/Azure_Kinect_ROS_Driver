@@ -1,0 +1,4 @@
+uint16 new_wb
+---
+string message
+int8 k4aExposureServiceErrorCode

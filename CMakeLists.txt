@@ -43,6 +43,7 @@ add_service_files(
   FILES
     k4a_auto_tune_exposure.srv
     k4a_update_exposure.srv
+    k4a_update_white_balance.srv
 )
 generate_messages(
   DEPENDENCIES
