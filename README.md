@@ -27,7 +27,7 @@ For more information about how to use the node, please see the [usage guide](doc
 
 ## PlusOne Robotics Features
 
-The k4a_exposure_calibration node allows users to both update the Azure Kinect camera's exposure and to auto tune the exposure for a provided average blue value from the command line.
+The k4a_exposure_calibration node allows users to update the Azure Kinect camera's exposure and white balance and to auto tune the exposure for a provided average blue value from the command line.
 
 ## Status
 

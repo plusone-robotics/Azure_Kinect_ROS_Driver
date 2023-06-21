@@ -3,29 +3,29 @@
 // email:  shannon.stoehr@plusonerobotics.com
 
 // Associated headers
-#include "azure_kinect_ros_driver/k4a_exposure_calibration.h"
+#include "azure_kinect_ros_driver/k4a_por_calibration.h"
 
-K4AExposureCalibration::K4AExposureCalibration()
+K4APORCalibration::K4APORCalibration()
 {
 }
 
-K4AExposureCalibration::~K4AExposureCalibration()
+K4APORCalibration::~K4APORCalibration()
 {
 }
 
-K4AExposureCalibration::K4AExposureCalibration(ros::NodeHandle& nh)
+K4APORCalibration::K4APORCalibration(ros::NodeHandle& nh)
 {
   nh_ = nh;
   image_transport::ImageTransport it_(nh_);
 
-  subRGBRaw_ = it_.subscribe("/rgb/raw/image", 1, &K4AExposureCalibration::rgbRawImageCallback, this);
+  subRGBRaw_ = it_.subscribe("/rgb/raw/image", 1, &K4APORCalibration::rgbRawImageCallback, this);
 
-  update_exposure_service_ = nh_.advertiseService("k4a_update_exposure", &K4AExposureCalibration::k4aUpdateExposureCallback, this);
-  update_white_balance_service_ = nh_.advertiseService("k4a_update_white_balance", &K4AExposureCalibration::k4aUpdateWhiteBalanceCallback, this);
-  auto_tune_exposure_service_ = nh_.advertiseService("k4a_auto_tune_exposure", &K4AExposureCalibration::k4aAutoTuneExposureCallback, this);
+  update_exposure_service_ = nh_.advertiseService("k4a_update_exposure", &K4APORCalibration::k4aUpdateExposureCallback, this);
+  update_white_balance_service_ = nh_.advertiseService("k4a_update_white_balance", &K4APORCalibration::k4aUpdateWhiteBalanceCallback, this);
+  auto_tune_exposure_service_ = nh_.advertiseService("k4a_auto_tune_exposure", &K4APORCalibration::k4aAutoTuneExposureCallback, this);
 }
 
-bool K4AExposureCalibration::k4aCameraExposureUpdateCheck(const uint32_t requested_exposure, uint32_t updated_exposure, int8_t& error_code, std::string& res_msg)
+bool K4APORCalibration::k4aCameraExposureUpdateCheck(const uint32_t requested_exposure, uint32_t updated_exposure, int8_t& error_code, std::string& res_msg)
 {
   if(updated_exposure != requested_exposure)
   {
@@ -44,7 +44,7 @@ bool K4AExposureCalibration::k4aCameraExposureUpdateCheck(const uint32_t request
   }
 }
 
-bool K4AExposureCalibration::k4aCameraExposureBoundsCheck(const uint32_t requested_exposure, int8_t& error_code, std::string& res_msg)
+bool K4APORCalibration::k4aCameraExposureBoundsCheck(const uint32_t requested_exposure, int8_t& error_code, std::string& res_msg)
 {
   if(requested_exposure < MIN_EXPOSURE_ || requested_exposure > MAX_EXPOSURE_)
   {
@@ -61,7 +61,7 @@ bool K4AExposureCalibration::k4aCameraExposureBoundsCheck(const uint32_t request
   }
 }
 
-bool K4AExposureCalibration::k4aCameraWhiteBalanceUpdateCheck(const uint16_t requested_white_balance, uint16_t updated_white_balance, int8_t& error_code, std::string& res_msg)
+bool K4APORCalibration::k4aCameraWhiteBalanceUpdateCheck(const uint16_t requested_white_balance, uint16_t updated_white_balance, int8_t& error_code, std::string& res_msg)
 {
   if(updated_white_balance != requested_white_balance)
   {
@@ -80,7 +80,7 @@ bool K4AExposureCalibration::k4aCameraWhiteBalanceUpdateCheck(const uint16_t req
   }
 }
 
-bool K4AExposureCalibration::k4aCameraWhiteBalanceBoundsCheck(const uint16_t requested_white_balance, int8_t& error_code, std::string& res_msg)
+bool K4APORCalibration::k4aCameraWhiteBalanceBoundsCheck(const uint16_t requested_white_balance, int8_t& error_code, std::string& res_msg)
 {
   if(requested_white_balance < MIN_WHITE_BALANCE_ || requested_white_balance > MAX_WHITE_BALANCE_)
   {
@@ -97,7 +97,7 @@ bool K4AExposureCalibration::k4aCameraWhiteBalanceBoundsCheck(const uint16_t req
   }
 }
 
-bool K4AExposureCalibration::k4aTargetBlueCheck(const uint8_t target_blue_value, uint8_t current_avg_blue_value, int8_t& error_code, std::string& res_msg)
+bool K4APORCalibration::k4aTargetBlueCheck(const uint8_t target_blue_value, uint8_t current_avg_blue_value, int8_t& error_code, std::string& res_msg)
 {
   if(current_avg_blue_value >= target_blue_value)
   {
@@ -114,7 +114,7 @@ bool K4AExposureCalibration::k4aTargetBlueCheck(const uint8_t target_blue_value,
   }
 }
 
-bool K4AExposureCalibration::k4aImagePopulatedCheck(cv::Mat& mat, int8_t& error_code, std::string& res_msg)
+bool K4APORCalibration::k4aImagePopulatedCheck(cv::Mat& mat, int8_t& error_code, std::string& res_msg)
 {
   if(mat.empty())
   {
@@ -132,7 +132,7 @@ bool K4AExposureCalibration::k4aImagePopulatedCheck(cv::Mat& mat, int8_t& error_
   }
 }
 
-bool K4AExposureCalibration::k4aUpdateExposure(const uint32_t req_exposure, int8_t& error_code, std::string& res_msg)
+bool K4APORCalibration::k4aUpdateExposure(const uint32_t req_exposure, int8_t& error_code, std::string& res_msg)
 {
   ROS_INFO("Updating exposure_time to: [%d]", req_exposure);
 
@@ -158,7 +158,7 @@ bool K4AExposureCalibration::k4aUpdateExposure(const uint32_t req_exposure, int8
   return k4aCameraExposureUpdateCheck(req_exposure, updated_exposure, error_code, res_msg);
 }
 
-bool K4AExposureCalibration::k4aUpdateWhiteBalance(const uint16_t req_white_balance, int8_t& error_code, std::string& res_msg)
+bool K4APORCalibration::k4aUpdateWhiteBalance(const uint16_t req_white_balance, int8_t& error_code, std::string& res_msg)
 {
   ROS_INFO("Updating white_balance to: [%d]", req_white_balance);
 
@@ -184,7 +184,7 @@ bool K4AExposureCalibration::k4aUpdateWhiteBalance(const uint16_t req_white_bala
   return k4aCameraWhiteBalanceUpdateCheck(req_white_balance, updated_white_balance, error_code, res_msg);
 }
 
-bool K4AExposureCalibration::k4aAutoTuneExposure(const uint8_t target_blue_value, uint32_t& final_exposure, int8_t& error_code, std::string& res_msg)
+bool K4APORCalibration::k4aAutoTuneExposure(const uint8_t target_blue_value, uint32_t& final_exposure, int8_t& error_code, std::string& res_msg)
 {
   ROS_INFO("Starting K4A auto exposure tuning...");
 
@@ -233,7 +233,7 @@ bool K4AExposureCalibration::k4aAutoTuneExposure(const uint8_t target_blue_value
   return true;
 }
 
-bool K4AExposureCalibration::k4aUpdateExposureCallback(azure_kinect_ros_driver::k4a_update_exposure::Request &req,
+bool K4APORCalibration::k4aUpdateExposureCallback(azure_kinect_ros_driver::k4a_update_exposure::Request &req,
                                                        azure_kinect_ros_driver::k4a_update_exposure::Response &res)
 {
   res.message = "";
@@ -265,7 +265,7 @@ bool K4AExposureCalibration::k4aUpdateExposureCallback(azure_kinect_ros_driver::
   }
 }
 
-bool K4AExposureCalibration::k4aUpdateWhiteBalanceCallback(azure_kinect_ros_driver::k4a_update_white_balance::Request &req,
+bool K4APORCalibration::k4aUpdateWhiteBalanceCallback(azure_kinect_ros_driver::k4a_update_white_balance::Request &req,
                                                            azure_kinect_ros_driver::k4a_update_white_balance::Response &res)
 {
   res.message = "";
@@ -297,7 +297,7 @@ bool K4AExposureCalibration::k4aUpdateWhiteBalanceCallback(azure_kinect_ros_driv
   }
 }
 
-bool K4AExposureCalibration::k4aAutoTuneExposureCallback(azure_kinect_ros_driver::k4a_auto_tune_exposure::Request &req,
+bool K4APORCalibration::k4aAutoTuneExposureCallback(azure_kinect_ros_driver::k4a_auto_tune_exposure::Request &req,
                                                          azure_kinect_ros_driver::k4a_auto_tune_exposure::Response &res)
 {
   res.message = "";
@@ -322,7 +322,7 @@ bool K4AExposureCalibration::k4aAutoTuneExposureCallback(azure_kinect_ros_driver
   }
 }
 
-void K4AExposureCalibration::rgbRawImageCallback(const sensor_msgs::ImageConstPtr& msg)
+void K4APORCalibration::rgbRawImageCallback(const sensor_msgs::ImageConstPtr& msg)
 {
   ROS_DEBUG("k4a_exposure_calibration_node subscribed to /rgb/raw/image");
   try
@@ -342,6 +342,6 @@ void K4AExposureCalibration::rgbRawImageCallback(const sensor_msgs::ImageConstPt
   }
   catch(cv_bridge::Exception& e)
   {
-    ROS_ERROR("cv_bridge exception in K4AExposureCalibration::rgbRawImageCallback: [%s]", e.what());
+    ROS_ERROR("cv_bridge exception in K4APORCalibration::rgbRawImageCallback: [%s]", e.what());
   }
 }

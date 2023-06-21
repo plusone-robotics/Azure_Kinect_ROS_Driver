@@ -24,15 +24,15 @@
 /**
  * @brief Class that allows the user to tune exposure in real time from the command line
  */
-class K4AExposureCalibration
+class K4APORCalibration
 {
 public:
     /**
      * @brief default constructor and destructor
      * @details These are required in order for catkin testing to work properly.
      */
-    K4AExposureCalibration();
-    ~K4AExposureCalibration();
+    K4APORCalibration();
+    ~K4APORCalibration();
 
     /**
      * @brief initializes calibrator with a provided node handle
@@ -40,7 +40,7 @@ public:
      *          Advertises the k4a_update_exposure service and the k4a_auto_tune_exposure service.
      * @param[in] nh ROS node handle
      */
-    K4AExposureCalibration(ros::NodeHandle& nh);
+    K4APORCalibration(ros::NodeHandle& nh);
 
     /**
      * @brief call k4a_nodelet_manager/set_parameters to update exposure value
