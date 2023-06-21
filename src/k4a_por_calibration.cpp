@@ -288,7 +288,7 @@ bool K4APORCalibration::k4aSGDTune(const float target_blue_value,
       // calculate mean values
       for(uint32_t r=0; r<rows; r++)
       {
-        for(uint32_t c=0; j<cols; c++)
+        for(uint32_t c=0; c<cols; c++)
         {
           total_blue += color_channels[0].at<uchar>(r,c);
           total_green += color_channels[1].at<uchar>(r,c);
@@ -310,7 +310,7 @@ bool K4APORCalibration::k4aSGDTune(const float target_blue_value,
       // update camera params
       exposure_time_double += LEARNING_RATE_* (error_blue + error_green + error_red + error_white) * dis(gen);
       exposure_time_uint = (uint32_t)exposure_time_double;
-      white_balance += LEARNING_RATE_* (error_blue + error_green + error_red + error_white) * dis(gen);
+      white_balance_double += LEARNING_RATE_* (error_blue + error_green + error_red + error_white) * dis(gen);
       white_balance_uint = (uint16_t)white_balance_double;
       bool update_exp = k4aUpdateExposure(exposure_time_uint, error_code, res_msg);
       bool update_wb = k4aUpdateWhiteBalance(white_balance_uint, error_code, res_msg);
@@ -428,10 +428,10 @@ bool K4APORCalibration::k4aSGDTuneCallback(azure_kinect_ros_driver::k4a_sgd_tune
   std::string res_msg;
 
   ROS_INFO("Received K4A sgd auto tuning request for:");
-  ROS_INFO("blue value: [%d]", req.target_blue_val);
-  ROS_INFO("green value: [%d]", req.target_green_val);
-  ROS_INFO("red value: [%d]", req.target_red_val);
-  ROS_INFO("white value: [%d]", req.target_white_val);
+  ROS_INFO("blue value: [%f]", req.target_blue_val);
+  ROS_INFO("green value: [%f]", req.target_green_val);
+  ROS_INFO("red value: [%f]", req.target_red_val);
+  ROS_INFO("white value: [%f]", req.target_white_val);
 
   bool sgdTuningRes = k4aSGDTune(req.target_blue_val,
                                  req.target_green_val,
