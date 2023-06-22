@@ -248,13 +248,14 @@ bool K4APORCalibration::k4aAutoTuneExposure(const uint8_t target_blue_value, uin
             total_blue += color_channels[0].at<uchar>(i,j);
           }
         }
-      }
-      uint8_t current_avg_blue_value = total_blue / pixel_count;
-      bool targetBlueCheck = k4aTargetBlueCheck(target_blue_value, current_avg_blue_value, error_code, res_msg);
-      if(targetBlueCheck)
-      {
-        final_exposure = EXPOSURES_[exp_index];
-        break;
+      
+        uint8_t current_avg_blue_value = total_blue / pixel_count;
+        bool targetBlueCheck = k4aTargetBlueCheck(target_blue_value, current_avg_blue_value, error_code, res_msg);
+        if(targetBlueCheck)
+        {
+          final_exposure = EXPOSURES_[exp_index];
+          break;
+        }
       }
     }
   } 
