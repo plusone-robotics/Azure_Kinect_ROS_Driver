@@ -37,9 +37,9 @@ uint32_t K4APORCalibration::k4aStandardizeExposure(const uint32_t exposure)
   {
     if(EXPOSURES_[i] <= exposure && exposure <= EXPOSURES_[i+1])
     {
-      int low_diff = (int)exposure - (int)EXPOSURES_[i];
-      int high_diff = (int)exposure - (int)EXPOSURES_[i+1];
-      if(std::abs(low_diff) < std::abs(high_diff))
+      uint32_t low_diff = std::max(exposure, EXPOSURES_[i]) - std::min(exposure, EXPOSURES_[i]);
+      uint32_t high_diff = std::max(exposure, EXPOSURES_[i+1]) - std::min(exposure, EXPOSURES_[i+1]);
+      if(low_diff < high_diff)
       {
         kinect_exposure = EXPOSURES_[i];
         break;
