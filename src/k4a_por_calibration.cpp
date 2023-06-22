@@ -194,7 +194,7 @@ bool K4APORCalibration::k4aAutoTuneExposure(const uint8_t target_blue_value, uin
   ROS_INFO("Starting K4A auto exposure tuning...");
 
   uint32_t total_blue = 0;
-  for(uint32_t exp=MIN_EXPOSURE_; exp<MAX_EXPOSURE_; exp+=EXPOSURE_INC_)
+  for(uint32_t exp_index=0; exp_index<11; exp_index++)
   {
     bool channelsPop = k4aImagePopulatedCheck(*latest_k4a_image_ptr_, error_code, res_msg);
     if(!channelsPop)
@@ -210,7 +210,7 @@ bool K4APORCalibration::k4aAutoTuneExposure(const uint8_t target_blue_value, uin
       uint32_t cols = latest_k4a_image_.cols;
       uint32_t pixel_count = rows * cols;
 
-      bool updateExposure = k4aUpdateExposure(exp, error_code, res_msg);
+      bool updateExposure = k4aUpdateExposure(EXPOSURES_[exp_index], error_code, res_msg);
       
       if(!updateExposure)
       {
@@ -229,7 +229,7 @@ bool K4APORCalibration::k4aAutoTuneExposure(const uint8_t target_blue_value, uin
       bool targetBlueCheck = k4aTargetBlueCheck(target_blue_value, current_avg_blue_value, error_code, res_msg);
       if(targetBlueCheck)
       {
-        final_exposure = exp;
+        final_exposure = EXPOSURES_[exp_index];
         break;
       }
     }
