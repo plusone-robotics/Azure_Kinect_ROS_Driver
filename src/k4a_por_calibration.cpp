@@ -234,12 +234,13 @@ bool K4APORCalibration::k4aAutoTuneExposure(const uint8_t target_blue_value, uin
         return false;
       }
       else{
+        cv::Mat color_channels[3];
         std::lock_guard<std::mutex> lock(latest_k4a_image_mutex_);
         cv::split(*latest_k4a_image_ptr_, color_channels);
         uint32_t rows = latest_k4a_image_.rows;
         uint32_t cols = latest_k4a_image_.cols;
         uint32_t pixel_count = rows * cols;
-        
+
         for(uint32_t i=0; i<rows; i++)
         {
           for(uint32_t j=0; j<cols; j++)
