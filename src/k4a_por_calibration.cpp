@@ -238,19 +238,13 @@ bool K4APORCalibration::k4aAutoTuneExposure(const uint8_t target_blue_value, uin
   return true;
 }
 
-float K4APORCalibration::k4aRMSE(const float blue, const float blue_target,
-                                 const float green, const float green_target, 
-                                 const float red, const float red_target, 
-                                 const float white, const float white_target)
+float K4APORCalibration::k4aRMSE(const float current, const float target)
 {
   float rmse;
 
-  float b_diff = blue - blue_target;
-  float g_diff = green - green_target;
-  float r_diff = red - red_target;
-  float w_diff = white - white_target;
+  float diff = current - target;
 
-  rmse = std::sqrt(b_diff * b_diff + g_diff * g_diff + r_diff * r_diff + w_diff * w_diff);
+  rmse = std::sqrt(diff * diff);
 
   return rmse;
 }
@@ -328,11 +322,18 @@ bool K4APORCalibration::k4aSGDTune(const float target_blue_value,
       ROS_INFO("Current white_avg: [%f]", white_avg);
 
       // compute error
-      float error = k4aRMSE(blue_avg, target_blue_value, green_avg, target_green_value, red_avg, target_red_value, white_avg, target_white_value);
-      ROS_INFO("RMSE: [%f]", error);
+      float blue_error = k4aRMSE(blue_avg, target_blue_value);
+      float green_error = k4aRMSE(green_avg, target_green_value);
+      float red_error = k4aRMSE(red_avg, target_red_value);
+      float white_error = k4aRMSE(white_avg, target_white_value);
+
+      ROS_INFO("Current blue RMSE: [%f]", blue_error);
+      ROS_INFO("Current green RMSE: [%f]", green_avg);
+      ROS_INFO("Current red RMSE: [%f]", red_avg);
+      ROS_INFO("Current white RMSE: [%f]", white_avg);
 
       // update camera params
-      *exposure_time_double_ptr += LEARNING_RATE_ * error * dis(gen);
+      *exposure_time_double_ptr += LEARNING_RATE_ * white_error;
       if(exposure_time_double < MIN_EXPOSURE_)
       {
         exposure_time_uint = MIN_EXPOSURE_;
@@ -346,7 +347,7 @@ bool K4APORCalibration::k4aSGDTune(const float target_blue_value,
         exposure_time_uint = (uint32_t)exposure_time_double;
       }
 
-      *white_balance_double_ptr += LEARNING_RATE_ * error * dis(gen);
+      *white_balance_double_ptr += LEARNING_RATE_ * (blue_error + green_error + red_error);
       if(white_balance_double < MIN_WHITE_BALANCE_)
       {
         white_balance_uint = MIN_WHITE_BALANCE_;
