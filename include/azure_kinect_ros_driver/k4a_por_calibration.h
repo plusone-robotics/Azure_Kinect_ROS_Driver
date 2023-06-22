@@ -206,20 +206,11 @@ private:
 
     /**
      * @brief calculate RMSE for SGD tuning
-     * @param[in] blue current average blue value
-     * @param[in] blue_target target average blue value
-     * @param[in] green current average green value
-     * @param[in] green_target target average green value
-     * @param[in] red current average red value
-     * @param[in] red_target target average red value
-     * @param[in] white current average white value
-     * @param[in] white_target target average white value
+     * @param[in] current current average value
+     * @param[in] target target average value
      * @param[out] rmse RMSE calculated
      */
-    float k4aRMSE(const float blue, const float blue_target,
-                  const float green, const float green_target, 
-                  const float red, const float red_target, 
-                  const float white, const float white_target);
+    float k4aRMSE(const float current, const float target);
 
     // private members
     ros::NodeHandle nh_;
