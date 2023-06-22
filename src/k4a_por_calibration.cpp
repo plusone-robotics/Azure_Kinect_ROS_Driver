@@ -515,7 +515,6 @@ void K4APORCalibration::rgbRawImageCallback(const sensor_msgs::ImageConstPtr& ms
     }
     else
     {
-      std::lock_guard<std::mutex> lock(latest_k4a_image_mutex_);
       cv::cvtColor(*latest_k4a_image_ptr_, *latest_k4a_image_hls__ptr_, cv::COLOR_BGR2HLS);
       ROS_DEBUG("Updated latest_k4a_image");
     }
