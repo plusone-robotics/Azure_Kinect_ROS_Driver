@@ -147,7 +147,6 @@ bool K4APORCalibration::k4aUpdateExposure(const uint32_t req_exposure, int8_t& e
   dynamic_reconfigure::Config req_conf;
 
   int_param.name = "exposure_time";
-  int diff = 
   for(int i = 0; i < 10; i++)
   {
     if(EXPOSURES_[i] < req_exposure && req_exposure < EXPOSURES_[i+1])
