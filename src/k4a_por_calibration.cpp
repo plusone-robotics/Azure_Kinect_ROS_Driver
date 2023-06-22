@@ -156,10 +156,12 @@ bool K4APORCalibration::k4aUpdateExposure(const uint32_t req_exposure, int8_t& e
       if(std::abs(low_diff) < std::abs(high_diff))
       {
         int_param.value = EXPOSURES_[i];
+        break;
       }
       else
       {
         int_param.value = EXPOSURES_[i+1];
+        break;
       }
     }
   }
