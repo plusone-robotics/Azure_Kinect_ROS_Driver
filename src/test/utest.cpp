@@ -49,7 +49,7 @@ TEST(PORCalibrationTest, KinectStandardizeExposureTest)
   const uint32_t ten_11 = 750000;
   const uint32_t eleven = 1000000;
 
-  const uint32_t result;
+  uint32_t result;
 
   // 488
   result = test_node.k4aStandardizeExposure(zero);
