@@ -241,11 +241,8 @@ bool K4APORCalibration::k4aAutoTuneExposure(const uint8_t target_blue_value, uin
 float K4APORCalibration::k4aRMSE(const float current, const float target)
 {
   float rmse;
-
   float diff = current - target;
-
   rmse = std::sqrt(diff * diff);
-
   return rmse;
 }
 
@@ -334,31 +331,31 @@ bool K4APORCalibration::k4aSGDTune(const float target_blue_value,
 
       // update camera params
       *exposure_time_double_ptr += LEARNING_RATE_ * white_error * dis(gen);
-      if(exposure_time_double < MIN_EXPOSURE_)
+      if(*exposure_time_double_ptr < MIN_EXPOSURE_)
       {
         exposure_time_uint = MIN_EXPOSURE_;
       }
-      else if(exposure_time_double > MAX_EXPOSURE_)
+      else if(*exposure_time_double_ptr > MAX_EXPOSURE_)
       {
         exposure_time_uint = MAX_EXPOSURE_;
       }
       else
       {
-        exposure_time_uint = (uint32_t)exposure_time_double;
+        exposure_time_uint = (uint32_t)*exposure_time_double_ptr;
       }
 
       *white_balance_double_ptr += LEARNING_RATE_ * (blue_error + green_error + red_error) * dis(gen);
-      if(white_balance_double < MIN_WHITE_BALANCE_)
+      if(*white_balance_double_ptr < MIN_WHITE_BALANCE_)
       {
         white_balance_uint = MIN_WHITE_BALANCE_;
       }
-      else if(white_balance_double > MAX_WHITE_BALANCE_)
+      else if(*white_balance_double_ptr > MAX_WHITE_BALANCE_)
       {
         white_balance_uint = MAX_WHITE_BALANCE_;
       }
       else
       {
-        white_balance_uint = (uint16_t)white_balance_double;
+        white_balance_uint = (uint16_t)*white_balance_double_ptr;
       }
       bool update_exp = k4aUpdateExposure(exposure_time_uint, error_code, res_msg);
       bool update_wb = k4aUpdateWhiteBalance(white_balance_uint, error_code, res_msg);
