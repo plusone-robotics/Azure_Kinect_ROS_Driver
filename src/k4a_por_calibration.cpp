@@ -147,13 +147,22 @@ bool K4APORCalibration::k4aUpdateExposure(const uint32_t req_exposure, int8_t& e
   dynamic_reconfigure::Config req_conf;
 
   int_param.name = "exposure_time";
-  int diff = 0;
-  int index = 0;
-  while(diff >= 0)
+  int diff = 
+  for(int i = 0; i < 10; i++)
   {
-    int_param.value = EXPOSURES_[index];
-    diff = req_exposure - EXPOSURES_[index];
-    index++;
+    if(EXPOSURES_[i] < req_exposure && req_exposure < EXPOSURES_[i+1])
+    {
+      int low_diff = std::abs(req_exposure - EXPOSURES_[i]);
+      int high_diff = std::abs(req_exposure - EXPOSURES_[i+1]);
+      if(low_diff < high_diff)
+      {
+        int_param.value = EXPOSURES_[i];
+      }
+      else
+      {
+        int_param.value = EXPOSURES_[i+1];
+      }
+    }
   }
   req_conf.ints.push_back(int_param);
   srv_req.config = req_conf;
