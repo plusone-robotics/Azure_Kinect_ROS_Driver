@@ -33,12 +33,12 @@ K4APORCalibration::K4APORCalibration(ros::NodeHandle& nh)
 uint32_t K4APORCalibration::k4aStandardizeExposure(const uint32_t exposure)
 {
   uint32_t kinect_exposure;
-  for(int i = 0; i < 10; i++)
+  for(int i = 0; i <= 10; i++)
   {
     if(EXPOSURES_[i] <= exposure && exposure <= EXPOSURES_[i+1])
     {
-      auto low_diff = exposure - EXPOSURES_[i];
-      auto high_diff = EXPOSURES_[i+1] - exposure;
+      uint32_t low_diff = exposure - EXPOSURES_[i];
+      uint32_t high_diff = EXPOSURES_[i+1] - exposure;
       if(low_diff < high_diff)
       {
         kinect_exposure = EXPOSURES_[i];
