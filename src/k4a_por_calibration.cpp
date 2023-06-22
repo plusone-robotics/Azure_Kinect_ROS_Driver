@@ -147,7 +147,14 @@ bool K4APORCalibration::k4aUpdateExposure(const uint32_t req_exposure, int8_t& e
   dynamic_reconfigure::Config req_conf;
 
   int_param.name = "exposure_time";
-  int_param.value = req_exposure;
+  int diff = 0;
+  int index = 0;
+  while(diff >= 0)
+  {
+    int_param.value = EXPOSURES_[index];
+    diff = req_exposure - EXPOSURES_[index];
+    index++;
+  }
   req_conf.ints.push_back(int_param);
   srv_req.config = req_conf;
   ros::service::call("/k4a_nodelet_manager/set_parameters", srv_req, srv_resp);

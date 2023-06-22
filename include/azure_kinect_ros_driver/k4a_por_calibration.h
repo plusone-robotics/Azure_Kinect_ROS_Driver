@@ -231,7 +231,7 @@ private:
 
     // config file info
     // TODO: PULL THESE VALUES FROM CONFIG FILE "azure_kinect_ros_driver/AzureKinectParamsConfig.h"
-    const uint32_t[12] EXPOSURES_ = { 488, 977, 1953, 3906, 7813, 15625, 31250, 62500, 125000, 250000, 500000, 1000000 };
+    const uint32_t EXPOSURES_[12] = { 488, 977, 1953, 3906, 7813, 15625, 31250, 62500, 125000, 250000, 500000, 1000000 };
     const uint32_t MIN_EXPOSURE_ = EXPOSURES_[0];
     const uint32_t MAX_EXPOSURE_ = EXPOSURES_[11];
     const uint32_t DEFAULT_EXPOSURE_ = EXPOSURES_[5];
