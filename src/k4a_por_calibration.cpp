@@ -342,7 +342,7 @@ bool K4APORCalibration::k4aSGDTune(const float target_blue_value,
          exposure_time_uint = (uint32_t)*exposure_time_double_ptr;
       // }
 
-      *white_balance_double_ptr -= LEARNING_RATE_ * (blue_error + green_error + red_error);
+      *white_balance_double_ptr -= LEARNING_RATE_ * (blue_error + green_error + red_error) * dis(gen);
       if(*white_balance_double_ptr < MIN_WHITE_BALANCE_)
       {
         white_balance_uint = MIN_WHITE_BALANCE_;
