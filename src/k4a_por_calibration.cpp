@@ -35,7 +35,7 @@ uint32_t K4APORCalibration::k4aStandardizeExposure(const uint32_t exposure)
   uint32_t kinect_exposure;
   for(int i = 0; i < 10; i++)
   {
-    if(EXPOSURES_[i] < exposure && exposure < EXPOSURES_[i+1])
+    if(EXPOSURES_[i] <= exposure && exposure <= EXPOSURES_[i+1])
     {
       int low_diff = (int)exposure - (int)EXPOSURES_[i];
       int high_diff = (int)exposure - (int)EXPOSURES_[i+1];
@@ -418,7 +418,7 @@ bool K4APORCalibration::k4aUpdateExposureCallback(azure_kinect_ros_driver::k4a_u
     }
     else
     {
-      ROS_INFO("Exposure updated to: [%d]", req.new_exp);
+      ROS_INFO("Exposure updated to: [%d]", kinect_exp);
       return true;
     }
   }

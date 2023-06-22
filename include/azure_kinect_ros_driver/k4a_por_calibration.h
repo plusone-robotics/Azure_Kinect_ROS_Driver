@@ -97,8 +97,8 @@ public:
                     std::string& res_msg);
 
     /**
-     * @brief convert an exposure value to its closest Kinect allowed equivalent
-     * @param[in] exposure raw exposure value
+     * @brief convert an in bounds exposure value to its closest Kinect allowed equivalent
+     * @param[in] exposure raw, in bounds exposure value
      * @param[out] kinect_exposure closest Kinect exposure
      * @return Kinect equivalent exposure
      */

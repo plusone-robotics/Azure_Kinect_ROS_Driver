@@ -8,6 +8,128 @@
 // Project headers
 #include "azure_kinect_ros_driver/k4a_por_calibration.h"
 
+// { 488, 977, 1953, 3906, 7813, 15625, 31250, 62500, 125000, 250000, 500000, 1000000 }
+TEST(PORCalibrationTest, KinectStandardizeExposureTest)
+{
+  K4APORCalibration test_node;
+  // _# refers to what index this value should evaluate to
+  const uint32_t zero = 488;
+  const uint32_t zero_0 = 732;
+  const uint32_t zero_1 = 733;
+  const uint32_t one = 977;
+  const uint32_t one_1 = 1464;
+  const uint32_t one_2 = 1465;
+  const uint32_t two = 1953;
+  const uint32_t two_2 = 2929;
+  const uint32_t two_3 = 2930;
+  const uint32_t three = 3906;
+  const uint32_t three_3 = 5859;
+  const uint32_t three_4 = 5860;
+  const uint32_t four = 7813;
+  const uint32_t four_4 = 11718;
+  const uint32_t four_5 = 11719;
+  const uint32_t five = 15625;
+  const uint32_t five_5 = 23437;
+  const uint32_t five_6 = 23438;
+  const uint32_t six = 31250;
+  const uint32_t six_6 = 46874;
+  const uint32_t six_7 = 46875;
+  const uint32_t seven = 62500;
+  const uint32_t seven_7 = 93749;
+  const uint32_t seven_8 = 93750;
+  const uint32_t eight = 125000;
+  const uint32_t eight_8 = 187499;
+  const uint32_t eight_9 = 187500;
+  const uint32_t nine = 250000;
+  const uint32_t nine_9 = 374999;
+  const uint32_t nine_10 = 375000;
+  const uint32_t ten = 500000;
+  const uint32_t ten_10 = 749999;
+  const uint32_t ten_11 = 750000;
+  const uint32_t eleven = 1000000;
+
+  const uint32_t result;
+  result = test_node.k4aStandardizeExposure(zero);
+  ASSERT_EQ(result, test_node.EXPOSURES_[0]);
+  result = test_node.k4aStandardizeExposure(zero_0);
+  ASSERT_EQ(result, test_node.EXPOSURES_[0]);
+
+  result = test_node.k4aStandardizeExposure(zero_1);
+  ASSERT_EQ(result, test_node.EXPOSURES_[1]);
+  result = test_node.k4aStandardizeExposure(one);
+  ASSERT_EQ(result, test_node.EXPOSURES_[1]);
+  result = test_node.k4aStandardizeExposure(one_1);
+  ASSERT_EQ(result, test_node.EXPOSURES_[1]);
+
+  result = test_node.k4aStandardizeExposure(one_2);
+  ASSERT_EQ(result, test_node.EXPOSURES_[2]);
+  result = test_node.k4aStandardizeExposure(two);
+  ASSERT_EQ(result, test_node.EXPOSURES_[2]);
+  result = test_node.k4aStandardizeExposure(two_2);
+  ASSERT_EQ(result, test_node.EXPOSURES_[2]);
+
+  result = test_node.k4aStandardizeExposure(two_3);
+  ASSERT_EQ(result, test_node.EXPOSURES_[3]);
+  result = test_node.k4aStandardizeExposure(three);
+  ASSERT_EQ(result, test_node.EXPOSURES_[3]);
+  result = test_node.k4aStandardizeExposure(three_3);
+  ASSERT_EQ(result, test_node.EXPOSURES_[3]);
+
+  result = test_node.k4aStandardizeExposure(three_4);
+  ASSERT_EQ(result, test_node.EXPOSURES_[4]);
+  result = test_node.k4aStandardizeExposure(four);
+  ASSERT_EQ(result, test_node.EXPOSURES_[4]);
+  result = test_node.k4aStandardizeExposure(four_4);
+  ASSERT_EQ(result, test_node.EXPOSURES_[4]);
+  
+  result = test_node.k4aStandardizeExposure(four_5);
+  ASSERT_EQ(result, test_node.EXPOSURES_[5]);
+  result = test_node.k4aStandardizeExposure(five);
+  ASSERT_EQ(result, test_node.EXPOSURES_[5]);
+  result = test_node.k4aStandardizeExposure(five_5);
+  ASSERT_EQ(result, test_node.EXPOSURES_[5]);
+  
+  result = test_node.k4aStandardizeExposure(five_6);
+  ASSERT_EQ(result, test_node.EXPOSURES_[6]);
+  result = test_node.k4aStandardizeExposure(six);
+  ASSERT_EQ(result, test_node.EXPOSURES_[6]);
+  result = test_node.k4aStandardizeExposure(six_6);
+  ASSERT_EQ(result, test_node.EXPOSURES_[6]);
+    
+  result = test_node.k4aStandardizeExposure(six_7);
+  ASSERT_EQ(result, test_node.EXPOSURES_[7]);
+  result = test_node.k4aStandardizeExposure(seven);
+  ASSERT_EQ(result, test_node.EXPOSURES_[7]);
+  result = test_node.k4aStandardizeExposure(seven_7);
+  ASSERT_EQ(result, test_node.EXPOSURES_[7]);
+    
+  result = test_node.k4aStandardizeExposure(seven_8);
+  ASSERT_EQ(result, test_node.EXPOSURES_[8]);
+  result = test_node.k4aStandardizeExposure(eight);
+  ASSERT_EQ(result, test_node.EXPOSURES_[8]);
+  result = test_node.k4aStandardizeExposure(eight_8);
+  ASSERT_EQ(result, test_node.EXPOSURES_[8]);
+    
+  result = test_node.k4aStandardizeExposure(eight_9);
+  ASSERT_EQ(result, test_node.EXPOSURES_[9]);
+  result = test_node.k4aStandardizeExposure(nine);
+  ASSERT_EQ(result, test_node.EXPOSURES_[9]);
+  result = test_node.k4aStandardizeExposure(nine_9);
+  ASSERT_EQ(result, test_node.EXPOSURES_[9]);
+    
+  result = test_node.k4aStandardizeExposure(nine_10);
+  ASSERT_EQ(result, test_node.EXPOSURES_[10]);
+  result = test_node.k4aStandardizeExposure(ten);
+  ASSERT_EQ(result, test_node.EXPOSURES_[10]);
+  result = test_node.k4aStandardizeExposure(ten_10);
+  ASSERT_EQ(result, test_node.EXPOSURES_[10]);
+    
+  result = test_node.k4aStandardizeExposure(ten_11);
+  ASSERT_EQ(result, test_node.EXPOSURES_[11]);
+  result = test_node.k4aStandardizeExposure(eleven);
+  ASSERT_EQ(result, test_node.EXPOSURES_[11]);
+}
+
 TEST(PORCalibrationTest, CameraExposureUpdateCheckTest)
 {
   K4APORCalibration test_node;
