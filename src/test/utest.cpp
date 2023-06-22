@@ -8,9 +8,10 @@
 // Project headers
 #include "azure_kinect_ros_driver/k4a_por_calibration.h"
 
-// { 488, 977, 1953, 3906, 7813, 15625, 31250, 62500, 125000, 250000, 500000, 1000000 }
 TEST(PORCalibrationTest, KinectStandardizeExposureTest)
 {
+  const uint32_t EXPOSURE_OPTIONS[12] = { 488, 977, 1953, 3906, 7813, 15625, 31250, 62500, 125000, 250000, 500000, 1000000 };
+
   K4APORCalibration test_node;
   // _# refers to what index this value should evaluate to
   const uint32_t zero = 488;
@@ -49,85 +50,98 @@ TEST(PORCalibrationTest, KinectStandardizeExposureTest)
   const uint32_t eleven = 1000000;
 
   const uint32_t result;
+
+  // 488
   result = test_node.k4aStandardizeExposure(zero);
-  ASSERT_EQ(result, test_node.EXPOSURES_[0]);
+  ASSERT_EQ(result, EXPOSURE_OPTIONS[0]);
   result = test_node.k4aStandardizeExposure(zero_0);
-  ASSERT_EQ(result, test_node.EXPOSURES_[0]);
+  ASSERT_EQ(result, EXPOSURE_OPTIONS[0]);
 
+  // 977
   result = test_node.k4aStandardizeExposure(zero_1);
-  ASSERT_EQ(result, test_node.EXPOSURES_[1]);
+  ASSERT_EQ(result, EXPOSURE_OPTIONS[1]);
   result = test_node.k4aStandardizeExposure(one);
-  ASSERT_EQ(result, test_node.EXPOSURES_[1]);
+  ASSERT_EQ(result, EXPOSURE_OPTIONS[1]);
   result = test_node.k4aStandardizeExposure(one_1);
-  ASSERT_EQ(result, test_node.EXPOSURES_[1]);
+  ASSERT_EQ(result, EXPOSURE_OPTIONS[1]);
 
+  // 1953
   result = test_node.k4aStandardizeExposure(one_2);
-  ASSERT_EQ(result, test_node.EXPOSURES_[2]);
+  ASSERT_EQ(result, EXPOSURE_OPTIONS[2]);
   result = test_node.k4aStandardizeExposure(two);
-  ASSERT_EQ(result, test_node.EXPOSURES_[2]);
+  ASSERT_EQ(result, EXPOSURE_OPTIONS[2]);
   result = test_node.k4aStandardizeExposure(two_2);
-  ASSERT_EQ(result, test_node.EXPOSURES_[2]);
+  ASSERT_EQ(result, EXPOSURE_OPTIONS[2]);
 
+  // 3906
   result = test_node.k4aStandardizeExposure(two_3);
-  ASSERT_EQ(result, test_node.EXPOSURES_[3]);
+  ASSERT_EQ(result, EXPOSURE_OPTIONS[3]);
   result = test_node.k4aStandardizeExposure(three);
-  ASSERT_EQ(result, test_node.EXPOSURES_[3]);
+  ASSERT_EQ(result, EXPOSURE_OPTIONS[3]);
   result = test_node.k4aStandardizeExposure(three_3);
-  ASSERT_EQ(result, test_node.EXPOSURES_[3]);
+  ASSERT_EQ(result, EXPOSURE_OPTIONS[3]);
 
+  // 7813
   result = test_node.k4aStandardizeExposure(three_4);
-  ASSERT_EQ(result, test_node.EXPOSURES_[4]);
+  ASSERT_EQ(result, EXPOSURE_OPTIONS[4]);
   result = test_node.k4aStandardizeExposure(four);
-  ASSERT_EQ(result, test_node.EXPOSURES_[4]);
+  ASSERT_EQ(result, EXPOSURE_OPTIONS[4]);
   result = test_node.k4aStandardizeExposure(four_4);
-  ASSERT_EQ(result, test_node.EXPOSURES_[4]);
+  ASSERT_EQ(result, EXPOSURE_OPTIONS[4]);
   
+  // 15625
   result = test_node.k4aStandardizeExposure(four_5);
-  ASSERT_EQ(result, test_node.EXPOSURES_[5]);
+  ASSERT_EQ(result, EXPOSURE_OPTIONS[5]);
   result = test_node.k4aStandardizeExposure(five);
-  ASSERT_EQ(result, test_node.EXPOSURES_[5]);
+  ASSERT_EQ(result, EXPOSURE_OPTIONS[5]);
   result = test_node.k4aStandardizeExposure(five_5);
-  ASSERT_EQ(result, test_node.EXPOSURES_[5]);
+  ASSERT_EQ(result, EXPOSURE_OPTIONS[5]);
   
+  // 31250
   result = test_node.k4aStandardizeExposure(five_6);
-  ASSERT_EQ(result, test_node.EXPOSURES_[6]);
+  ASSERT_EQ(result, EXPOSURE_OPTIONS[6]);
   result = test_node.k4aStandardizeExposure(six);
-  ASSERT_EQ(result, test_node.EXPOSURES_[6]);
+  ASSERT_EQ(result, EXPOSURE_OPTIONS[6]);
   result = test_node.k4aStandardizeExposure(six_6);
-  ASSERT_EQ(result, test_node.EXPOSURES_[6]);
-    
+  ASSERT_EQ(result, EXPOSURE_OPTIONS[6]);
+
+  // 62500
   result = test_node.k4aStandardizeExposure(six_7);
-  ASSERT_EQ(result, test_node.EXPOSURES_[7]);
+  ASSERT_EQ(result, EXPOSURE_OPTIONS[7]);
   result = test_node.k4aStandardizeExposure(seven);
-  ASSERT_EQ(result, test_node.EXPOSURES_[7]);
+  ASSERT_EQ(result, EXPOSURE_OPTIONS[7]);
   result = test_node.k4aStandardizeExposure(seven_7);
-  ASSERT_EQ(result, test_node.EXPOSURES_[7]);
-    
+  ASSERT_EQ(result, EXPOSURE_OPTIONS[7]);
+  
+  // 125000
   result = test_node.k4aStandardizeExposure(seven_8);
-  ASSERT_EQ(result, test_node.EXPOSURES_[8]);
+  ASSERT_EQ(result, EXPOSURE_OPTIONS[8]);
   result = test_node.k4aStandardizeExposure(eight);
-  ASSERT_EQ(result, test_node.EXPOSURES_[8]);
+  ASSERT_EQ(result, EXPOSURE_OPTIONS[8]);
   result = test_node.k4aStandardizeExposure(eight_8);
-  ASSERT_EQ(result, test_node.EXPOSURES_[8]);
-    
+  ASSERT_EQ(result, EXPOSURE_OPTIONS[8]);
+
+  // 250000
   result = test_node.k4aStandardizeExposure(eight_9);
-  ASSERT_EQ(result, test_node.EXPOSURES_[9]);
+  ASSERT_EQ(result, EXPOSURE_OPTIONS[9]);
   result = test_node.k4aStandardizeExposure(nine);
-  ASSERT_EQ(result, test_node.EXPOSURES_[9]);
+  ASSERT_EQ(result, EXPOSURE_OPTIONS[9]);
   result = test_node.k4aStandardizeExposure(nine_9);
-  ASSERT_EQ(result, test_node.EXPOSURES_[9]);
-    
+  ASSERT_EQ(result, EXPOSURE_OPTIONS[9]);
+  
+  // 500000
   result = test_node.k4aStandardizeExposure(nine_10);
-  ASSERT_EQ(result, test_node.EXPOSURES_[10]);
+  ASSERT_EQ(result, EXPOSURE_OPTIONS[10]);
   result = test_node.k4aStandardizeExposure(ten);
-  ASSERT_EQ(result, test_node.EXPOSURES_[10]);
+  ASSERT_EQ(result, EXPOSURE_OPTIONS[10]);
   result = test_node.k4aStandardizeExposure(ten_10);
-  ASSERT_EQ(result, test_node.EXPOSURES_[10]);
+  ASSERT_EQ(result, EXPOSURE_OPTIONS[10]);
     
+  // 1000000
   result = test_node.k4aStandardizeExposure(ten_11);
-  ASSERT_EQ(result, test_node.EXPOSURES_[11]);
+  ASSERT_EQ(result, EXPOSURE_OPTIONS[11]);
   result = test_node.k4aStandardizeExposure(eleven);
-  ASSERT_EQ(result, test_node.EXPOSURES_[11]);
+  ASSERT_EQ(result, EXPOSURE_OPTIONS[11]);
 }
 
 TEST(PORCalibrationTest, CameraExposureUpdateCheckTest)
