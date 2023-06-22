@@ -364,7 +364,7 @@ bool K4APORCalibration::k4aSGDTune(const float target_blue_value,
       }
       else
       {
-         exposure_time_uint = (uint32_t)*exposure_time_double_ptr;
+         exposure_time_uint = k4aStandardizeExposure((uint32_t)*exposure_time_double_ptr);
       }
 
       *white_balance_double_ptr -= LEARNING_RATE_ * (blue_error + green_error + red_error) * dis(gen);
