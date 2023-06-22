@@ -30,6 +30,30 @@ K4APORCalibration::K4APORCalibration(ros::NodeHandle& nh)
   sgd_tune_service_ = nh_.advertiseService("k4a_sgd_tune", &K4APORCalibration::k4aSGDTuneCallback, this);
 }
 
+uint32_t K4APORCalibration::k4aStandardizeExposure(const uint32_t exposure)
+{
+  uint32_t kinect_exposure;
+  for(int i = 0; i < 10; i++)
+  {
+    if(EXPOSURES_[i] < exposure && exposure < EXPOSURES_[i+1])
+    {
+      int low_diff = (int)exposure - (int)EXPOSURES_[i];
+      int high_diff = (int)exposure - (int)EXPOSURES_[i+1];
+      if(std::abs(low_diff) < std::abs(high_diff))
+      {
+        kinect_exposure = EXPOSURES_[i];
+        break;
+      }
+      else
+      {
+        kinect_exposure = EXPOSURES_[i+1];
+        break;
+      }
+    }
+  }
+  return kinect_exposure;
+}
+
 bool K4APORCalibration::k4aCameraExposureUpdateCheck(const uint32_t requested_exposure, uint32_t updated_exposure, int8_t& error_code, std::string& res_msg)
 {
   if(updated_exposure != requested_exposure)
@@ -147,24 +171,7 @@ bool K4APORCalibration::k4aUpdateExposure(const uint32_t req_exposure, int8_t& e
   dynamic_reconfigure::Config req_conf;
 
   int_param.name = "exposure_time";
-  for(int i = 0; i < 10; i++)
-  {
-    if(EXPOSURES_[i] < req_exposure && req_exposure < EXPOSURES_[i+1])
-    {
-      int low_diff = req_exposure - EXPOSURES_[i];
-      int high_diff = req_exposure - EXPOSURES_[i+1];
-      if(std::abs(low_diff) < std::abs(high_diff))
-      {
-        int_param.value = EXPOSURES_[i];
-        break;
-      }
-      else
-      {
-        int_param.value = EXPOSURES_[i+1];
-        break;
-      }
-    }
-  }
+  int_param.value = req_exposure;
   req_conf.ints.push_back(int_param);
   srv_req.config = req_conf;
   ros::service::call("/k4a_nodelet_manager/set_parameters", srv_req, srv_resp);
@@ -401,7 +408,8 @@ bool K4APORCalibration::k4aUpdateExposureCallback(azure_kinect_ros_driver::k4a_u
   bool expBoundCheck = k4aCameraExposureBoundsCheck(req.new_exp, error_code, res.message);
   if(expBoundCheck)
   {
-    bool tuningRes = k4aUpdateExposure(req.new_exp, error_code, res.message);
+    uint32_t kinect_exp = k4aStandardizeExposure(req.new_exp);
+    bool tuningRes = k4aUpdateExposure(kinect_exp, error_code, res.message);
     res.k4aExposureServiceErrorCode = error_code;
     if(!tuningRes)
     {

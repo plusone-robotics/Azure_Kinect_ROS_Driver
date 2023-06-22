@@ -97,6 +97,14 @@ public:
                     std::string& res_msg);
 
     /**
+     * @brief convert an exposure value to its closest Kinect allowed equivalent
+     * @param[in] exposure raw exposure value
+     * @param[out] kinect_exposure closest Kinect exposure
+     * @return Kinect equivalent exposure
+     */
+    uint32_t k4aStandardizeExposure(const uint32_t exposure);
+
+    /**
      * @brief check if dynamic_reconfigure response has correctly updated exposure
      * @param[in] requested_exposure exposure originally requested in k4aUpdateExposure
      * @param[in] updated_exposure exposure that was returned by the dynamic_reconfigure call
