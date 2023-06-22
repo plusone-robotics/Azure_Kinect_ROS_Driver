@@ -223,6 +223,8 @@ private:
     // allocate memory space to store latest image
     cv::Mat latest_k4a_image_; /** @brief latest image*/
     cv::Mat* const latest_k4a_image_ptr_ = &latest_k4a_image_; /** @brief pointer to latest image*/
+    cv::Mat latest_k4a_image_hls_; /** @brief latest image converted to hls*/
+    cv::Mat* const latest_k4a_image_hls__ptr_ = &latest_k4a_image_hls_; /** @brief pointer to latest hls image*/
     cv_bridge::CvImageConstPtr k4aCvImagePtr_; /** @brief pointer to convert ROS image to OpenCV mat*/
     std::mutex latest_k4a_image_mutex_; /** @brief mutex to protect latest image*/
     azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode k4a_error_code_; /** @brief error codes*/

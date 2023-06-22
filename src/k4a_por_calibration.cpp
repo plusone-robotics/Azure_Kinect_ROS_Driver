@@ -329,20 +329,20 @@ bool K4APORCalibration::k4aSGDTune(const float target_blue_value,
       ROS_INFO("Current red RMSE: [%f]", red_error);
       ROS_INFO("Current white RMSE: [%f]", white_error);
 
-      // update camera params
-      *exposure_time_double_ptr -= LEARNING_RATE_ * white_error;
-      if(*exposure_time_double_ptr < MIN_EXPOSURE_)
-      {
-        exposure_time_uint = MIN_EXPOSURE_;
-      }
-      else if(*exposure_time_double_ptr > MAX_EXPOSURE_)
-      {
-        exposure_time_uint = MAX_EXPOSURE_;
-      }
-      else
-      {
-        exposure_time_uint = (uint32_t)*exposure_time_double_ptr;
-      }
+      // // update camera params
+      // *exposure_time_double_ptr -= LEARNING_RATE_ * white_error;
+      // if(*exposure_time_double_ptr < MIN_EXPOSURE_)
+      // {
+      //   exposure_time_uint = MIN_EXPOSURE_;
+      // }
+      // else if(*exposure_time_double_ptr > MAX_EXPOSURE_)
+      // {
+      //   exposure_time_uint = MAX_EXPOSURE_;
+      // }
+      // else
+      // {
+         exposure_time_uint = (uint32_t)*exposure_time_double_ptr;
+      // }
 
       *white_balance_double_ptr -= LEARNING_RATE_ * (blue_error + green_error + red_error);
       if(*white_balance_double_ptr < MIN_WHITE_BALANCE_)
@@ -517,6 +517,8 @@ void K4APORCalibration::rgbRawImageCallback(const sensor_msgs::ImageConstPtr& ms
     }
     else
     {
+      std::lock_guard<std::mutex> lock(latest_k4a_image_mutex_);
+      cv::cvtColor(*latest_k4a_image_ptr_, *latest_k4a_image_hls__ptr_, cv::COLOR_BGR2HLS);
       ROS_DEBUG("Updated latest_k4a_image");
     }
   }
