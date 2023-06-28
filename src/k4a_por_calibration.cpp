@@ -4,6 +4,7 @@
 
 // Library headers
 #include <cmath>
+#include <random>
 #include <numeric>
 
 // Associated headers
