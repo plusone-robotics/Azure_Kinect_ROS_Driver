@@ -271,52 +271,52 @@ float K4APORCalibration::k4aRMSE(const float current, const float target)
   return rmse;
 }
 
-// prediction function
-float K4APORCalibration::k4aDotProduct(const std::vector<float>& a,
-                                       const std::vector<float>& b)
-{
-  float product = 0.0;
-  for(size_t i=0; i<a.size(); i++)
-  {
-    product += a[i] * b[i];
-  }
-  return product;
-}
+// // prediction function
+// float K4APORCalibration::k4aDotProduct(const std::vector<float>& a,
+//                                        const std::vector<float>& b)
+// {
+//   float product = 0.0;
+//   for(size_t i=0; i<a.size(); i++)
+//   {
+//     product += a[i] * b[i];
+//   }
+//   return product;
+// }
 
-// cost function
-float K4APORCalibration::k4aCostFunction(const std::vector<float>& theta,
-                                         const std::vector<float>& X,
-                                         const std::vector<float>& y)
-{
-  float cost = 0.0;
-  size_t lenX = X.size();
-  for(size_t i=0; i < lenX; i++)
-  {
-    float prediction = k4aDotProduct(theta, X[i]);
-    float diff = prediction - y[i];
-    cost += (diff * diff);
-  }
-  return (1.0/(2.0 * lenX)) * cost;
-}
+// // cost function
+// float K4APORCalibration::k4aCostFunction(const std::vector<float>& theta,
+//                                          const std::vector<float>& X,
+//                                          const std::vector<float>& y)
+// {
+//   float cost = 0.0;
+//   size_t lenX = X.size();
+//   for(size_t i=0; i < lenX; i++)
+//   {
+//     float prediction = k4aDotProduct(theta, X[i]);
+//     float diff = prediction - y[i];
+//     cost += (diff * diff);
+//   }
+//   return (1.0/(2.0 * lenX)) * cost;
+// }
 
-// function to calculate gradient at given theta
-std::vector<float> K4APORCalibration::k4aGradient(const std::vector<float>& theta,
-                                                  const std::vector<float>& X,
-                                                  const std::vector<float>& y)
-{
-  size_t lenX = X.size();
-  std::vector<float> gradTheta(theta.size(), 0.0);
-  for(size_t i = 0; i < lenX; i++)
-  {
-    float prediction = k4aDotProduct(theta, X[i]);
-    float diff = prediction - y[i];
-  }
-  for(size_t j=0; j < theta.size(); j++)
-  {
-    gradTheta[j] /= lenX;
-  }
-  return gradTheta;
-}
+// // function to calculate gradient at given theta
+// std::vector<float> K4APORCalibration::k4aGradient(const std::vector<float>& theta,
+//                                                   const std::vector<float>& X,
+//                                                   const std::vector<float>& y)
+// {
+//   size_t lenX = X.size();
+//   std::vector<float> gradTheta(theta.size(), 0.0);
+//   for(size_t i = 0; i < lenX; i++)
+//   {
+//     float prediction = k4aDotProduct(theta, X[i]);
+//     float diff = prediction - y[i];
+//   }
+//   for(size_t j=0; j < theta.size(); j++)
+//   {
+//     gradTheta[j] /= lenX;
+//   }
+//   return gradTheta;
+// }
 
 bool K4APORCalibration::k4aSGDTune(const float target_blue_value,
                                    const float target_green_value,
