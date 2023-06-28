@@ -69,11 +69,12 @@ public:
      * @brief auto tune exposure with given target blue value
      * @param[in] target_blue_value requested blue value to tune exposure to
      * @param[out] final_exposure exposure camera is set to after call
+     * @param[out] final_blue_value blue value of image after call
      * @param[out] error_code error code included in response
      * @param[out] res_msg human-readable error message included in response
      * @return true if auto tuning exposure is successfully completed
      */
-    bool k4aAutoTuneExposure(const uint8_t target_blue_value, uint32_t& final_exposure, int8_t& error_code, std::string& res_msg);
+    bool k4aAutoTuneExposure(const uint8_t target_blue_value, uint32_t& final_exposure, uint8_t& final_blue_value, int8_t& error_code, std::string& res_msg);
 
     /**
      * @brief auto tune exposure and white balance with given target bgr and white values

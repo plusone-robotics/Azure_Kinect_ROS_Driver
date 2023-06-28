@@ -214,7 +214,7 @@ bool K4APORCalibration::k4aUpdateWhiteBalance(const uint16_t req_white_balance, 
   return k4aCameraWhiteBalanceUpdateCheck(req_white_balance, updated_white_balance, error_code, res_msg);
 }
 
-bool K4APORCalibration::k4aAutoTuneExposure(const uint8_t target_blue_value, uint32_t& final_exposure, int8_t& error_code, std::string& res_msg)
+bool K4APORCalibration::k4aAutoTuneExposure(const uint8_t target_blue_value, uint32_t& final_exposure, uint8_t& final_blue_value, int8_t& error_code, std::string& res_msg)
 {
   ROS_INFO("Starting K4A auto exposure tuning...");
 
@@ -255,12 +255,13 @@ bool K4APORCalibration::k4aAutoTuneExposure(const uint8_t target_blue_value, uin
         if(targetBlueCheck)
         {
           final_exposure = EXPOSURES_[exp_index];
+          final_blue_value = current_avg_blue_value;
           break;
         }
       }
     }
   } 
-  ROS_INFO("Successfully updated exposure to [%d] for target blue value of [%d]", final_exposure, target_blue_value);
+  ROS_INFO("Successfully updated exposure to [%d] for target blue value of [%d] (actual: [%d])", final_exposure, target_blue_value, final_blue_value);
   return true;
 }
 
@@ -485,14 +486,16 @@ bool K4APORCalibration::k4aAutoTuneExposureCallback(azure_kinect_ros_driver::k4a
   res.message = "";
   int8_t error_code;
   uint32_t calibrated_exposure;
+  uint8_t calibrated_blue_value;
   std::string res_msg;
 
   ROS_INFO("Received K4A exposure auto tuning request for blue value: [%d]", req.target_blue_val);
 
-  bool autoTuningRes = k4aAutoTuneExposure(req.target_blue_val, calibrated_exposure, error_code, res_msg);
+  bool autoTuningRes = k4aAutoTuneExposure(req.target_blue_val, calibrated_exposure, calibrated_blue_value, error_code, res_msg);
   res.k4aExposureServiceErrorCode = error_code;
   res.message = res_msg;
   res.calibrated_exposure = calibrated_exposure;
+  res.calibrated_blue_val = calibrated_blue_value;
 
   if(!autoTuningRes)
   {
