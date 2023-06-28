@@ -227,7 +227,7 @@ private:
      * @param[in] iteration current iteration
      * @param[out] rmse RMSE calculated
      */
-    float k4aRMSE(const float current, const float target, const int iteration, float &rmse);
+    float k4aRMSE(const float current, const float target, const int iteration, vector<float>& se_track);
 
     /**
      * @brief calculate dot product of two vectors

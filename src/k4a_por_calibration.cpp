@@ -3,8 +3,9 @@
 // email:  shannon.stoehr@plusonerobotics.com
 
 // Library headers
-#include <random>
 #include <cmath>
+#include <vector>
+#include <numeric>
 
 // Associated headers
 #include "azure_kinect_ros_driver/k4a_por_calibration.h"
@@ -263,59 +264,16 @@ bool K4APORCalibration::k4aAutoTuneExposure(const uint8_t target_blue_value, uin
   return true;
 }
 
-float K4APORCalibration::k4aRMSE(const float current, const float target, const int iteration, float &rmse)
+float K4APORCalibration::k4aRMSE(const float current, const float target, const int iteration, vector<float>& se_track)
 {
+  float se;
+  float rmse;
   float diff = current - target;
-  rmse = std::sqrt((1.0 / ((float)iteration + 1.0)) * (diff * diff));
+  se = diff * diff;
+  se_track.push_back(se);
+  rmse = std::sqrt((1.0 / ((float)iteration + 1.0)) * accumulate(se_track.begin(), se_track.end(), 0));
   return rmse;
 }
-
-// // prediction function
-// float K4APORCalibration::k4aDotProduct(const std::vector<float>& a,
-//                                        const std::vector<float>& b)
-// {
-//   float product = 0.0;
-//   for(size_t i=0; i<a.size(); i++)
-//   {
-//     product += a[i] * b[i];
-//   }
-//   return product;
-// }
-
-// // cost function
-// float K4APORCalibration::k4aCostFunction(const std::vector<float>& theta,
-//                                          const std::vector<float>& X,
-//                                          const std::vector<float>& y)
-// {
-//   float cost = 0.0;
-//   size_t lenX = X.size();
-//   for(size_t i=0; i < lenX; i++)
-//   {
-//     float prediction = k4aDotProduct(theta, X[i]);
-//     float diff = prediction - y[i];
-//     cost += (diff * diff);
-//   }
-//   return (1.0/(2.0 * lenX)) * cost;
-// }
-
-// // function to calculate gradient at given theta
-// std::vector<float> K4APORCalibration::k4aGradient(const std::vector<float>& theta,
-//                                                   const std::vector<float>& X,
-//                                                   const std::vector<float>& y)
-// {
-//   size_t lenX = X.size();
-//   std::vector<float> gradTheta(theta.size(), 0.0);
-//   for(size_t i = 0; i < lenX; i++)
-//   {
-//     float prediction = k4aDotProduct(theta, X[i]);
-//     float diff = prediction - y[i];
-//   }
-//   for(size_t j=0; j < theta.size(); j++)
-//   {
-//     gradTheta[j] /= lenX;
-//   }
-//   return gradTheta;
-// }
 
 bool K4APORCalibration::k4aSGDTune(const float target_blue_value,
                                    const float target_green_value,
@@ -339,19 +297,10 @@ bool K4APORCalibration::k4aSGDTune(const float target_blue_value,
   float* const white_balance_float_ptr = &white_balance_float;
   uint32_t exposure_time_uint;
   uint16_t white_balance_uint;
-  float blue_rmse;
-  float* const blue_rmse_ptr = &blue_rmse;
-  float green_rmse;
-  float* const green_rmse_ptr = &green_rmse;
-  float red_rmse;
-  float* const red_rmse_ptr = &red_rmse;
-  float white_rmse;
-  float* const white_rmse_ptr = &white_rmse;
-
-  // rng
-  std::random_device rd;
-  std::mt19937 gen(rd());
-  std::uniform_real_distribution<double> dis(-1.0, 1.0);
+  vector<float> blue_se_track;
+  vector<float> green_se_track;
+  vector<float> red_se_track;
+  vector<float> white_se_track;
 
   // adjust camera params using SGD
   for(int i = 0; i < MAX_ITERATIONS_; i++)
@@ -400,10 +349,10 @@ bool K4APORCalibration::k4aSGDTune(const float target_blue_value,
       ROS_INFO("Current white_avg: [%f]", white_avg);
 
       // update rmse
-      blue_rmse = k4aRMSE(blue_avg, target_blue_value, i, *blue_rmse_ptr);
-      green_rmse = k4aRMSE(green_avg, target_green_value, i, *green_rmse_ptr);
-      red_rmse = k4aRMSE(red_avg, target_red_value, i, *red_rmse_ptr);
-      white_rmse = k4aRMSE(white_avg, target_white_value, i, *white_rmse_ptr);
+      float blue_rmse = k4aRMSE(blue_avg, target_blue_value, i, blue_se_track);
+      float green_rmse = k4aRMSE(green_avg, target_green_value, i, green_se_track);
+      float red_rmse = k4aRMSE(red_avg, target_red_value, i, red_se_track);
+      float white_rmse = k4aRMSE(white_avg, target_white_value, i, white_se_track);
 
       ROS_INFO("Current blue RMSE: [%f]", blue_rmse);
       ROS_INFO("Current green RMSE: [%f]", green_rmse);
@@ -411,7 +360,7 @@ bool K4APORCalibration::k4aSGDTune(const float target_blue_value,
       ROS_INFO("Current white RMSE: [%f]", white_rmse);
 
       // update camera params
-      *exposure_time_float_ptr -= LEARNING_RATE_ * white_rmse * 100;
+      *exposure_time_float_ptr -= LEARNING_RATE_ * white_rmse;
       if(*exposure_time_float_ptr < MIN_EXPOSURE_)
       {
         exposure_time_uint = MIN_EXPOSURE_;
@@ -425,7 +374,7 @@ bool K4APORCalibration::k4aSGDTune(const float target_blue_value,
          exposure_time_uint = k4aStandardizeExposure((uint32_t)*exposure_time_float_ptr);
       }
 
-      *white_balance_float_ptr -= LEARNING_RATE_ * (blue_rmse + green_rmse + red_rmse) * 10;
+      *white_balance_float_ptr -= LEARNING_RATE_ * (blue_rmse + green_rmse + red_rmse);
       if(*white_balance_float_ptr < MIN_WHITE_BALANCE_)
       {
         white_balance_uint = MIN_WHITE_BALANCE_;
