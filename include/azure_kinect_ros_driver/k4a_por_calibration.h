@@ -83,6 +83,10 @@ public:
      * @param[in] target_white_value requested white value to tune params to
      * @param[out] final_exposure exposure camera is set to after call
      * @param[out] final_white_balance white balance camera is set to after call
+     * @param[out] final_blue_val average blue value for final exposure and white balance
+     * @param[out] final_green_val average green value for final exposure and white balance
+     * @param[out] final_red_val average red value for final exposure and white balance
+     * @param[out] final_white_val average white value for final exposure and white balance
      * @param[out] error_code error code included in response
      * @param[out] res_msg human-readable error message included in response
      * @return true if auto tuning is successfully completed
@@ -93,6 +97,10 @@ public:
                     const float target_white_value,
                     uint32_t& final_exposure,
                     uint16_t& final_white_balance,
+                    float final_blue_val,
+                    float final_green_val,
+                    float final_red_val,
+                    float final_white_val,
                     int8_t& error_code,
                     std::string& res_msg);
 
