@@ -280,6 +280,10 @@ bool K4APORCalibration::k4aSGDTune(const float target_blue_value,
                                    const float target_green_value,
                                    const float target_red_value,
                                    const float target_white_value,
+                                   const float std_dev_blue,
+                                   const float std_dev_green,
+                                   const float std_dev_red,
+                                   const float std_dev_white,
                                    uint32_t& final_exposure,
                                    uint16_t& final_white_balance,
                                    float& final_blue_val,
@@ -344,21 +348,23 @@ bool K4APORCalibration::k4aSGDTune(const float target_blue_value,
           total_white += hls_channels[1].at<uchar>(r,c);
         }
       }
-      float blue_avg = total_blue / pixel_count;
-      float green_avg = total_green / pixel_count;
-      float red_avg = total_red / pixel_count;
-      float white_avg = total_white / pixel_count;
 
-      ROS_INFO("Current blue_avg: [%f]", blue_avg);
-      ROS_INFO("Current green_avg: [%f]", green_avg);
-      ROS_INFO("Current red_avg: [%f]", red_avg);
-      ROS_INFO("Current white_avg: [%f]", white_avg);
+      // standardize (X - X mean) / std_dev
+      float blue_std = ((total_blue / pixel_count) - target_blue_value) / std_dev_blue;
+      float green_std = ((total_green / pixel_count) - target_green_value) / std_dev_green;
+      float red_std = ((total_red / pixel_count) - target_red_value) / std_dev_red;
+      float white_std = ((total_white / pixel_count) - target_white_value) / std_dev_white;
+
+      ROS_INFO("Current blue_std: [%f]", blue_std);
+      ROS_INFO("Current green_std: [%f]", green_std);
+      ROS_INFO("Current red_std: [%f]", red_std);
+      ROS_INFO("Current white_std: [%f]", white_std);
 
       // update rmse
-      float blue_rmse = k4aRMSE(blue_avg, target_blue_value, i, blue_se_track);
-      float green_rmse = k4aRMSE(green_avg, target_green_value, i, green_se_track);
-      float red_rmse = k4aRMSE(red_avg, target_red_value, i, red_se_track);
-      float white_rmse = k4aRMSE(white_avg, target_white_value, i, white_se_track);
+      float blue_rmse = k4aRMSE(blue_std, target_blue_value, i, blue_se_track);
+      float green_rmse = k4aRMSE(green_std, target_green_value, i, green_se_track);
+      float red_rmse = k4aRMSE(red_std, target_red_value, i, red_se_track);
+      float white_rmse = k4aRMSE(white_std, target_white_value, i, white_se_track);
 
       ROS_INFO("Current blue RMSE: [%f]", blue_rmse);
       ROS_INFO("Current green RMSE: [%f]", green_rmse);
@@ -366,7 +372,7 @@ bool K4APORCalibration::k4aSGDTune(const float target_blue_value,
       ROS_INFO("Current white RMSE: [%f]", white_rmse);
 
       // update camera params
-      *exposure_time_float_ptr -= LEARNING_RATE_ * (blue_rmse + green_rmse + red_rmse + white_rmse) * dis(gen);
+      *exposure_time_float_ptr -= LEARNING_RATE_ * white_rmse * dis(gen);
       if(*exposure_time_float_ptr < MIN_EXPOSURE_)
       {
         exposure_time_uint = MIN_EXPOSURE_;
