@@ -13,6 +13,7 @@
 #include <dynamic_reconfigure/client.h>
 #include <k4a/k4a.h>
 #include <mutex>
+#include <vector>
 
 // Project headers
 #include "azure_kinect_ros_driver/AzureKinectParamsConfig.h"

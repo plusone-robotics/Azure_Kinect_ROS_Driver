@@ -4,7 +4,6 @@
 
 // Library headers
 #include <cmath>
-#include <vector>
 #include <numeric>
 
 // Associated headers
