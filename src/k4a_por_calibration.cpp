@@ -266,14 +266,7 @@ bool K4APORCalibration::k4aAutoTuneExposure(const uint8_t target_blue_value, uin
 float K4APORCalibration::k4aRMSE(const float current, const float target, const int iteration, float &rmse)
 {
   float diff = current - target;
-  if(iteration == 0)
-  {
-    rmse = std::sqrt(diff * diff); 
-  }
-  else
-  {
-    rmse += std::sqrt(diff * diff) / iteration;
-  }
+  rmse = std::sqrt((1 / (iteration + 1)) * (diff * diff));
   return rmse;
 }
 
