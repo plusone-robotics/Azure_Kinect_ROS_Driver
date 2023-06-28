@@ -224,9 +224,10 @@ private:
      * @brief calculate RMSE for SGD tuning
      * @param[in] current current average value
      * @param[in] target target average value
+     * @param[in] iteration current iteration
      * @param[out] rmse RMSE calculated
      */
-    float k4aRMSE(const float current, const float target);
+    float k4aRMSE(const float current, const float target, const int iteration, float &rmse);
 
     /**
      * @brief calculate dot product of two vectors

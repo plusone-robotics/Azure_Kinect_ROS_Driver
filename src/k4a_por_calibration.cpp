@@ -263,11 +263,10 @@ bool K4APORCalibration::k4aAutoTuneExposure(const uint8_t target_blue_value, uin
   return true;
 }
 
-float K4APORCalibration::k4aRMSE(const float current, const float target)
+float K4APORCalibration::k4aRMSE(const float current, const float target, float &rmse, const int iteration)
 {
-  float rmse;
   float diff = current - target;
-  rmse = std::sqrt(diff * diff);
+  rmse += std::sqrt(diff * diff) / iteration;
   return rmse;
 }
 
@@ -340,6 +339,14 @@ bool K4APORCalibration::k4aSGDTune(const float target_blue_value,
   float* const white_balance_float_ptr = &white_balance_float;
   uint32_t exposure_time_uint;
   uint16_t white_balance_uint;
+  float blue_rmse;
+  float* const blue_rmse_ptr = &blue_rmse;
+  float green_rmse;
+  float* const green_rmse_ptr = &green_rmse;
+  float red_rmse;
+  float* const red_rmse_ptr = &red_rmse;
+  float white_rmse;
+  float* const white_rmse_ptr = &white_rmse;
 
   // rng
   std::random_device rd;
@@ -392,19 +399,19 @@ bool K4APORCalibration::k4aSGDTune(const float target_blue_value,
       ROS_INFO("Current red_avg: [%f]", red_avg);
       ROS_INFO("Current white_avg: [%f]", white_avg);
 
-      // compute error
-      float blue_error = k4aRMSE(blue_avg, target_blue_value);
-      float green_error = k4aRMSE(green_avg, target_green_value);
-      float red_error = k4aRMSE(red_avg, target_red_value);
-      float white_error = k4aRMSE(white_avg, target_white_value);
+      // update rmse
+      blue_rmse = k4aRMSE(blue_avg, target_blue_value, i, *blue_rmse_ptr);
+      green_rmse = k4aRMSE(green_avg, target_green_value, i, *green_rmse_ptr);
+      red_rmse = k4aRMSE(red_avg, target_red_value, i, *red_rmse_ptr);
+      white_rmse = k4aRMSE(white_avg, target_white_value, i, *white_rmse_ptr);
 
-      ROS_INFO("Current blue RMSE: [%f]", blue_error);
-      ROS_INFO("Current green RMSE: [%f]", green_error);
-      ROS_INFO("Current red RMSE: [%f]", red_error);
-      ROS_INFO("Current white RMSE: [%f]", white_error);
+      ROS_INFO("Current blue RMSE: [%f]", blue_rmse);
+      ROS_INFO("Current green RMSE: [%f]", green_rmse);
+      ROS_INFO("Current red RMSE: [%f]", red_rmse);
+      ROS_INFO("Current white RMSE: [%f]", white_rmse);
 
       // update camera params
-      *exposure_time_float_ptr -= LEARNING_RATE_ * white_error * 100;
+      *exposure_time_float_ptr -= LEARNING_RATE_ * white_rmse * 100;
       if(*exposure_time_float_ptr < MIN_EXPOSURE_)
       {
         exposure_time_uint = MIN_EXPOSURE_;
@@ -418,7 +425,7 @@ bool K4APORCalibration::k4aSGDTune(const float target_blue_value,
          exposure_time_uint = k4aStandardizeExposure((uint32_t)*exposure_time_float_ptr);
       }
 
-      *white_balance_float_ptr -= LEARNING_RATE_ * (blue_error + green_error + red_error) * 10;
+      *white_balance_float_ptr -= LEARNING_RATE_ * (blue_rmse + green_rmse + red_rmse) * 10;
       if(*white_balance_float_ptr < MIN_WHITE_BALANCE_)
       {
         white_balance_uint = MIN_WHITE_BALANCE_;
