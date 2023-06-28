@@ -220,6 +220,37 @@ private:
      */
     float k4aRMSE(const float current, const float target);
 
+    /**
+     * @brief calculate dot product of two vectors
+     * @param[in] a
+     * @param[in] b
+     * @param[out] product dot product calculated (a • b)
+     */
+    float k4aDotProduct(const std::vector<float>& a,
+                        const std::vector<float>& b);
+
+    /**
+     * @brief calculate cost function
+     * @param[in] theta current theta
+     * @param[in] X current X vals
+     * @param[in] y current y vals 
+     * @param[out] cost cost of current configuration
+     */
+    float k4aCostFunction(const std::vector<float>& theta,
+                          const std::vector<float>& X,
+                          const std::vector<float>& y);
+
+    /**
+     * @brief calculate gradient at given theta
+     * @param[in] theta current theta
+     * @param[in] X current X vals
+     * @param[in] y current y vals
+     * @param[out] gradient vector of length theta
+     */
+    std::vector<float> k4aGradient(const std::vector<float>& theta,
+                                   const std::vector<float>& X,
+                                   const std::vector<float>& y);
+
     // private members
     ros::NodeHandle nh_;
     image_transport::Subscriber subRGBRaw_;

@@ -271,6 +271,53 @@ float K4APORCalibration::k4aRMSE(const float current, const float target)
   return rmse;
 }
 
+// prediction function
+float K4APORCalibration::k4aDotProduct(const std::vector<float>& a,
+                                       const std::vector<float>& b)
+{
+  float product = 0.0;
+  for(size_t i=0; i<a.size(); i++)
+  {
+    product += a[i] * b[i];
+  }
+  return product;
+}
+
+// cost function
+float K4APORCalibration::k4aCostFunction(const std::vector<float>& theta,
+                                         const std::vector<float>& X,
+                                         const std::vector<float>& y)
+{
+  float cost = 0.0;
+  size_t lenX = X.size();
+  for(size_t i=0; i < lenX; i++)
+  {
+    float prediction = k4aDotProduct(theta, X[i]);
+    float diff = prediction - y[i];
+    cost += (diff * diff);
+  }
+  return (1.0/(2.0 * lenX)) * cost;
+}
+
+// function to calculate gradient at given theta
+std::vector<float> K4APORCalibration::k4aGradient(const std::vector<float>& theta,
+                                                  const std::vector<float>& X,
+                                                  const std::vector<float>& y)
+{
+  size_t lenX = X.size();
+  std::vector<float> gradTheta(theta.size(), 0.0);
+  for(size_t i = 0; i < lenX; i++)
+  {
+    float prediction = k4aDotProduct(theta, X[i]);
+    float diff = prediction - y[i];
+  }
+  for(size_t j=0; j < theta.size(); j++)
+  {
+    gradTheta[j] /= lenX;
+  }
+  return gradTheta;
+}
+
 bool K4APORCalibration::k4aSGDTune(const float target_blue_value,
                                    const float target_green_value,
                                    const float target_red_value,
@@ -283,10 +330,10 @@ bool K4APORCalibration::k4aSGDTune(const float target_blue_value,
   ROS_INFO("Starting K4A SGD tuning...");
 
   // camera params to be modified
-  double exposure_time_double = (double)DEFAULT_EXPOSURE_;
-  double* const exposure_time_double_ptr = &exposure_time_double;
-  double white_balance_double = (double)DEFAULT_WHITE_BALANCE_;
-  double* const white_balance_double_ptr = &white_balance_double;
+  float exposure_time_float = (float)DEFAULT_EXPOSURE_;
+  float* const exposure_time_float_ptr = &exposure_time_float;
+  float white_balance_float = (float)DEFAULT_WHITE_BALANCE_;
+  float* const white_balance_float_ptr = &white_balance_float;
   uint32_t exposure_time_uint;
   uint16_t white_balance_uint;
 
@@ -353,32 +400,32 @@ bool K4APORCalibration::k4aSGDTune(const float target_blue_value,
       ROS_INFO("Current white RMSE: [%f]", white_error);
 
       // update camera params
-      *exposure_time_double_ptr -= LEARNING_RATE_ * white_error;
-      if(*exposure_time_double_ptr < MIN_EXPOSURE_)
+      *exposure_time_float_ptr -= LEARNING_RATE_ * white_error * 1000;
+      if(*exposure_time_float_ptr < MIN_EXPOSURE_)
       {
         exposure_time_uint = MIN_EXPOSURE_;
       }
-      else if(*exposure_time_double_ptr > MAX_EXPOSURE_)
+      else if(*exposure_time_float_ptr > MAX_EXPOSURE_)
       {
         exposure_time_uint = MAX_EXPOSURE_;
       }
       else
       {
-         exposure_time_uint = k4aStandardizeExposure((uint32_t)*exposure_time_double_ptr);
+         exposure_time_uint = k4aStandardizeExposure((uint32_t)*exposure_time_float_ptr);
       }
 
-      *white_balance_double_ptr -= LEARNING_RATE_ * (blue_error + green_error + red_error);
-      if(*white_balance_double_ptr < MIN_WHITE_BALANCE_)
+      *white_balance_float_ptr -= LEARNING_RATE_ * (blue_error + green_error + red_error) * 100;
+      if(*white_balance_float_ptr < MIN_WHITE_BALANCE_)
       {
         white_balance_uint = MIN_WHITE_BALANCE_;
       }
-      else if(*white_balance_double_ptr > MAX_WHITE_BALANCE_)
+      else if(*white_balance_float_ptr > MAX_WHITE_BALANCE_)
       {
         white_balance_uint = MAX_WHITE_BALANCE_;
       }
       else
       {
-        white_balance_uint = (uint16_t)*white_balance_double_ptr;
+        white_balance_uint = (uint16_t)*white_balance_float_ptr;
       }
       bool update_exp = k4aUpdateExposure(exposure_time_uint, error_code, res_msg);
       bool update_wb = k4aUpdateWhiteBalance(white_balance_uint, error_code, res_msg);
