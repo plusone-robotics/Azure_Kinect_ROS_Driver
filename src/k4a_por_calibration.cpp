@@ -324,6 +324,10 @@ bool K4APORCalibration::k4aSGDTune(const float target_blue_value,
                                    const float target_white_value,
                                    uint32_t& final_exposure,
                                    uint16_t& final_white_balance,
+                                   float final_blue_val,
+                                   float final_green_val,
+                                   float final_red_val,
+                                   float final_white_val,
                                    int8_t& error_code,
                                    std::string& res_msg)
 {
@@ -437,6 +441,10 @@ bool K4APORCalibration::k4aSGDTune(const float target_blue_value,
       {
         final_exposure = exposure_time_uint;
         final_white_balance = white_balance_uint;
+        final_blue_val = blue_avg;
+        final_green_val = green_avg;
+        final_red_val = red_avg;
+        final_white_val = white_avg;
       }
     }
   }
@@ -542,6 +550,10 @@ bool K4APORCalibration::k4aSGDTuneCallback(azure_kinect_ros_driver::k4a_sgd_tune
   int8_t error_code;
   uint32_t calibrated_exposure;
   uint16_t calibrated_white_balance;
+  float final_blue;
+  float final_green;
+  float final_red;
+  float final_white;
   std::string res_msg;
 
   ROS_INFO("Received K4A sgd auto tuning request for:");
@@ -556,12 +568,20 @@ bool K4APORCalibration::k4aSGDTuneCallback(azure_kinect_ros_driver::k4a_sgd_tune
                                  req.target_white_val,
                                  calibrated_exposure,
                                  calibrated_white_balance,
+                                 final_blue,
+                                 final_green,
+                                 final_red,
+                                 final_white,
                                  error_code,
                                  res_msg);
   res.k4aExposureServiceErrorCode = error_code;
   res.message = res_msg;
   res.calibrated_exposure = calibrated_exposure;
   res.calibrated_white_balance = calibrated_white_balance;
+  res.final_blue_val = final_blue;
+  res.final_green_val = final_green;
+  res.final_red_val = final_red;
+  res.final_white_val = final_white;
 
   if(!sgdTuningRes)
   {

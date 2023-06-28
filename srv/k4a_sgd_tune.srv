@@ -5,5 +5,9 @@ float32 target_white_val
 ---
 uint32 calibrated_exposure
 uint16 calibrated_white_balance
+float32 final_blue_val
+float32 final_green_val
+float32 final_red_val
+float32 final_white_val
 string message
 int8 k4aExposureServiceErrorCode
