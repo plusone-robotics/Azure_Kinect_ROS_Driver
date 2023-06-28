@@ -280,10 +280,10 @@ bool K4APORCalibration::k4aSGDTune(const float target_blue_value,
                                    const float target_white_value,
                                    uint32_t& final_exposure,
                                    uint16_t& final_white_balance,
-                                   float final_blue_val,
-                                   float final_green_val,
-                                   float final_red_val,
-                                   float final_white_val,
+                                   float& final_blue_val,
+                                   float& final_green_val,
+                                   float& final_red_val,
+                                   float& final_white_val,
                                    int8_t& error_code,
                                    std::string& res_msg)
 {
@@ -300,6 +300,11 @@ bool K4APORCalibration::k4aSGDTune(const float target_blue_value,
   std::vector<float> green_se_track;
   std::vector<float> red_se_track;
   std::vector<float> white_se_track;
+
+  // rng
+  std::random_device rd;
+  std::mt19937 gen(rd());
+  std::uniform_real_distribution<double> dis(-1.0, 1.0);
 
   // adjust camera params using SGD
   for(int i = 0; i < MAX_ITERATIONS_; i++)
@@ -359,7 +364,7 @@ bool K4APORCalibration::k4aSGDTune(const float target_blue_value,
       ROS_INFO("Current white RMSE: [%f]", white_rmse);
 
       // update camera params
-      *exposure_time_float_ptr -= LEARNING_RATE_ * white_rmse * 100;
+      *exposure_time_float_ptr -= LEARNING_RATE_ * white_rmse * dis(gen);
       if(*exposure_time_float_ptr < MIN_EXPOSURE_)
       {
         exposure_time_uint = MIN_EXPOSURE_;
@@ -373,7 +378,7 @@ bool K4APORCalibration::k4aSGDTune(const float target_blue_value,
          exposure_time_uint = k4aStandardizeExposure((uint32_t)*exposure_time_float_ptr);
       }
 
-      *white_balance_float_ptr -= LEARNING_RATE_ * (blue_rmse + green_rmse + red_rmse);
+      *white_balance_float_ptr -= LEARNING_RATE_ * (blue_rmse + green_rmse + red_rmse) * dis(gen);
       if(*white_balance_float_ptr < MIN_WHITE_BALANCE_)
       {
         white_balance_uint = MIN_WHITE_BALANCE_;

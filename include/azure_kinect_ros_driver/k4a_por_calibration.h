@@ -97,10 +97,10 @@ public:
                     const float target_white_value,
                     uint32_t& final_exposure,
                     uint16_t& final_white_balance,
-                    float final_blue_val,
-                    float final_green_val,
-                    float final_red_val,
-                    float final_white_val,
+                    float& final_blue_val,
+                    float& final_green_val,
+                    float& final_red_val,
+                    float& final_white_val,
                     int8_t& error_code,
                     std::string& res_msg);
 
