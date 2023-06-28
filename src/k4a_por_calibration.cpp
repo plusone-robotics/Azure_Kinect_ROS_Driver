@@ -400,7 +400,7 @@ bool K4APORCalibration::k4aSGDTune(const float target_blue_value,
       ROS_INFO("Current white RMSE: [%f]", white_error);
 
       // update camera params
-      *exposure_time_float_ptr -= LEARNING_RATE_ * white_error * 1000;
+      *exposure_time_float_ptr -= LEARNING_RATE_ * white_error * 100;
       if(*exposure_time_float_ptr < MIN_EXPOSURE_)
       {
         exposure_time_uint = MIN_EXPOSURE_;
@@ -414,7 +414,7 @@ bool K4APORCalibration::k4aSGDTune(const float target_blue_value,
          exposure_time_uint = k4aStandardizeExposure((uint32_t)*exposure_time_float_ptr);
       }
 
-      *white_balance_float_ptr -= LEARNING_RATE_ * (blue_error + green_error + red_error) * 100;
+      *white_balance_float_ptr -= LEARNING_RATE_ * (blue_error + green_error + red_error) * 10;
       if(*white_balance_float_ptr < MIN_WHITE_BALANCE_)
       {
         white_balance_uint = MIN_WHITE_BALANCE_;
