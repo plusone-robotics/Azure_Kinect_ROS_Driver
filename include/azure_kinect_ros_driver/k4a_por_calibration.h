@@ -82,6 +82,10 @@ public:
      * @param[in] target_green_value requested green value to tune params to
      * @param[in] target_red_value requested red value to tune params to
      * @param[in] target_white_value requested white value to tune params to
+     * @param[in] std_dev_blue requested std dev of blue value to tune params to
+     * @param[in] std_dev_green requested std dev of green value to tune params to
+     * @param[in] std_dev_red requested std dev of red value to tune params to
+     * @param[in] std_dev_white requested std dev of white value to tune params to
      * @param[out] final_exposure exposure camera is set to after call
      * @param[out] final_white_balance white balance camera is set to after call
      * @param[out] final_blue_val average blue value for final exposure and white balance
