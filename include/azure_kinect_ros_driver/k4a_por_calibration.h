@@ -289,6 +289,6 @@ private:
     const uint16_t DEFAULT_WHITE_BALANCE_ = 4500;
     const uint16_t WHITE_BALANCE_INC_ = 10;
 
-    const float LEARNING_RATE_ = 0.1; // learning rate for SGD
+    const float LEARNING_RATE_ = 0.01; // learning rate for SGD
     const uint16_t MAX_ITERATIONS_ = 2500; // max iterations for SGD
 };
