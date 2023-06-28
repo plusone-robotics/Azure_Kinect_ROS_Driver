@@ -291,11 +291,10 @@ bool K4APORCalibration::k4aSGDTune(const float target_blue_value,
   ROS_INFO("Starting K4A SGD tuning...");
 
   // camera params to be modified
-  float exposure_time_float = (float)DEFAULT_EXPOSURE_;
-  float* const exposure_time_float_ptr = &exposure_time_float;
+  int exposure_time_index = 5;
+  int* const exposure_time_index_ptr = &exposure_time_index;
   float white_balance_float = (float)DEFAULT_WHITE_BALANCE_;
   float* const white_balance_float_ptr = &white_balance_float;
-  uint32_t exposure_time_uint;
   uint16_t white_balance_uint;
   std::vector<float> blue_se_track;
   std::vector<float> green_se_track;
@@ -365,18 +364,18 @@ bool K4APORCalibration::k4aSGDTune(const float target_blue_value,
       ROS_INFO("Current white RMSE: [%f]", white_rmse);
 
       // update camera params
-      *exposure_time_float_ptr -= LEARNING_RATE_ * white_rmse * dis(gen) * 1000;
-      if(*exposure_time_float_ptr < MIN_EXPOSURE_)
+      *exposure_time_index_ptr -= LEARNING_RATE_ * (white_rmse / 255) * dis(gen);
+      if(EXPOSURES_[*exposure_time_index_ptr] < MIN_EXPOSURE_)
       {
         exposure_time_uint = MIN_EXPOSURE_;
       }
-      else if(*exposure_time_float_ptr > MAX_EXPOSURE_)
+      else if(EXPOSURES_[*exposure_time_index_ptr] > MAX_EXPOSURE_)
       {
         exposure_time_uint = MAX_EXPOSURE_;
       }
       else
       {
-         exposure_time_uint = k4aStandardizeExposure((uint32_t)*exposure_time_float_ptr);
+         exposure_time_uint = EXPOSURES_[*exposure_time_index_ptr];
       }
 
       *white_balance_float_ptr -= LEARNING_RATE_ * (blue_rmse + green_rmse + red_rmse) * dis(gen) * WHITE_BALANCE_INC_;
