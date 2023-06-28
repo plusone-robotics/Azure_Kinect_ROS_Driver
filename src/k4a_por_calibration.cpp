@@ -350,10 +350,15 @@ bool K4APORCalibration::k4aSGDTune(const float target_blue_value,
       }
 
       // standardize (X - X mean) / std_dev
-      float blue_std = ((total_blue / pixel_count) - target_blue_value) / std_dev_blue;
-      float green_std = ((total_green / pixel_count) - target_green_value) / std_dev_green;
-      float red_std = ((total_red / pixel_count) - target_red_value) / std_dev_red;
-      float white_std = ((total_white / pixel_count) - target_white_value) / std_dev_white;
+      float blue_avg = total_blue / pixel_count;
+      float green_avg = total_green / pixel_count;
+      float red_avg = total_red / pixel_count;
+      float white_avg = total_white / pixel_count;
+
+      float blue_std = (blue_avg - target_blue_value) / std_dev_blue;
+      float green_std = (green_avg - target_green_value) / std_dev_green;
+      float red_std = (red_avg - target_red_value) / std_dev_red;
+      float white_std = (white_avg - target_white_value) / std_dev_white;
 
       ROS_INFO("Current blue_std: [%f]", blue_std);
       ROS_INFO("Current green_std: [%f]", green_std);
