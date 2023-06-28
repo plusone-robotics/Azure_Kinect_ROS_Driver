@@ -365,17 +365,17 @@ bool K4APORCalibration::k4aSGDTune(const float target_blue_value,
 
       // update camera params
       *exposure_time_index_ptr -= LEARNING_RATE_ * (white_rmse / 255) * dis(gen);
-      if(EXPOSURES_[*exposure_time_index_ptr] < MIN_EXPOSURE_)
+      if(*exposure_time_index_ptr < 0)
       {
-        exposure_time_uint = MIN_EXPOSURE_;
+        final_exposure = MIN_EXPOSURE_;
       }
-      else if(EXPOSURES_[*exposure_time_index_ptr] > MAX_EXPOSURE_)
+      else if(*exposure_time_index_ptr > 11)
       {
-        exposure_time_uint = MAX_EXPOSURE_;
+        final_exposure = MAX_EXPOSURE_;
       }
       else
       {
-         exposure_time_uint = EXPOSURES_[*exposure_time_index_ptr];
+         final_exposure = EXPOSURES_[*exposure_time_index_ptr];
       }
 
       *white_balance_float_ptr -= LEARNING_RATE_ * (blue_rmse + green_rmse + red_rmse) * dis(gen) * WHITE_BALANCE_INC_;
@@ -391,7 +391,7 @@ bool K4APORCalibration::k4aSGDTune(const float target_blue_value,
       {
         white_balance_uint = (uint16_t)*white_balance_float_ptr;
       }
-      bool update_exp = k4aUpdateExposure(exposure_time_uint, error_code, res_msg);
+      bool update_exp = k4aUpdateExposure(EXPOSURES_[*exposure_time_index_ptr], error_code, res_msg);
       bool update_wb = k4aUpdateWhiteBalance(white_balance_uint, error_code, res_msg);
       if(!update_exp || !update_wb)
       {
@@ -399,7 +399,6 @@ bool K4APORCalibration::k4aSGDTune(const float target_blue_value,
       }
       else
       {
-        final_exposure = exposure_time_uint;
         final_white_balance = white_balance_uint;
         final_blue_val = blue_avg;
         final_green_val = green_avg;
