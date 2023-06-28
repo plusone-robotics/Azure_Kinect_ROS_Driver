@@ -263,7 +263,7 @@ bool K4APORCalibration::k4aAutoTuneExposure(const uint8_t target_blue_value, uin
   return true;
 }
 
-float K4APORCalibration::k4aRMSE(const float current, const float target, const int iteration, vector<float>& se_track)
+float K4APORCalibration::k4aRMSE(const float current, const float target, const int iteration, std::vector<float>& se_track)
 {
   float se;
   float rmse;
@@ -296,10 +296,10 @@ bool K4APORCalibration::k4aSGDTune(const float target_blue_value,
   float* const white_balance_float_ptr = &white_balance_float;
   uint32_t exposure_time_uint;
   uint16_t white_balance_uint;
-  vector<float> blue_se_track;
-  vector<float> green_se_track;
-  vector<float> red_se_track;
-  vector<float> white_se_track;
+  std::vector<float> blue_se_track;
+  std::vector<float> green_se_track;
+  std::vector<float> red_se_track;
+  std::vector<float> white_se_track;
 
   // adjust camera params using SGD
   for(int i = 0; i < MAX_ITERATIONS_; i++)

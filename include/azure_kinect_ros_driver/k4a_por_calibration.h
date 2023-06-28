@@ -13,7 +13,6 @@
 #include <dynamic_reconfigure/client.h>
 #include <k4a/k4a.h>
 #include <mutex>
-#include <vector>
 
 // Project headers
 #include "azure_kinect_ros_driver/AzureKinectParamsConfig.h"
@@ -228,7 +227,7 @@ private:
      * @param[in] iteration current iteration
      * @param[out] rmse RMSE calculated
      */
-    float k4aRMSE(const float current, const float target, const int iteration, vector<float>& se_track);
+    float k4aRMSE(const float current, const float target, const int iteration, std::vector<float>& se_track);
 
     /**
      * @brief calculate dot product of two vectors
