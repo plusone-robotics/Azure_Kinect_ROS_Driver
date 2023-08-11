@@ -275,3 +275,4 @@ private:
     const float LEARNING_RATE_ = 0.01; // learning rate for SGD
     const uint16_t MAX_ITERATIONS_ = 2500; // max iterations for SGD
 };
+
