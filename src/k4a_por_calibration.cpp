@@ -265,14 +265,60 @@ bool K4APORCalibration::k4aAutoTuneExposure(const uint8_t target_blue_value, uin
   return true;
 }
 
-float K4APORCalibration::k4aRMSE(const float current, const float target, const int iteration, std::vector<float>& se_track)
+float K4APORCalibration::k4aCalculateMean(const cv::Mat& img)
 {
-  float se;
-  float rmse;
+  float sum = 0.0;
+  uint32_t rows = img.rows;
+  uint32_t cols = img.cols;
+  uint32_t pixel_count = rows * cols;
+
+  for(uint32_t r=0; r<rows; r++)
+  {
+    for(uint32_t c=0; c<cols; c++)
+    {
+      sum += img.at<uchar>(r,c);
+    }
+  }
+  return sum / pixel_count;
+}
+
+float K4APORCalibration::k4aCalculateStdDev(const cv::Mat& img)
+{
+  if(img.empty())
+  {
+    ROS_ERROR("Error: Input data for k4aCalculateStdDev is empty.");
+    return -1.0;
+  }
+  else
+  {
+    float mean = k4aCalculateMean(img);
+    float sumSquaredDiff = 0.0;
+
+      uint32_t rows = img.rows;
+      uint32_t cols = img.cols;
+      uint32_t pixel_count = rows * cols;
+
+      for(uint32_t r=0; r<rows; r++)
+      {
+        for(uint32_t c=0; c<cols; c++)
+        {
+          double diff = img.at<uchar>(r,c) - mean;
+          sumSquaredDiff += diff * diff;
+        }
+      }
+
+    float meanSquaredDiff = sumSquaredDiff / pixel_count;
+    float standardDev = std::sqrt(meanSquaredDiff);
+    return standardDev;
+  }
+}
+
+float K4APORCalibration::k4aRMSE(const float current, const float target)
+{
+  float se, rmse;
   float diff = current - target;
   se = diff * diff;
-  se_track.push_back(se);
-  rmse = std::sqrt((1.0 / ((float)iteration + 1.0)) * accumulate(se_track.begin(), se_track.end(), 0));
+  rmse = std::sqrt(se);
   return rmse;
 }
 
@@ -280,150 +326,175 @@ bool K4APORCalibration::k4aSGDTune(const float target_blue_value,
                                    const float target_green_value,
                                    const float target_red_value,
                                    const float target_white_value,
-                                   const float std_dev_blue,
-                                   const float std_dev_green,
-                                   const float std_dev_red,
-                                   const float std_dev_white,
+                                   const float target_std_dev_blue,
+                                   const float target_std_dev_green,
+                                   const float target_std_dev_red,
+                                   const float target_std_dev_white,
                                    uint32_t& final_exposure,
                                    uint16_t& final_white_balance,
-                                   float& final_blue_val,
-                                   float& final_green_val,
-                                   float& final_red_val,
-                                   float& final_white_val,
                                    int8_t& error_code,
                                    std::string& res_msg)
 {
   ROS_INFO("Starting K4A SGD tuning...");
 
-  // camera params to be modified
-  float exposure_time_float = (float)DEFAULT_EXPOSURE_;
-  float* const exposure_time_float_ptr = &exposure_time_float;
-  float white_balance_float = (float)DEFAULT_WHITE_BALANCE_;
-  float* const white_balance_float_ptr = &white_balance_float;
-  uint32_t exposure_time_uint;
-  uint16_t white_balance_uint;
-  std::vector<float> blue_se_track;
-  std::vector<float> green_se_track;
-  std::vector<float> red_se_track;
-  std::vector<float> white_se_track;
-
-  // rng
+  // initialize exposure setting randomly
   std::random_device rd;
   std::mt19937 gen(rd());
-  std::uniform_real_distribution<double> dis(-1.0, 1.0);
+  std::uniform_int_distribution<int> dis(0, 11);
 
-  // adjust camera params using SGD
-  for(int i = 0; i < MAX_ITERATIONS_; i++)
+  int start_exposure_index = dis(gen);
+  int* exposure_index_ptr = &start_exposure_index;
+  ROS_INFO("Starting exposure: [%d]", EXPOSURES_[start_exposure_index]);
+  bool start_exposure = k4aUpdateExposure(EXPOSURES_[start_exposure_index], error_code, res_msg);
+
+  bool tuned = false;
+
+  if(!start_exposure)
   {
-    ROS_INFO("Current iteration: [%d]", i);
-    float total_blue = 0;
-    float total_green = 0;
-    float total_red = 0;
-    float total_white = 0;
-    
-    bool channelsPop = k4aImagePopulatedCheck(*latest_k4a_image_ptr_, error_code, res_msg);
-    if(!channelsPop)
+    return false;
+  }
+  else
+  {
+    // adjust camera params using SGD
+    while(!tuned)
     {
-      return false;
-    }
-    else
-    {
-      cv::Mat color_channels[3];
-      cv::Mat hls_channels[3];
-      std::lock_guard<std::mutex> lock(latest_k4a_image_mutex_);
-      cv::split(*latest_k4a_image_ptr_, color_channels);
-      cv::split(*latest_k4a_image_hls__ptr_, hls_channels);
-      uint32_t rows = latest_k4a_image_.rows;
-      uint32_t cols = latest_k4a_image_.cols;
-      uint32_t pixel_count = rows * cols;
-
-      // calculate mean values
-      for(uint32_t r=0; r<rows; r++)
-      {
-        for(uint32_t c=0; c<cols; c++)
-        {
-          total_blue += color_channels[0].at<uchar>(r,c);
-          total_green += color_channels[1].at<uchar>(r,c);
-          total_red += color_channels[2].at<uchar>(r,c);
-          total_white += hls_channels[1].at<uchar>(r,c);
-        }
-      }
-
-      // standardize (X - X mean) / std_dev
-      float blue_avg = total_blue / pixel_count;
-      float green_avg = total_green / pixel_count;
-      float red_avg = total_red / pixel_count;
-      float white_avg = total_white / pixel_count;
-
-      float blue_std = (blue_avg - target_blue_value) / std_dev_blue;
-      float green_std = (green_avg - target_green_value) / std_dev_green;
-      float red_std = (red_avg - target_red_value) / std_dev_red;
-      float white_std = (white_avg - target_white_value) / std_dev_white;
-
-      ROS_INFO("Current blue_std: [%f]", blue_std);
-      ROS_INFO("Current green_std: [%f]", green_std);
-      ROS_INFO("Current red_std: [%f]", red_std);
-      ROS_INFO("Current white_std: [%f]", white_std);
-
-      // update rmse
-      float blue_rmse = k4aRMSE(blue_std, target_blue_value, i, blue_se_track);
-      float green_rmse = k4aRMSE(green_std, target_green_value, i, green_se_track);
-      float red_rmse = k4aRMSE(red_std, target_red_value, i, red_se_track);
-      float white_rmse = k4aRMSE(white_std, target_white_value, i, white_se_track);
-
-      ROS_INFO("Current blue RMSE: [%f]", blue_rmse);
-      ROS_INFO("Current green RMSE: [%f]", green_rmse);
-      ROS_INFO("Current red RMSE: [%f]", red_rmse);
-      ROS_INFO("Current white RMSE: [%f]", white_rmse);
-
-      // update camera params
-      *exposure_time_float_ptr -= LEARNING_RATE_ * white_rmse * dis(gen);
-      if(*exposure_time_float_ptr < MIN_EXPOSURE_)
-      {
-        exposure_time_uint = MIN_EXPOSURE_;
-      }
-      else if(*exposure_time_float_ptr > MAX_EXPOSURE_)
-      {
-        exposure_time_uint = MAX_EXPOSURE_;
-      }
-      else
-      {
-         exposure_time_uint = k4aStandardizeExposure((uint32_t)*exposure_time_float_ptr);
-      }
-
-      *white_balance_float_ptr -= LEARNING_RATE_ * (blue_rmse + green_rmse + red_rmse) * dis(gen) * WHITE_BALANCE_INC_;
-      if(*white_balance_float_ptr < MIN_WHITE_BALANCE_)
-      {
-        white_balance_uint = MIN_WHITE_BALANCE_;
-      }
-      else if(*white_balance_float_ptr > MAX_WHITE_BALANCE_)
-      {
-        white_balance_uint = MAX_WHITE_BALANCE_;
-      }
-      else
-      {
-        white_balance_uint = (uint16_t)*white_balance_float_ptr;
-      }
-      bool update_exp = k4aUpdateExposure(exposure_time_uint, error_code, res_msg);
-      bool update_wb = k4aUpdateWhiteBalance(white_balance_uint, error_code, res_msg);
-      if(!update_exp || !update_wb)
+      bool channelsPop = k4aImagePopulatedCheck(*latest_k4a_image_ptr_, error_code, res_msg);
+      if(!channelsPop)
       {
         return false;
       }
       else
       {
-        final_exposure = exposure_time_uint;
-        final_white_balance = white_balance_uint;
-        final_blue_val = blue_avg;
-        final_green_val = green_avg;
-        final_red_val = red_avg;
-        final_white_val = white_avg;
+        // calculate current state
+        cv::Mat color_channels[3];
+        cv::Mat hls_channels[3];
+        latest_k4a_image_mutex_.lock();
+        cv::split(*latest_k4a_image_ptr_, color_channels);
+        cv::split(*latest_k4a_image_hls__ptr_, hls_channels);
+        latest_k4a_image_mutex_.unlock();
+
+        // calculate current state means
+        float blue_mean = k4aCalculateMean(color_channels[0]);
+        float green_mean = k4aCalculateMean(color_channels[1]);
+        float red_mean = k4aCalculateMean(color_channels[2]);
+        float white_mean = k4aCalculateMean(hls_channels[1]);
+
+        // calculate current state standard deviations
+        float blue_std = k4aCalculateStdDev(color_channels[0]);
+        float green_std = k4aCalculateStdDev(color_channels[1]);
+        float red_std = k4aCalculateStdDev(color_channels[2]);
+        float white_std = k4aCalculateStdDev(hls_channels[1]);
+
+        // update current state rmse
+        float blue_rmse = k4aRMSE(blue_mean, target_blue_value);
+        float green_rmse = k4aRMSE(green_mean, target_green_value);
+        float red_rmse = k4aRMSE(red_mean, target_red_value);
+        float total_bgr_error = blue_rmse + green_rmse + red_rmse;
+        float white_rmse = k4aRMSE(white_mean, target_white_value);
+        
+        // randomly pick around current state, determine step direction
+        // check decreased state
+        int dec_index = (start_exposure_index - 1) % 12;
+        bool dec_exposure = k4aUpdateExposure(EXPOSURES_[dec_index], error_code, res_msg);
+        if(!dec_exposure)
+        {
+          return false;
+        }
+        else
+        {
+          // calculate decreased state
+          cv::Mat color_channels_dec[3];
+          cv::Mat hls_channels_dec[3];
+          latest_k4a_image_mutex_.lock();
+          cv::split(*latest_k4a_image_ptr_, color_channels_dec);
+          cv::split(*latest_k4a_image_hls__ptr_, hls_channels_dec);
+          latest_k4a_image_mutex_.unlock();
+
+          // calculate decreased state means
+          float blue_mean_dec = k4aCalculateMean(color_channels_dec[0]);
+          float green_mean_dec = k4aCalculateMean(color_channels_dec[1]);
+          float red_mean_dec = k4aCalculateMean(color_channels_dec[2]);
+          float white_mean_dec = k4aCalculateMean(hls_channels_dec[1]);
+
+          // calculate decreased state standard deviations
+          float blue_std_dec = k4aCalculateStdDev(color_channels_dec[0]);
+          float green_std_dec = k4aCalculateStdDev(color_channels_dec[1]);
+          float red_std_dec = k4aCalculateStdDev(color_channels_dec[2]);
+          float white_std_dec = k4aCalculateStdDev(hls_channels_dec[1]);
+
+          // update decreased state rmse
+          float blue_rmse_dec = k4aRMSE(blue_mean_dec, target_blue_value);
+          float green_rmse_dec = k4aRMSE(green_mean_dec, target_green_value);
+          float red_rmse_dec = k4aRMSE(red_mean_dec, target_red_value);
+          float total_bgr_error_dec = blue_rmse_dec + green_rmse_dec + red_rmse_dec;
+          float white_rmse_dec = k4aRMSE(white_mean_dec, target_white_value);
+
+          if(total_bgr_error_dec > total_bgr_error)
+          {
+            // check increased state
+            int inc_index = (start_exposure_index + 1) % 12;
+            bool inc_exposure = k4aUpdateExposure(EXPOSURES_[inc_index], error_code, res_msg);
+            if(!inc_exposure)
+            {
+              return false;
+            }
+            else
+            {
+              // calculate increased state
+              cv::Mat color_channels_inc[3];
+              cv::Mat hls_channels_inc[3];
+              latest_k4a_image_mutex_.lock();
+              cv::split(*latest_k4a_image_ptr_, color_channels_inc);
+              cv::split(*latest_k4a_image_hls__ptr_, hls_channels_inc);
+              latest_k4a_image_mutex_.unlock();
+
+              // calculate increased state means
+              float blue_mean_inc = k4aCalculateMean(color_channels_inc[0]);
+              float green_mean_inc = k4aCalculateMean(color_channels_inc[1]);
+              float red_mean_inc = k4aCalculateMean(color_channels_inc[2]);
+              float white_mean_inc = k4aCalculateMean(hls_channels_inc[1]);
+
+              // // calculate increased state standard deviations
+              float blue_std_inc = k4aCalculateStdDev(color_channels_inc[0]);
+              float green_std_inc = k4aCalculateStdDev(color_channels_inc[1]);
+              float red_std_inc = k4aCalculateStdDev(color_channels_inc[2]);
+              float white_std_inc = k4aCalculateStdDev(hls_channels_inc[1]);
+
+              // update increased state rmse
+              float blue_rmse_inc = k4aRMSE(blue_mean_inc, target_blue_value);
+              float green_rmse_inc = k4aRMSE(green_mean_inc, target_green_value);
+              float red_rmse_inc = k4aRMSE(red_mean_inc, target_red_value);
+              float total_bgr_error_inc = blue_rmse_inc + green_rmse_inc + red_rmse_inc;
+              float white_rmse_inc = k4aRMSE(white_mean_inc, target_white_value);
+
+              if(total_bgr_error_inc > total_bgr_error)
+              {
+                final_exposure = EXPOSURES_[start_exposure_index];
+                final_white_balance = 4500;
+                ROS_INFO("Successfully updated exposure to [%d] and white balance to [%d]", final_exposure, final_white_balance);
+                ROS_INFO("Total BGR Error: [%f]", total_bgr_error);
+                res_msg = "SGD tuning complete";
+                tuned = true;
+                return true;
+              }
+              else
+              {
+                // move to increased state, repeat
+                *exposure_index_ptr = inc_index;
+                continue;
+              }
+            }
+          }
+          else
+          {
+            // move to decreased state, repeat
+            *exposure_index_ptr = dec_index;
+            continue;
+          }
+        }
       }
     }
   }
-  ROS_INFO("Successfully updated exposure to [%d] and white balance to [%d]", final_exposure, final_white_balance);
-  res_msg = "SGD tuning complete";
-  return true;
 }
 
 bool K4APORCalibration::k4aUpdateExposureCallback(azure_kinect_ros_driver::k4a_update_exposure::Request &req,
@@ -525,10 +596,6 @@ bool K4APORCalibration::k4aSGDTuneCallback(azure_kinect_ros_driver::k4a_sgd_tune
   int8_t error_code;
   uint32_t calibrated_exposure;
   uint16_t calibrated_white_balance;
-  float final_blue;
-  float final_green;
-  float final_red;
-  float final_white;
   std::string res_msg;
 
   ROS_INFO("Received K4A sgd auto tuning request for:");
@@ -547,20 +614,12 @@ bool K4APORCalibration::k4aSGDTuneCallback(azure_kinect_ros_driver::k4a_sgd_tune
                                  req.std_dev_white,
                                  calibrated_exposure,
                                  calibrated_white_balance,
-                                 final_blue,
-                                 final_green,
-                                 final_red,
-                                 final_white,
                                  error_code,
                                  res_msg);
   res.k4aExposureServiceErrorCode = error_code;
   res.message = res_msg;
   res.calibrated_exposure = calibrated_exposure;
   res.calibrated_white_balance = calibrated_white_balance;
-  res.final_blue_val = final_blue;
-  res.final_green_val = final_green;
-  res.final_red_val = final_red;
-  res.final_white_val = final_white;
 
   if(!sgdTuningRes)
   {
