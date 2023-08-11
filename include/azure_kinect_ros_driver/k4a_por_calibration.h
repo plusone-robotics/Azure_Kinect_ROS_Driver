@@ -82,16 +82,12 @@ public:
      * @param[in] target_green_value requested green value to tune params to
      * @param[in] target_red_value requested red value to tune params to
      * @param[in] target_white_value requested white value to tune params to
-     * @param[in] std_dev_blue requested std dev of blue value to tune params to
-     * @param[in] std_dev_green requested std dev of green value to tune params to
-     * @param[in] std_dev_red requested std dev of red value to tune params to
-     * @param[in] std_dev_white requested std dev of white value to tune params to
+     * @param[in] target_std_dev_blue requested std dev of blue value to tune params to
+     * @param[in] target_std_dev_green requested std dev of green value to tune params to
+     * @param[in] target_std_dev_red requested std dev of red value to tune params to
+     * @param[in] target_std_dev_white requested std dev of white value to tune params to
      * @param[out] final_exposure exposure camera is set to after call
      * @param[out] final_white_balance white balance camera is set to after call
-     * @param[out] final_blue_val average blue value for final exposure and white balance
-     * @param[out] final_green_val average green value for final exposure and white balance
-     * @param[out] final_red_val average red value for final exposure and white balance
-     * @param[out] final_white_val average white value for final exposure and white balance
      * @param[out] error_code error code included in response
      * @param[out] res_msg human-readable error message included in response
      * @return true if auto tuning is successfully completed
@@ -100,16 +96,12 @@ public:
                     const float target_green_value,
                     const float target_red_value,
                     const float target_white_value,
-                    const float std_dev_blue,
-                    const float std_dev_green,
-                    const float std_dev_red,
-                    const float std_dev_white,
+                    const float target_std_dev_blue,
+                    const float target_std_dev_green,
+                    const float target_std_dev_red,
+                    const float target_std_dev_white,
                     uint32_t& final_exposure,
                     uint16_t& final_white_balance,
-                    float& final_blue_val,
-                    float& final_green_val,
-                    float& final_red_val,
-                    float& final_white_val,
                     int8_t& error_code,
                     std::string& res_msg);
 
@@ -230,13 +222,26 @@ private:
                             azure_kinect_ros_driver::k4a_sgd_tune::Response &res);
 
     /**
+     * @brief calculate mean of a color channel in a cv::Mat, return mean
+     * @param[in] img cv::Mat
+     * @param[out] mean mean of provided cv::Mat
+     */
+    float k4aCalculateMean(const cv::Mat& img);
+
+    /**
+     * @brief calculate standard deviation of a color channel in a cv::Mat, return standard deviation
+     * @param[in] img cv::Mat
+     * @param[out] std_dev standard deviation of cv::Mat
+     */
+    float k4aCalculateStdDev(const cv::Mat& img);
+
+    /**
      * @brief calculate RMSE for SGD tuning
      * @param[in] current current average value
      * @param[in] target target average value
-     * @param[in] iteration current iteration
      * @param[out] rmse RMSE calculated
      */
-    float k4aRMSE(const float current, const float target, const int iteration, std::vector<float>& se_track);
+    float k4aRMSE(const float current, const float target);
 
     // private members
     ros::NodeHandle nh_;
@@ -256,7 +261,7 @@ private:
     azure_kinect_ros_driver::k4aCameraExposureServiceErrorCode k4a_error_code_; /** @brief error codes*/
 
     // config file info
-    // TODO: PULL THESE VALUES FROM CONFIG FILE "azure_kinect_ros_driver/AzureKinectParamsConfig.h"
+    // TODO: PULL THESE VALUES FROM CONFIG FILE "azure_kinect_ros_driver/cfg/AzureKinectParamsConfig.h"
     const uint32_t EXPOSURES_[12] = { 488, 977, 1953, 3906, 7813, 15625, 31250, 62500, 125000, 250000, 500000, 1000000 };
     const uint32_t MIN_EXPOSURE_ = EXPOSURES_[0];
     const uint32_t MAX_EXPOSURE_ = EXPOSURES_[11];
