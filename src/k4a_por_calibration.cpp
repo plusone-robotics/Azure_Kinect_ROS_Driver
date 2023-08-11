@@ -389,7 +389,7 @@ bool K4APORCalibration::k4aSGDTune(const float target_blue_value,
         float blue_rmse = k4aRMSE(blue_mean, target_blue_value);
         float green_rmse = k4aRMSE(green_mean, target_green_value);
         float red_rmse = k4aRMSE(red_mean, target_red_value);
-        float total_bgr_error = blue_rmse + green_rmse + red_rmse;
+        float mean_bgr_error = (blue_rmse + green_rmse + red_rmse) / 3;
         float white_rmse = k4aRMSE(white_mean, target_white_value);
         
         // randomly pick around current state, determine step direction
@@ -426,10 +426,10 @@ bool K4APORCalibration::k4aSGDTune(const float target_blue_value,
           float blue_rmse_dec = k4aRMSE(blue_mean_dec, target_blue_value);
           float green_rmse_dec = k4aRMSE(green_mean_dec, target_green_value);
           float red_rmse_dec = k4aRMSE(red_mean_dec, target_red_value);
-          float total_bgr_error_dec = blue_rmse_dec + green_rmse_dec + red_rmse_dec;
+          float mean_bgr_error_dec = (blue_rmse_dec + green_rmse_dec + red_rmse_dec) / 3;
           float white_rmse_dec = k4aRMSE(white_mean_dec, target_white_value);
 
-          if(total_bgr_error_dec > total_bgr_error)
+          if(mean_bgr_error_dec > mean_bgr_error)
           {
             // check increased state
             int inc_index = (start_exposure_index + 1) % 12;
@@ -464,15 +464,15 @@ bool K4APORCalibration::k4aSGDTune(const float target_blue_value,
               float blue_rmse_inc = k4aRMSE(blue_mean_inc, target_blue_value);
               float green_rmse_inc = k4aRMSE(green_mean_inc, target_green_value);
               float red_rmse_inc = k4aRMSE(red_mean_inc, target_red_value);
-              float total_bgr_error_inc = blue_rmse_inc + green_rmse_inc + red_rmse_inc;
+              float mean_bgr_error_inc = (blue_rmse_inc + green_rmse_inc + red_rmse_inc) / 3;
               float white_rmse_inc = k4aRMSE(white_mean_inc, target_white_value);
 
-              if(total_bgr_error_inc > total_bgr_error)
+              if(mean_bgr_error_inc > mean_bgr_error)
               {
                 final_exposure = EXPOSURES_[start_exposure_index];
                 final_white_balance = 4500;
                 ROS_INFO("Successfully updated exposure to [%d] and white balance to [%d]", final_exposure, final_white_balance);
-                ROS_INFO("Total BGR Error: [%f]", total_bgr_error);
+                ROS_INFO("Mean BGR Error: [%f]", mean_bgr_error);
                 res_msg = "SGD tuning complete";
                 tuned = true;
                 return true;
