@@ -42,7 +42,9 @@ add_message_files(
 add_service_files(
   FILES
     k4a_auto_tune_exposure.srv
+    k4a_sgd_tune.srv
     k4a_update_exposure.srv
+    k4a_update_white_balance.srv
 )
 generate_messages(
   DEPENDENCIES
@@ -61,7 +63,7 @@ generate_messages(
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
  INCLUDE_DIRS include
- LIBRARIES k4a_exposure_calibration_lib
+ LIBRARIES k4a_por_calibration_lib
   CATKIN_DEPENDS
     roscpp
     std_msgs
@@ -83,21 +85,21 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
   include
 )
-add_library(k4a_exposure_calibration_lib
-  src/k4a_exposure_calibration.cpp)
-target_link_libraries(k4a_exposure_calibration_lib ${catkin_LIBRARIES})
-add_dependencies(k4a_exposure_calibration_lib ${catkin_EXPORTED_TARGETS})
+add_library(k4a_por_calibration_lib
+  src/k4a_por_calibration.cpp)
+target_link_libraries(k4a_por_calibration_lib ${catkin_LIBRARIES})
+add_dependencies(k4a_por_calibration_lib ${catkin_EXPORTED_TARGETS})
 
-add_executable(k4a_exposure_calibration_node
-  src/k4a_exposure_calibration_node.cpp
+add_executable(k4a_por_calibration_node
+  src/k4a_por_calibration_node.cpp
 )
-target_link_libraries(k4a_exposure_calibration_node
+target_link_libraries(k4a_por_calibration_node
   ${catkin_LIBRARIES}
   ${OpenCV_LIBS}
-  k4a_exposure_calibration_lib
+  k4a_por_calibration_lib
 )
-add_dependencies(k4a_exposure_calibration_node ${PROJECT_NAME}_gencfg ${catkin_EXPORTED_TARGETS})
-target_compile_features(k4a_exposure_calibration_node PUBLIC cxx_std_11)
+add_dependencies(k4a_por_calibration_node ${PROJECT_NAME}_gencfg ${catkin_EXPORTED_TARGETS})
+target_compile_features(k4a_por_calibration_node PUBLIC cxx_std_11)
 
 ##################################
 ####### END POR BUILD ############
@@ -282,14 +284,14 @@ if(CATKIN_ENABLE_TESTING)
   include_directories(
     ${catkin_INCLUDE_DIRS}
     "include"
-    k4a_exposure_calibration_node.h
+    k4a_por_calibration_node.h
   )
   add_rostest_gtest(utest_node test/utest_launch.test src/test/utest.cpp)
   target_link_libraries(utest_node
     ${K4A_LIBS}
     ${catkin_LIBRARIES}
     ${OpenCV_LIBS}
-    k4a_exposure_calibration_lib
+    k4a_por_calibration_lib
     )
 endif()
 
@@ -328,7 +330,7 @@ install(TARGETS ${PROJECT_NAME}_node
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
-install(TARGETS k4a_exposure_calibration_lib
+install(TARGETS k4a_por_calibration_lib
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
@@ -338,7 +340,7 @@ install(TARGETS k4a_exposure_calibration_lib
 ###### START POR INSTALL #########
 ##################################
 
-install(TARGETS k4a_exposure_calibration_node
+install(TARGETS k4a_por_calibration_node
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
