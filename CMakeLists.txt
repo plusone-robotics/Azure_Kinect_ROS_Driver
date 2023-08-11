@@ -12,20 +12,21 @@ option(CUDA_SUPPORT "use CUDA support onnxruntime library" ON)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-  camera_info_manager
-  cv_bridge
-  dynamic_reconfigure
-  geometry_msgs
-  image_geometry
-  image_transport
-  message_generation
-  nodelet
   roscpp
-  sensor_msgs
   std_msgs
+  message_generation
+  sensor_msgs
+  image_transport
+  image_geometry
+  nodelet
   tf2
-  tf2_geometry_msgs
   tf2_ros
+  tf2_geometry_msgs
+  geometry_msgs
+  nodelet
+  cv_bridge
+  camera_info_manager
+  dynamic_reconfigure
 )
 
 find_package(OpenCV REQUIRED)
