@@ -13,6 +13,7 @@
   <!-- <url type="website">http://wiki.ros.org/azure_kinect_ros_driver</url> -->
 
   <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>message_generation</build_depend>
 
   <depend>roscpp</depend>
   <depend>std_msgs</depend>
@@ -32,6 +33,11 @@
   <depend>dynamic_reconfigure</depend>
 
   <exec_depend>rgbd_launch</exec_depend>
+  <exec_depend>message_runtime</exec_depend>
+
+  <test_depend>gtest</test_depend>
+  <test_depend>image_transport</test_depend>
+  <test_depend>cv_bridge</test_depend>
 
   <export>
     <nodelet plugin="${prefix}/nodelet_plugins.xml" />

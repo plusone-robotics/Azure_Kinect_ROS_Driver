@@ -14,6 +14,7 @@ option(CUDA_SUPPORT "use CUDA support onnxruntime library" ON)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   std_msgs
+  message_generation
   sensor_msgs
   image_transport
   image_geometry
@@ -34,6 +35,22 @@ find_package(OpenCV REQUIRED)
 generate_dynamic_reconfigure_options(
   cfg/AzureKinectParams.cfg
 )
+add_message_files(
+  FILES
+    k4aCameraExposureServiceErrorCode.msg
+)
+add_service_files(
+  FILES
+    k4a_auto_tune_exposure.srv
+    k4a_sgd_tune.srv
+    k4a_update_exposure.srv
+    k4a_update_white_balance.srv
+)
+generate_messages(
+  DEPENDENCIES
+    std_msgs
+    sensor_msgs
+)
 
 ###################################
 ## catkin specific configuration ##
@@ -45,15 +62,48 @@ generate_dynamic_reconfigure_options(
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES k4a_ros_bridge
-#  CATKIN_DEPENDS roscpp std_msgs
-#  DEPENDS system_lib
+ INCLUDE_DIRS include
+ LIBRARIES k4a_por_calibration_lib
+  CATKIN_DEPENDS
+    roscpp
+    std_msgs
+    message_runtime
+    image_transport
+    cv_bridge
+ # DEPENDS system_lib
 )
 
 ###########
 ## Build ##
 ###########
+
+##################################
+####### START POR BUILD ##########
+##################################
+
+include_directories(
+  ${catkin_INCLUDE_DIRS}
+  include
+)
+add_library(k4a_por_calibration_lib
+  src/k4a_por_calibration.cpp)
+target_link_libraries(k4a_por_calibration_lib ${catkin_LIBRARIES})
+add_dependencies(k4a_por_calibration_lib ${catkin_EXPORTED_TARGETS})
+
+add_executable(k4a_por_calibration_node
+  src/k4a_por_calibration_node.cpp
+)
+target_link_libraries(k4a_por_calibration_node
+  ${catkin_LIBRARIES}
+  ${OpenCV_LIBS}
+  k4a_por_calibration_lib
+)
+add_dependencies(k4a_por_calibration_node ${PROJECT_NAME}_gencfg ${catkin_EXPORTED_TARGETS})
+target_compile_features(k4a_por_calibration_node PUBLIC cxx_std_11)
+
+##################################
+####### END POR BUILD ############
+##################################
 
 
 ## Declare a C++ executable
@@ -67,7 +117,6 @@ add_executable(${PROJECT_NAME}_node
   )
 add_dependencies(${PROJECT_NAME}_node ${PROJECT_NAME}_gencfg)
 target_compile_features(${PROJECT_NAME}_node PUBLIC cxx_std_11)
-
 add_library(${PROJECT_NAME}_nodelet
   src/k4a_ros_bridge_nodelet.cpp
   src/k4a_ros_device.cpp
@@ -76,6 +125,7 @@ add_library(${PROJECT_NAME}_nodelet
   )
 add_dependencies(${PROJECT_NAME}_nodelet ${PROJECT_NAME}_gencfg)
 target_compile_features(${PROJECT_NAME}_nodelet PUBLIC cxx_std_11)
+
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -222,6 +272,33 @@ include(Installk4a)
 ###### END AZURE KINECT SDK ######
 ##################################
 
+
+##################################
+####### START POR TESTING ########
+##################################
+
+if(CATKIN_ENABLE_TESTING)
+  find_package(rostest REQUIRED
+    cv_bridge
+    image_transport)
+  include_directories(
+    ${catkin_INCLUDE_DIRS}
+    "include"
+    k4a_por_calibration_node.h
+  )
+  add_rostest_gtest(utest_node test/utest_launch.test src/test/utest.cpp)
+  target_link_libraries(utest_node
+    ${K4A_LIBS}
+    ${catkin_LIBRARIES}
+    ${OpenCV_LIBS}
+    k4a_por_calibration_lib
+    )
+endif()
+
+##################################
+###### END POR TESTING ###########
+##################################
+
 include_directories(
   ${catkin_INCLUDE_DIRS}
   "include"
@@ -253,6 +330,26 @@ install(TARGETS ${PROJECT_NAME}_node
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
+install(TARGETS k4a_por_calibration_lib
+  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+
+##################################
+###### START POR INSTALL #########
+##################################
+
+install(TARGETS k4a_por_calibration_node
+  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+
+##################################
+###### END POR INSTALL ###########
+##################################
+
 install(TARGETS ${PROJECT_NAME}_nodelet
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
@@ -271,3 +368,4 @@ install(FILES
    nodelet_plugins.xml
    DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )
+

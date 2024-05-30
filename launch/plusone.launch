@@ -92,4 +92,8 @@
     </include>
 
   </group>
+
+  <!-- Start the K4A POR calibration -->
+  <node pkg="azure_kinect_ros_driver" type="k4a_por_calibration_node" name="k4a_por_calibration" output="screen">
+  </node>
 </launch>
